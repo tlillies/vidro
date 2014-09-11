@@ -337,7 +337,7 @@ def get_gains():
 	global pitch_K_D
 
 	#Get fill lines with the lines from the gain file
-	gainfile = open('/home/tom/gains.txt', "r")
+	gainfile = open('/home/recuv/vidro/gains.txt', "r")
 	lines = gainfile.readlines()
 	gainfile.close()
 
@@ -532,7 +532,7 @@ def get_yaw_degrees():
 	Works for SITL and Vicon
 	For SITL it returns that yaw givn by the copter and for the Vicon system it returns the yaw given by the Vicon
 	"""
-	degrees = math.degrees(get_yaw_radians)*-1
+	degrees = math.degrees(get_yaw_radians())*-1
 
 	if degrees < 0.0:
 		degrees += 360
@@ -841,8 +841,8 @@ def rc_go_to_xy(goal_x, goal_y):
 	curses_print("Roll  RC    = 1505 + " + str(error_roll*roll_K_P) + " + " + str(I_error_roll*roll_K_I) + " + " + str(D_error_roll*roll_K_D), 22, 0)
 
 	#Send RC values
-	rc_pitch( 1505 + (error_pitch*pitch_K_P) + (I_error_pitch*pitch_K_I) + (D_error_pitch*pitch_K_D) )
-	rc_roll(  1505 + (error_roll*roll_K_P) + (I_error_roll*roll_K_I) + (D_error_roll*roll_K_D) )
+	rc_pitch( 1540 + (error_pitch*pitch_K_P) + (I_error_pitch*pitch_K_I) + (D_error_pitch*pitch_K_D) )
+	rc_roll(  1540 + (error_roll*roll_K_P) + (I_error_roll*roll_K_I) + (D_error_roll*roll_K_D) )
 
 
 
