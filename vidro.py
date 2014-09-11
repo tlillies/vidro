@@ -491,7 +491,7 @@ def rc_check_dup(channel, value):
 
 def get_alt():
 	"""
-	Returns the altitude in mm
+	Returns the altitude in mm in SITL
 	"""
 	return v.location_list[2]*1000
 
@@ -516,14 +516,23 @@ def get_roll():
 def get_yaw_radians():
 	"""
 	Returns the current yaw in radians from -pi to pi
+	Works for both SITL and Vicon
+	For SITL it returns that yaw givn by the copter and for the Vicon system it returns the yaw given by the Vicon
 	"""
-	return v.attitude_list[1]
+	yaw = None
+	if sitl == True:
+		yaw = v.attitude_list[1]
+	else:
+		yaw = vicon_data()[6]
+	return yaw
 
 def get_yaw_degrees():
 	"""
 	Returns the current yaw in degrees from 0 to 360
+	Works for SITL and Vicon
+	For SITL it returns that yaw givn by the copter and for the Vicon system it returns the yaw given by the Vicon
 	"""
-	degrees = math.degrees(v.attitude_list[1])*-1
+	degrees = math.degrees(get_yaw_radians)*-1
 
 	if degrees < 0.0:
 		degrees += 360
