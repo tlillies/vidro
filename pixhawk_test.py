@@ -336,7 +336,7 @@ def get_gains():
 	global pitch_K_D
 
 	#Get fill lines with the lines from the gain file
-	gainfile = open('/home/recuv/vidro/gains.txt', "r")
+	gainfile = open('/home/tom/RECUV/vidro/vidro/gains.txt', "r")
 	lines = gainfile.readlines()
 	gainfile.close()
 
@@ -368,6 +368,9 @@ def set_vicon_home():
 	"""
 	Set the home coordinate for the vicon data.
 	"""
+	global home_x
+	global home_y
+	global home_z
 	home_x = vicon_data()[1]
 	home_y = vicon_data()[2]
 	home_z = vicon_data()[3]
@@ -492,7 +495,7 @@ def get_alt():
 	"""
 	Returns the altitude in mm in SITL
 	"""
-	return v.location_list[2]*1000
+	return get_position()[2]
 
 def get_lat():
 	"""
@@ -522,7 +525,7 @@ def get_yaw_radians():
 	if sitl == True:
 		yaw = v.attitude_list[1]
 	else:
-		yaw = vicon_data()[6]
+		yaw = round(vicon_data()[6], 7)*-1
 	return yaw
 
 def get_yaw_degrees():
@@ -555,9 +558,9 @@ def get_position():
 		position[1] = calc_sitl_distance_y()
 		position[2] = get_alt()
 	else:
-		position[0] = vicon_data()[1] - home_x
-		position[1] = vicon_data()[2] - home_y
-		position[2] = vicon_data()[3] - home_z
+		position[0] = round(vicon_data()[1] - home_x, 7)
+		position[1] = round((vicon_data()[2] - home_y)*-1, 7)
+		position[2] = round(vicon_data()[3] - home_z, 7)
 
 	return position
 
@@ -666,8 +669,8 @@ def rc_go_to_alt(goal_alt):
 
 	#Print alt data
 	curses_print("Throttle RC Level: " + str(v.channel_readback['3']), 6, 1)
-	curses_print("Error: " + str(error_alt), 7, 1)
-	curses_print("Altitude:" + str(get_alt()), 8, 1)
+	curses_print("Error: " + str(round(error_alt, 2)), 7, 1)
+	curses_print("Altitude:" + str(round(get_alt(), 2)), 8, 1)
 	curses_print("T: "+ str(int(1370+error_alt*alt_K_P+I_error_alt*alt_K_I)) + " = 1370 + " + str(error_alt*alt_K_P) + " + " + str(I_error_alt*alt_K_I), 19, 0)
 
 	#Send RC value
@@ -704,9 +707,9 @@ def rc_go_to_heading(goal_heading):
 
 	#Print yaw data
 	curses_print("Yaw RC Level: " + str(v.channel_readback['4']), 6, 0)
-	curses_print("Error: " + str(error_yaw), 7, 0)
-	curses_print("Heading Radians: " + str(get_yaw_radians()), 8, 0)
-	curses_print("Heading Degrees: " + str(get_yaw_degrees()), 9, 0)
+	curses_print("Error: " + str(round(error_yaw)), 7, 0)
+	curses_print("Heading Radians: " + str(round(get_yaw_radians(), 2)), 8, 0)
+	curses_print("Heading Degrees: " + str(round(get_yaw_degrees(), 2)), 9, 0)
 	curses_print("Y: "+ str(int(1500+error_yaw*yaw_K_P+I_error_yaw*yaw_K_I)) + " = 1500 + " + str(error_yaw*yaw_K_P) + " + " + str(I_error_yaw*yaw_K_I), 20, 0)
 
 	#Send RC value
@@ -763,8 +766,10 @@ def rc_go_to_xy(goal_x, goal_y):
 	#Calculate current position (Need to find which one works best)
 	#x_current = calc_sitl_distance_x()
 	#y_current = calc_sitl_distance_y()
-	x_current = calc_sitl_distance(home_lat, home_lon, home_lat, average_lon)
-	y_current = calc_sitl_distance(home_lat, home_lon, average_lat, home_lon)
+	x_current = get_position()[0]
+	y_current = get_position()[1]
+	#x_current = calc_sitl_distance(home_lat, home_lon, home_lat, average_lon)
+	#y_current = calc_sitl_distance(home_lat, home_lon, average_lat, home_lon)
 	#x_current = calc_utm_distance(home_lat, home_lon, home_lat, get_lon())
 	#y_current = calc_utm_distance(home_lat, home_lon, get_lat(), home_lon)
 
@@ -872,7 +877,7 @@ while v.channel_readback['6'] < 1100:
 
 
 	#Setting goal
-	rc_go_to_alt(10000)
+	rc_go_to_alt(1000)
 	"""
 	yaw_error = rc_go_to_heading(.78539816)
 	if yaw_error < .1 and yaw_error > -.1:
@@ -910,7 +915,7 @@ while v.channel_readback['6'] < 1100:
 	curses_print("Time: " + str((time.clock()-timer)*10),0,0)
 
 	#Formatting for PID
-	curses_print("              Base        P                I                 D", 18, 0)
+	curses_print("          Base        P                I                 D", 18, 0)
 
 	#
 	curses_print("             X              Y              Z              YAW", 2, 0)
@@ -926,7 +931,7 @@ disarm()
 
 
 #Plots
-
+"""
 plot.figure(1)
 plot.xlabel("Time(sec)")
 plot.ylabel("Error(rads)")
@@ -953,6 +958,7 @@ plot.plot(plot_time_roll,plot_error_roll)
 #plot.plot(plot_time_roll,plot_rc_roll)
 #plot.plot(plot_time_roll,plot_error_roll_D)
 """
+"""
 plot.figure(5)
 plot.xlabel("Time(sec)")
 plot.ylabel("Error(rads)")
@@ -965,6 +971,7 @@ plot.ylabel("Error(mm)")
 plot.title("Throttle")
 plot.plot(plot_time_throttle,plot_error_throttle)
 plot.plot(plot_time_throttle,plot_error_throttle_I)
+"""
 """
 plot.figure(7)
 plot.xlabel("Time(sec)")
@@ -984,3 +991,4 @@ plot.ylabel("y Location(mm)")
 plot.title("Location")
 plot.plot(plot_x_current, plot_y_current)
 plot.show()
+"""
