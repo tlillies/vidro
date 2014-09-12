@@ -672,7 +672,7 @@ def rc_go_to_alt(goal_alt):
 	curses_print("Throttle RC = 1370 + " + str(error_alt*alt_K_P) + " + " + str(I_error_alt*alt_K_I), 19, 0)
 
 	#Send RC value
-	rc_throttle(1370+error_alt*alt_K_P+I_error_alt*alt_K_I)
+	curses_print("T: "+ str(int(1370+error_alt*alt_K_P+I_error_alt*alt_K_I)) + " = 1370 + " + str(error_alt*alt_K_P) + " + " + str(I_error_alt*alt_K_I), 19, 0)
 
 	return error_alt
 
@@ -708,7 +708,7 @@ def rc_go_to_heading(goal_heading):
 	curses_print("Error: " + str(error_yaw), 7, 0)
 	curses_print("Heading Radians: " + str(get_yaw_radians()), 8, 0)
 	curses_print("Heading Degrees: " + str(get_yaw_degrees()), 9, 0)
-	curses_print("Yaw RC      = 1500 + " + str(error_yaw*yaw_K_P) + " + " + str(I_error_yaw*yaw_K_I), 20, 0)
+	curses_print("Y: "+ str(int(1500+error_yaw*yaw_K_P+I_error_yaw*yaw_K_I)) + " = 1500 + " + str(error_yaw*yaw_K_P) + " + " + str(I_error_yaw*yaw_K_I), 20, 0)
 
 	#Send RC value
 	rc_yaw(1500+error_yaw*yaw_K_P+I_error_yaw*yaw_K_I)
@@ -837,8 +837,8 @@ def rc_go_to_xy(goal_x, goal_y):
 	previous_error_pitch = error_pitch
 	previous_error_roll = error_roll
 
-	curses_print("Pitch RC    = 1505 + " + str(error_pitch*pitch_K_P) + " + " + str(I_error_pitch*pitch_K_I) + " + " + str(D_error_pitch*pitch_K_D), 21, 0)
-	curses_print("Roll  RC    = 1505 + " + str(error_roll*roll_K_P) + " + " + str(I_error_roll*roll_K_I) + " + " + str(D_error_roll*roll_K_D), 22, 0)
+	curses_print("P: " +  str(int(1540+error_pitch*pitch_K_P+I_error_pitch*pitch_K_I+D_error_pitch*pitch_K_D)) + " = 1540 + " + str(error_pitch*pitch_K_P) + " + " + str(I_error_pitch*pitch_K_I) + " + " + str(D_error_pitch*pitch_K_D), 21, 0)
+	curses_print("R: " +  str(int(1540+error_roll*roll_K_P+I_error_roll*roll_K_I+D_error_roll*roll_K_D)) + " = 1540 + " + str(error_roll*roll_K_P) + " + " + str(I_error_roll*roll_K_I) + " + " + str(D_error_roll*roll_K_D), 22, 0)
 
 	#Send RC values
 	rc_pitch( 1540 + (error_pitch*pitch_K_P) + (I_error_pitch*pitch_K_I) + (D_error_pitch*pitch_K_D) )
