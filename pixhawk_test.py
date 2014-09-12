@@ -304,7 +304,6 @@ def curses_print(string, line, col):
 	"""
 	Function to do a simple curses print.
 	"""
-
 	#Check for bad inputs
 	if col > 1 or col < 0:
 		return
@@ -558,7 +557,7 @@ def get_position():
 	else:
 		position[0] = vicon_data()[1] - home_x
 		position[1] = vicon_data()[2] - home_y
-		psoition[2] = vicon_data()[3] - home_z
+		position[2] = vicon_data()[3] - home_z
 
 	return position
 
@@ -672,7 +671,7 @@ def rc_go_to_alt(goal_alt):
 	curses_print("Throttle RC = 1370 + " + str(error_alt*alt_K_P) + " + " + str(I_error_alt*alt_K_I), 19, 0)
 
 	#Send RC value
-	rc_throttle(1370+error_alt*alt_K_P+I_error_alt*alt_K_I)
+	#rc_throttle(1370+error_alt*alt_K_P+I_error_alt*alt_K_I)
 
 	return error_alt
 
@@ -711,7 +710,7 @@ def rc_go_to_heading(goal_heading):
 	curses_print("Yaw RC      = 1500 + " + str(error_yaw*yaw_K_P) + " + " + str(I_error_yaw*yaw_K_I), 20, 0)
 
 	#Send RC value
-	rc_yaw(1500+error_yaw*yaw_K_P+I_error_yaw*yaw_K_I)
+	#rc_yaw(1500+error_yaw*yaw_K_P+I_error_yaw*yaw_K_I)
 
 	return error_alt
 
@@ -841,8 +840,8 @@ def rc_go_to_xy(goal_x, goal_y):
 	curses_print("Roll  RC    = 1505 + " + str(error_roll*roll_K_P) + " + " + str(I_error_roll*roll_K_I) + " + " + str(D_error_roll*roll_K_D), 22, 0)
 
 	#Send RC values
-	rc_pitch( 1540 + (error_pitch*pitch_K_P) + (I_error_pitch*pitch_K_I) + (D_error_pitch*pitch_K_D) )
-	rc_roll(  1540 + (error_roll*roll_K_P) + (I_error_roll*roll_K_I) + (D_error_roll*roll_K_D) )
+	#rc_pitch( 1540 + (error_pitch*pitch_K_P) + (I_error_pitch*pitch_K_I) + (D_error_pitch*pitch_K_D) )
+	#rc_roll(  1540 + (error_roll*roll_K_P) + (I_error_roll*roll_K_I) + (D_error_roll*roll_K_D) )
 
 
 
@@ -850,6 +849,8 @@ def rc_go_to_xy(goal_x, goal_y):
 
 connect_droneapi()
 connect_curses()
+connect_vicon()
+sitl = False
 
 #Set home
 time.sleep(1)
@@ -859,6 +860,8 @@ time.sleep(1)
 #Start the time clock
 timer = time.clock()
 
+screen.clear()
+screen.refresh()
 
 #Main program loop
 while v.channel_readback['6'] < 1100:
@@ -875,8 +878,8 @@ while v.channel_readback['6'] < 1100:
 	if yaw_error < .1 and yaw_error > -.1:
 		rc_go_to_xy(1000, 1000)
 	"""
-	rc_go_to_heading(.78539816)
-	rc_go_to_xy(1000, 1000)
+	rc_go_to_heading(0)
+	rc_go_to_xy(0, 0)
 
 	#Add values to arrays for plotting
 	plot_error_yaw.append(error_yaw)
@@ -913,11 +916,12 @@ while v.channel_readback['6'] < 1100:
 	curses_print("             X              Y              Z              YAW", 2, 0)
 	curses_print("Position = " + str(get_position()[0]) + " " + str(get_position()[1]) + " " + str(get_position()[2]) + " " + str(get_yaw_radians()), 3, 0)
 	curses_print("Error    = " + str(error_x) + " " + str(error_y) + " " + str(error_alt) + " " + str(error_yaw), 4, 0)
+	curses_print("Error    = " + str(error_x) + " " + str(error_y) + " " + str(error_alt) + " " + str(error_yaw), 4, 0)
 
 	#Sleep
 	time.sleep(.1)
 
-
+disconnect_vicon()
 disarm()
 
 
