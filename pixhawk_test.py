@@ -304,6 +304,7 @@ def curses_print(string, line, col):
 	"""
 	Function to do a simple curses print.
 	"""
+	
 	#Check for bad inputs
 	if col > 1 or col < 0:
 		return
@@ -336,7 +337,7 @@ def get_gains():
 	global pitch_K_D
 
 	#Get fill lines with the lines from the gain file
-	gainfile = open('/home/tom/RECUV/vidro/vidro/gains.txt', "r")
+	gainfile = open('/home/recuv/vidro/gains.txt', "r")
 	lines = gainfile.readlines()
 	gainfile.close()
 
@@ -525,7 +526,7 @@ def get_yaw_radians():
 	if sitl == True:
 		yaw = v.attitude_list[1]
 	else:
-		yaw = round(vicon_data()[6], 7)*-1
+		yaw =  vicon_data()[6]*-1
 	return yaw
 
 def get_yaw_degrees():
@@ -558,9 +559,9 @@ def get_position():
 		position[1] = calc_sitl_distance_y()
 		position[2] = get_alt()
 	else:
-		position[0] = round(vicon_data()[1] - home_x, 7)
-		position[1] = round((vicon_data()[2] - home_y)*-1, 7)
-		position[2] = round(vicon_data()[3] - home_z, 7)
+		position[0] = vicon_data()[1] - home_x
+		position[1] = (vicon_data()[2] - home_y)*-1
+		position[2] = vicon_data()[3] - home_z
 
 	return position
 
@@ -669,8 +670,8 @@ def rc_go_to_alt(goal_alt):
 
 	#Print alt data
 	curses_print("Throttle RC Level: " + str(v.channel_readback['3']), 6, 1)
-	curses_print("Error: " + str(round(error_alt, 2)), 7, 1)
-	curses_print("Altitude:" + str(round(get_alt(), 2)), 8, 1)
+	curses_print("Error: " + str(error_alt), 7, 1)
+	curses_print("Altitude:" + str(get_alt()), 8, 1)
 	curses_print("T: "+ str(int(1370+error_alt*alt_K_P+I_error_alt*alt_K_I)) + " = 1370 + " + str(error_alt*alt_K_P) + " + " + str(I_error_alt*alt_K_I), 19, 0)
 
 	#Send RC value
@@ -707,9 +708,9 @@ def rc_go_to_heading(goal_heading):
 
 	#Print yaw data
 	curses_print("Yaw RC Level: " + str(v.channel_readback['4']), 6, 0)
-	curses_print("Error: " + str(round(error_yaw)), 7, 0)
-	curses_print("Heading Radians: " + str(round(get_yaw_radians(), 2)), 8, 0)
-	curses_print("Heading Degrees: " + str(round(get_yaw_degrees(), 2)), 9, 0)
+	curses_print("Error: " + str(error_yaw), 7, 0)
+	curses_print("Heading Radians: " + str(get_yaw_radians()), 8, 0)
+	curses_print("Heading Degrees: " + str(get_yaw_degrees()), 9, 0)
 	curses_print("Y: "+ str(int(1500+error_yaw*yaw_K_P+I_error_yaw*yaw_K_I)) + " = 1500 + " + str(error_yaw*yaw_K_P) + " + " + str(I_error_yaw*yaw_K_I), 20, 0)
 
 	#Send RC value
@@ -870,7 +871,7 @@ screen.refresh()
 
 #Main program loop
 while v.channel_readback['6'] < 1100:
-
+	screen.erase()
 
 	#Set the gains from the gain file
 	get_gains()
