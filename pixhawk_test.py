@@ -304,7 +304,7 @@ def curses_print(string, line, col):
 	"""
 	Function to do a simple curses print.
 	"""
-	
+
 	#Check for bad inputs
 	if col > 1 or col < 0:
 		return
@@ -337,7 +337,7 @@ def get_gains():
 	global pitch_K_D
 
 	#Get fill lines with the lines from the gain file
-	gainfile = open('/home/recuv/vidro/gains.txt', "r")
+	gainfile = open('/home/tom/RECUV/vidro/vidro/gains.txt', "r")
 	lines = gainfile.readlines()
 	gainfile.close()
 
@@ -526,7 +526,7 @@ def get_yaw_radians():
 	if sitl == True:
 		yaw = v.attitude_list[1]
 	else:
-		yaw =  vicon_data()[6]*-1
+		yaw =  (vicon_data()[6])*-1
 	return yaw
 
 def get_yaw_degrees():
@@ -540,7 +540,7 @@ def get_yaw_degrees():
 	if degrees < 0.0:
 		degrees += 360
 
-	return degrees
+	return degrees%360
 
 def get_pitch():
 	"""
@@ -559,7 +559,7 @@ def get_position():
 		position[1] = calc_sitl_distance_y()
 		position[2] = get_alt()
 	else:
-		position[0] = vicon_data()[1] - home_x
+		position[0] = (vicon_data()[1] - home_x)*-1
 		position[1] = (vicon_data()[2] - home_y)*-1
 		position[2] = vicon_data()[3] - home_z
 
@@ -762,7 +762,7 @@ def rc_go_to_xy(goal_x, goal_y):
 	count_lat_lon = 0
 
 	#Get current heading for shifting axis
-	heading = get_yaw_degrees()
+	heading = (get_yaw_degrees())*-1
 
 	#Calculate current position (Need to find which one works best)
 	#x_current = calc_sitl_distance_x()
@@ -775,10 +775,11 @@ def rc_go_to_xy(goal_x, goal_y):
 	#y_current = calc_utm_distance(home_lat, home_lon, get_lat(), home_lon)
 
 	#Assign distance with appropriate sign
-	if get_lat() < home_lat:
-		y_current *= -1
-	if get_lon() < home_lon:
-		x_current *= -1
+	if sitl == True:
+		if get_lat() < home_lat:
+			y_current *= -1
+		if get_lon() < home_lon:
+			x_current *= -1
 
 	#Calculate the error in the x-y(lat/lon) axis
 	error_x = goal_x - x_current * 1.0
@@ -794,6 +795,7 @@ def rc_go_to_xy(goal_x, goal_y):
 	#Total error from current point to goal point
 	total_error = math.sqrt(error_x*error_x+error_y*error_y)
 
+	"""
 	#Angle on x-y(lat/lon) axis to point
 	waypoint_angle = math.degrees(math.atan(error_y/error_x))
 
@@ -804,6 +806,9 @@ def rc_go_to_xy(goal_x, goal_y):
 		waypoint_angle += 180
 	if error_x > 0 and error_y < 0:
 		waypoint_angle += 360
+	"""
+
+	waypoint_angle = math.degrees(math.atan2(error_y,error_x))
 
 	#Calculate the offset of the vehicle from the x-y (lat-lon) axis
 	vehicle_angle = 90 - (waypoint_angle + heading)
@@ -878,14 +883,14 @@ while v.channel_readback['6'] < 1100:
 
 
 	#Setting goal
-	rc_go_to_alt(1000)
+	rc_go_to_alt(0)
 	"""
 	yaw_error = rc_go_to_heading(.78539816)
 	if yaw_error < .1 and yaw_error > -.1:
 		rc_go_to_xy(1000, 1000)
 	"""
 	rc_go_to_heading(0)
-	rc_go_to_xy(0, 0)
+	rc_go_to_xy(500, 500)
 
 	#Add values to arrays for plotting
 	plot_error_yaw.append(error_yaw)
@@ -927,8 +932,10 @@ while v.channel_readback['6'] < 1100:
 	#Sleep
 	time.sleep(.1)
 
+screen.erase()
 disconnect_vicon()
 disarm()
+screen.erase()
 
 
 #Plots
