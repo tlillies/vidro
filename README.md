@@ -13,3 +13,7 @@ An API combing DroneAPI and Vicon streaming data to close the feedback control l
 [Vicon Streaming]()
 
 =====
+
+TODO:
+
+streamline (get_homee() into one function and make sending rc values one function)
