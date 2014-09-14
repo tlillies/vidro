@@ -747,38 +747,20 @@ def rc_go_to_xy(goal_x, goal_y):
 	global error_x
 	global error_y
 
-	#Average out lat and lon (May not be needed. Need to text this)
-	sum_lat += get_lat()
-	sum_lon += get_lon()
-	count_lat_lon += 1
-	average_lat = 0.0
-	average_lon = 0.0
-	if count_lat_lon != 1:
-		return
-	average_lat = sum_lat / 1.0
-	average_lon = sum_lon / 1.0
-	sum_lat = 0
-	sum_lon = 0
-	count_lat_lon = 0
-
 	#Get current heading for shifting axis
 	heading = get_yaw_degrees()
 
 	#Calculate current position (Need to find which one works best)
-	#x_current = calc_sitl_distance_x()
-	#y_current = calc_sitl_distance_y()
 	x_current = get_position()[0]
 	y_current = get_position()[1]
-	#x_current = calc_sitl_distance(home_lat, home_lon, home_lat, average_lon)
-	#y_current = calc_sitl_distance(home_lat, home_lon, average_lat, home_lon)
-	#x_current = calc_utm_distance(home_lat, home_lon, home_lat, get_lon())
-	#y_current = calc_utm_distance(home_lat, home_lon, get_lat(), home_lon)
+
 
 	#Assign distance with appropriate sign
-	if get_lat() < home_lat:
-		y_current *= -1
-	if get_lon() < home_lon:
-		x_current *= -1
+	if sitl == True:
+		if get_lat() < home_lat:
+			y_current *= -1
+		if get_lon() < home_lon:
+			x_current *= -1
 
 	#Calculate the error in the x-y(lat/lon) axis
 	error_x = goal_x - x_current * 1.0
@@ -869,63 +851,68 @@ timer = time.clock()
 screen.clear()
 screen.refresh()
 
+reset = True
+
 #Main program loop
-while v.channel_readback['6'] < 1100:
-	screen.erase()
 
-	#Set the gains from the gain file
-	get_gains()
+while v.channel_readback['5'] > 1500:
+	
+	while v.channel_readback['6'] < 1500:
+		screen.erase()
 
-
-	#Setting goal
-	rc_go_to_alt(0)
-	"""
-	yaw_error = rc_go_to_heading(.78539816)
-	if yaw_error < .1 and yaw_error > -.1:
-		rc_go_to_xy(1000, 1000)
-	"""
-	rc_go_to_heading(0)
-	rc_go_to_xy(0, 0)
-
-	#Add values to arrays for plotting
-	plot_error_yaw.append(error_yaw)
-	plot_error_yaw_I.append(I_error_yaw)
-	plot_time_yaw.append(previous_time_yaw)
-
-	plot_error_throttle.append(error_alt)
-	plot_error_throttle_I.append(I_error_alt)
-	plot_time_throttle.append(previous_time_alt)
-
-	plot_error_pitch.append(error_pitch)
-	plot_error_pitch_I.append(I_error_pitch)
-	plot_time_pitch.append(previous_time_xy)
-	plot_error_pitch_D.append(D_error_pitch)
-	plot_rc_pitch.append(v.channel_readback['2'])
-
-	plot_error_roll.append(error_roll)
-	plot_error_roll_I.append(I_error_roll)
-	plot_time_roll.append(previous_time_xy)
-	plot_rc_roll.append(v.channel_readback['1'])
-	plot_error_roll_D.append(D_error_roll)
-
-	plot_x_current.append(x_current)
-	plot_y_current.append(y_current)
+		#Set the gains from the gain file
+		get_gains()
 
 
-	#Print out of time
-	curses_print("Time: " + str((time.clock()-timer)*10),0,0)
+		#Setting goal
+		rc_go_to_alt(0)
+		"""
+		yaw_error = rc_go_to_heading(.78539816)
+		if yaw_error < .1 and yaw_error > -.1:
+			rc_go_to_xy(1000, 1000)
+		"""
+		rc_go_to_heading(0)
+		rc_go_to_xy(0, 0)
 
-	#Formatting for PID
-	curses_print("          Base        P                I                 D", 18, 0)
+		#Add values to arrays for plotting
+		plot_error_yaw.append(error_yaw)
+		plot_error_yaw_I.append(I_error_yaw)
+		plot_time_yaw.append(previous_time_yaw)
 
-	#
-	curses_print("             X              Y              Z              YAW", 2, 0)
-	curses_print("Position = " + str(get_position()[0]) + " " + str(get_position()[1]) + " " + str(get_position()[2]) + " " + str(get_yaw_radians()), 3, 0)
-	curses_print("Error    = " + str(error_x) + " " + str(error_y) + " " + str(error_alt) + " " + str(error_yaw), 4, 0)
-	curses_print("Error    = " + str(error_x) + " " + str(error_y) + " " + str(error_alt) + " " + str(error_yaw), 4, 0)
+		plot_error_throttle.append(error_alt)
+		plot_error_throttle_I.append(I_error_alt)
+		plot_time_throttle.append(previous_time_alt)
 
-	#Sleep
-	time.sleep(.1)
+		plot_error_pitch.append(error_pitch)
+		plot_error_pitch_I.append(I_error_pitch)
+		plot_time_pitch.append(previous_time_xy)
+		plot_error_pitch_D.append(D_error_pitch)
+		plot_rc_pitch.append(v.channel_readback['2'])
+
+		plot_error_roll.append(error_roll)
+		plot_error_roll_I.append(I_error_roll)
+		plot_time_roll.append(previous_time_xy)
+		plot_rc_roll.append(v.channel_readback['1'])
+		plot_error_roll_D.append(D_error_roll)
+
+		plot_x_current.append(x_current)
+		plot_y_current.append(y_current)
+
+
+		#Print out of time
+		curses_print("Time: " + str((time.clock()-timer)*10),0,0)
+
+		#Formatting for PID
+		curses_print("          Base        P                I                 D", 18, 0)
+
+		#
+		curses_print("             X              Y              Z              YAW", 2, 0)
+		curses_print("Position = " + str(get_position()[0]) + " " + str(get_position()[1]) + " " + str(get_position()[2]) + " " + str(get_yaw_radians()), 3, 0)
+		curses_print("Error    = " + str(error_x) + " " + str(error_y) + " " + str(error_alt) + " " + str(error_yaw), 4, 0)
+		curses_print("Error    = " + str(error_x) + " " + str(error_y) + " " + str(error_alt) + " " + str(error_yaw), 4, 0)
+
+		#Sleep
+		time.sleep(.1)
 
 disconnect_vicon()
 disarm()
