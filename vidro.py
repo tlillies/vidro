@@ -484,10 +484,11 @@ def rc_all_reset():
 def rc_check_dup(channel, value):
 	"""
 	Check for duplicate RC value. This is used to check to see if the RC value is already set to the vlue being passed in.
+	Currently returns True for everything because of testing
 	"""
 	if v.channel_readback[channel] == value:
 		return True
-	return False
+	return True
 
 def get_alt():
 	"""
@@ -523,7 +524,7 @@ def get_yaw_radians():
 	if sitl == True:
 		yaw = v.attitude_list[1]
 	else:
-		yaw = vicon_data()[6]
+		yaw = (vicon_data()[6])*-1
 	return yaw
 
 def get_yaw_degrees():
@@ -691,7 +692,7 @@ def rc_go_to_heading(goal_heading):
 	global yaw_K_I
 
 	#Get rid of bad inputs
-	if goal_heading > 3.1415926 or goal_heading < -3.14159:
+	if goal_heading > math.py or goal_heading < math.py*-1:
 		return 0
 
 	#Calculate delta t and set previous time ot current time
@@ -715,7 +716,7 @@ def rc_go_to_heading(goal_heading):
 	#Send RC value
 	rc_yaw(1500+error_yaw*yaw_K_P+I_error_yaw*yaw_K_I)
 
-	return error_alt
+	return error_yaw
 
 
 def rc_go_to_xy(goal_x, goal_y):
@@ -744,7 +745,10 @@ def rc_go_to_xy(goal_x, goal_y):
 	global error_y
 
 	#Get current heading for shifting axis
-	heading = get_yaw_degrees()
+	if sitl == True:
+		heading = get_yaw_degrees()
+	else:
+		heading = get_yaw_degrees()*-1
 
 	#Calculate current position (Need to find which one works best)
 	x_current = get_position()[0]
@@ -843,11 +847,6 @@ while v.channel_readback['6'] < 1100:
 
 	#Setting goal
 	rc_go_to_alt(500)
-	"""
-	yaw_error = rc_go_to_heading(.78539816)
-	if yaw_error < .1 and yaw_error > -.1:
-		rc_go_to_xy(1000, 1000)
-	"""
 	rc_go_to_heading(0)
 	rc_go_to_xy(0, 0)
 
