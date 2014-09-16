@@ -1,0 +1,7 @@
+Roll Min: 0
+Roll Max: 1633
+Pitch Min 0
+Pitch Max: 1611
+Throttle Min: 0
+Throttle Max: 1657
+Yaw Min: 0

@@ -337,7 +337,7 @@ def get_gains():
 	global pitch_K_D
 
 	#Get fill lines with the lines from the gain file
-	gainfile = open('/home/tom/RECUV/vidro/gains.txt', "r")
+	gainfile = open('/home/recuv/vidro/gains.txt', "r")
 	lines = gainfile.readlines()
 	gainfile.close()
 
@@ -440,7 +440,7 @@ def rc_pitch(rc_value):
 		v.flush()
 
 def rc_throttle(rc_value):
-	rc_value = rc_filter(rc_value, 1100, 1900)
+	rc_value = rc_filter(rc_value, 1550, 1850)
 	if rc_check_dup('3', rc_value) == False:
 		v.channel_override = { "3" : rc_value}
 		v.flush()
@@ -489,13 +489,16 @@ def rc_check_dup(channel, value):
 	"""
 	if v.channel_readback[channel] == value:
 		return False
-	return True
+	return False
 
 def get_alt():
 	"""
 	Returns the altitude in mm in SITL
 	"""
-	return get_position()[2]
+	if sitl == True:
+		return v.location_list[2]*1000
+	else:
+		return get_position()[2]
 
 def get_lat():
 	"""
@@ -671,10 +674,10 @@ def rc_go_to_alt(goal_alt):
 	curses_print("Throttle RC Level: " + str(v.channel_readback['3']), 6, 1)
 	curses_print("Error: " + str(error_alt), 7, 1)
 	curses_print("Altitude:" + str(get_alt()), 8, 1)
-	curses_print("T: "+ str(int(1370+error_alt*alt_K_P+I_error_alt*alt_K_I)) + " = 1370 + " + str(error_alt*alt_K_P) + " + " + str(I_error_alt*alt_K_I), 19, 0)
+	curses_print("T: "+ str(int(1630+error_alt*alt_K_P+I_error_alt*alt_K_I)) + " = 1630 + " + str(error_alt*alt_K_P) + " + " + str(I_error_alt*alt_K_I), 19, 0)
 
 	#Send RC value
-	rc_throttle(1370+error_alt*alt_K_P+I_error_alt*alt_K_I)
+	rc_throttle(1630+error_alt*alt_K_P+I_error_alt*alt_K_I)
 
 	return error_alt
 
@@ -713,7 +716,7 @@ def rc_go_to_heading(goal_heading):
 	curses_print("Y: "+ str(int(1500+error_yaw*yaw_K_P+I_error_yaw*yaw_K_I)) + " = 1500 + " + str(error_yaw*yaw_K_P) + " + " + str(I_error_yaw*yaw_K_I), 20, 0)
 
 	#Send RC value
-	rc_yaw(1500+error_yaw*yaw_K_P+I_error_yaw*yaw_K_I)
+	#rc_yaw(1500+error_yaw*yaw_K_P+I_error_yaw*yaw_K_I)
 
 	return error_yaw
 
@@ -815,8 +818,8 @@ def rc_go_to_xy(goal_x, goal_y):
 	curses_print("R: " +  str(int(1540+error_roll*roll_K_P+I_error_roll*roll_K_I+D_error_roll*roll_K_D)) + " = 1540 + " + str(error_roll*roll_K_P) + " + " + str(I_error_roll*roll_K_I) + " + " + str(D_error_roll*roll_K_D), 22, 0)
 
 	#Send RC values
-	rc_pitch( 1540 + (error_pitch*pitch_K_P) + (I_error_pitch*pitch_K_I) + (D_error_pitch*pitch_K_D) )
-	rc_roll(  1540 + (error_roll*roll_K_P) + (I_error_roll*roll_K_I) + (D_error_roll*roll_K_D) )
+	#rc_pitch( 1540 + (error_pitch*pitch_K_P) + (I_error_pitch*pitch_K_I) + (D_error_pitch*pitch_K_D) )
+	#rc_roll(  1540 + (error_roll*roll_K_P) + (I_error_roll*roll_K_I) + (D_error_roll*roll_K_D) )
 
 
 
@@ -843,7 +846,18 @@ reset = False
 #Main program loop
 
 while v.channel_readback['5'] > 1500:
-
+	screen.erase()
+	curses_print("Transmitter control", 0, 0)
+	
+	I_error_alt = 0
+	I_error_pitch = 0
+	I_error_roll = 0
+	I_error_yaw = 0
+	
+	previous_time_alt = (time.clock()-timer)*10
+	
+	
+	
 	while v.channel_readback['6'] < 1500:
 		screen.erase()
 
@@ -851,14 +865,9 @@ while v.channel_readback['5'] > 1500:
 		get_gains()
 
 		#Setting goal
-		rc_go_to_alt(500)
-		"""
-		yaw_error = rc_go_to_heading(.78539816)
-		if yaw_error < .1 and yaw_error > -.1:
-			rc_go_to_xy(1000, 1000)
-		"""
-		rc_go_to_heading(0)
-		rc_go_to_xy(500, 500)
+		rc_go_to_alt(1000)
+		#rc_go_to_heading(0)
+		#rc_go_to_xy(500, 500)
 
 		#Print out of time
 		curses_print("Time: " + str((time.clock()-timer)*10),0,0)
@@ -873,7 +882,7 @@ while v.channel_readback['5'] > 1500:
 		curses_print("Error    = " + str(error_x) + " " + str(error_y) + " " + str(error_alt) + " " + str(error_yaw), 4, 0)
 
 		#Sleep
-		time.sleep(.1)
+		time.sleep(.02)
 		#Make it so next time out of loop RC resets
 		reset = True
 

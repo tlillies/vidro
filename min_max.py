@@ -6,6 +6,11 @@ import curses
 import utm
 import matplotlib.pyplot as plot
 
+#Location of the gains file:
+#Change these as needed. Have only on uncommented
+gains_location = '/home/tom/RECUV/vidro/gains.txt'
+gains_location = '/home/recuv/vidro/gains.txt'
+
 #Global variable for determining whether to use SITL or Vicon
 sitl = True
 
@@ -337,7 +342,7 @@ def get_gains():
 	global pitch_K_D
 
 	#Get fill lines with the lines from the gain file
-	gainfile = open('/home/recuv/vidro/gains.txt', "r")
+	gainfile = open('/home/tom/RECUV/vidro/gains.txt', "r")
 	lines = gainfile.readlines()
 	gainfile.close()
 
@@ -453,28 +458,28 @@ def rc_yaw(rc_value):
 
 ## Reset RC Channels ##
 def rc_roll_reset():
-	if rc_check_dup('1', -1) == False:
-		v.channel_override = { "1" : -1}
+	if rc_check_dup('1', 0) == False:
+		v.channel_override = { "1" : 0}
 		v.flush()
 
 def rc_pitch_reset():
-	if rc_check_dup('2', -1) == False:
-		v.channel_override = { "2" : -1}
+	if rc_check_dup('2', 0) == False:
+		v.channel_override = { "2" : 0}
 		v.flush()
 
 def rc_throttle_reset():
-	if rc_check_dup('3', -1) == False:
-		v.channel_override = { "3" : -1}
+	if rc_check_dup('3', 0) == False:
+		v.channel_override = { "3" : 0}
 		v.flush()
 
 def rc_yaw_reset():
-	if rc_check_dup('4', -1) == False:
-		v.channel_override = { "4" : -1}
+	if rc_check_dup('4', 0) == False:
+		v.channel_override = { "4" : 0}
 		v.flush()
 
 def rc_six_reset():
-	if rc_check_dup('6', -1) == False:
-		v.channel_override = { "6" : -1}
+	if rc_check_dup('6', 0) == False:
+		v.channel_override = { "6" : 0}
 		v.flush()
 
 def rc_all_reset():
@@ -488,14 +493,17 @@ def rc_check_dup(channel, value):
 	Check for duplicate RC value. This is used to check to see if the RC value is already set to the vlue being passed in.
 	"""
 	if v.channel_readback[channel] == value:
-		return True
-	return False
+		return False
+	return True
 
 def get_alt():
 	"""
 	Returns the altitude in mm in SITL
 	"""
-	return get_position()[2]
+	if sitl == True:
+		return v.location_list[2]*1000
+	else:
+		return get_position()[2]
 
 def get_lat():
 	"""
@@ -525,7 +533,7 @@ def get_yaw_radians():
 	if sitl == True:
 		yaw = v.attitude_list[1]
 	else:
-		yaw =  ((vicon_data()[6]))*-1
+		yaw =  vicon_data()[6]*-1
 	return yaw
 
 def get_yaw_degrees():
@@ -558,8 +566,8 @@ def get_position():
 		position[1] = calc_sitl_distance_y()
 		position[2] = get_alt()
 	else:
-		position[0] = (vicon_data()[1] - home_x)
-		position[1] = (vicon_data()[2] - home_y)
+		position[0] = vicon_data()[1] - home_x
+		position[1] = vicon_data()[2] - home_y
 		position[2] = vicon_data()[3] - home_z
 
 	return position
@@ -674,7 +682,7 @@ def rc_go_to_alt(goal_alt):
 	curses_print("T: "+ str(int(1370+error_alt*alt_K_P+I_error_alt*alt_K_I)) + " = 1370 + " + str(error_alt*alt_K_P) + " + " + str(I_error_alt*alt_K_I), 19, 0)
 
 	#Send RC value
-	#rc_throttle(1370+error_alt*alt_K_P+I_error_alt*alt_K_I)
+	rc_throttle(1370+error_alt*alt_K_P+I_error_alt*alt_K_I)
 
 	return error_alt
 
@@ -713,9 +721,9 @@ def rc_go_to_heading(goal_heading):
 	curses_print("Y: "+ str(int(1500+error_yaw*yaw_K_P+I_error_yaw*yaw_K_I)) + " = 1500 + " + str(error_yaw*yaw_K_P) + " + " + str(I_error_yaw*yaw_K_I), 20, 0)
 
 	#Send RC value
-	#rc_yaw(1500+error_yaw*yaw_K_P+I_error_yaw*yaw_K_I)
+	rc_yaw(1500+error_yaw*yaw_K_P+I_error_yaw*yaw_K_I)
 
-	return error_alt
+	return error_yaw
 
 
 def rc_go_to_xy(goal_x, goal_y):
@@ -815,8 +823,8 @@ def rc_go_to_xy(goal_x, goal_y):
 	curses_print("R: " +  str(int(1540+error_roll*roll_K_P+I_error_roll*roll_K_I+D_error_roll*roll_K_D)) + " = 1540 + " + str(error_roll*roll_K_P) + " + " + str(I_error_roll*roll_K_I) + " + " + str(D_error_roll*roll_K_D), 22, 0)
 
 	#Send RC values
-	#rc_pitch( 1540 + (error_pitch*pitch_K_P) + (I_error_pitch*pitch_K_I) + (D_error_pitch*pitch_K_D) )
-	#rc_roll(  1540 + (error_roll*roll_K_P) + (I_error_roll*roll_K_I) + (D_error_roll*roll_K_D) )
+	rc_pitch( 1540 + (error_pitch*pitch_K_P) + (I_error_pitch*pitch_K_I) + (D_error_pitch*pitch_K_D) )
+	rc_roll(  1540 + (error_roll*roll_K_P) + (I_error_roll*roll_K_I) + (D_error_roll*roll_K_D) )
 
 
 
@@ -838,129 +846,59 @@ timer = time.clock()
 screen.clear()
 screen.refresh()
 
+#Reset for RC values and plots
+reset = False
+
 #Main program loop
-while v.channel_readback['6'] < 1100:
+
+RC_yaw_min = 0
+RC_yaw_max = 0
+RC_throttle_min = 0
+RC_throttle_max = 0
+RC_pitch_min = 0
+RC_pitch_max = 0
+RC_roll_min = 0
+RC_roll_max = 0
+
+
+while v.channel_readback['6'] < 1500:
 	screen.erase()
-
-	#Set the gains from the gain file
-	get_gains()
-
-
-	#Setting goal
-	rc_go_to_alt(0)
-	"""
-	yaw_error = rc_go_to_heading(.78539816)
-	if yaw_error < .1 and yaw_error > -.1:
-		rc_go_to_xy(1000, 1000)
-	"""
-	rc_go_to_heading(0)
-	rc_go_to_xy(500, 500)
-
-	#Add values to arrays for plotting
-	plot_error_yaw.append(error_yaw)
-	plot_error_yaw_I.append(I_error_yaw)
-	plot_time_yaw.append(previous_time_yaw)
-
-	plot_error_throttle.append(error_alt)
-	plot_error_throttle_I.append(I_error_alt)
-	plot_time_throttle.append(previous_time_alt)
-
-	plot_error_pitch.append(error_pitch)
-	plot_error_pitch_I.append(I_error_pitch)
-	plot_time_pitch.append(previous_time_xy)
-	plot_error_pitch_D.append(D_error_pitch)
-	plot_rc_pitch.append(v.channel_readback['2'])
-
-	plot_error_roll.append(error_roll)
-	plot_error_roll_I.append(I_error_roll)
-	plot_time_roll.append(previous_time_xy)
-	plot_rc_roll.append(v.channel_readback['1'])
-	plot_error_roll_D.append(D_error_roll)
-
-	plot_x_current.append(x_current)
-	plot_y_current.append(y_current)
-
-
-	#Print out of time
-	curses_print("Time: " + str((time.clock()-timer)*10),0,0)
-
-	#Formatting for PID
-	curses_print("          Base        P                I                 D", 18, 0)
-
-	#
-	curses_print("             X              Y              Z              YAW", 2, 0)
-	curses_print("Position = " + str(get_position()[0]) + " " + str(get_position()[1]) + " " + str(get_position()[2]) + " " + str(get_yaw_radians()), 3, 0)
-	curses_print("Error    = " + str(error_x) + " " + str(error_y) + " " + str(error_alt) + " " + str(error_yaw), 4, 0)
-	curses_print("Error    = " + str(error_x) + " " + str(error_y) + " " + str(error_alt) + " " + str(error_yaw), 4, 0)
-
-	#Sleep
+	if v.channel_readback['1'] < RC_roll_min:
+		RC_roll_min = v.channel_readback['1']
+	if v.channel_readback['1'] > RC_roll_max:
+		RC_roll_max = v.channel_readback['1']
+		
+	if v.channel_readback['2'] < RC_pitch_min:
+		RC_pitch_min = v.channel_readback['2']
+	if v.channel_readback['2'] > RC_pitch_max:
+		RC_pitch_max = v.channel_readback['2']
+		
+	if v.channel_readback['3'] < RC_throttle_min:
+		RC_throttle_min = v.channel_readback['3']
+	if v.channel_readback['3'] > RC_throttle_max:
+		RC_throttle_max = v.channel_readback['3']
+		
+	if v.channel_readback['4'] < RC_yaw_min:
+		RC_yaw_min = v.channel_readback['4']
+	if v.channel_readback['4'] > RC_yaw_max:
+		RC_yaw_max = v.channel_readback['4']
+	
+	curses_print("Roll: " + str(v.channel_readback['1']), 0,0)
+	curses_print("Pitch: " + str(v.channel_readback['2']), 1,0)
+	curses_print("Throttle: " + str(v.channel_readback['3']), 2,0)
+	curses_print("Yaw: " + str(v.channel_readback['4']), 3,0)
 	time.sleep(.1)
 
-screen.erase()
-disconnect_vicon()
+curses_print("Roll Min: " + str(RC_roll_min), 5,0)
+curses_print("Roll Max: " + str(RC_roll_max), 6,0)
+
+curses_print("Pitch Min " + str(RC_pitch_min), 7,0)
+curses_print("Pitch Max: " + str(RC_pitch_max), 8,0)
+	
+curses_print("Throttle Min: " + str(RC_throttle_min), 9,0)
+curses_print("Throttle Max: " + str(RC_throttle_max), 10,0)
+
+curses_print("Yaw Min: " + str(RC_yaw_min), 11,0)
+curses_print("Yaw Max: " + str(RC_yaw_max), 12,0)
+
 disarm()
-screen.erase()
-
-
-#Plots
-"""
-plot.figure(1)
-plot.xlabel("Time(sec)")
-plot.ylabel("Error(rads)")
-plot.title("Yaw")
-plot.plot(plot_time_yaw,plot_error_yaw)
-plot.figure(2)
-plot.xlabel("Time(sec)")
-plot.ylabel("Error(mm)")
-plot.title("Throttle")
-plot.plot(plot_time_throttle,plot_error_throttle)
-
-plot.figure(3)
-plot.xlabel("Time(sec)")
-plot.ylabel("Error(mm) | RC Value")
-plot.title("Pitch Error PD | RC Value")
-plot.plot(plot_time_pitch,plot_error_pitch)
-#plot.plot(plot_time_pitch,plot_rc_pitch)
-#plot.plot(plot_time_pitch,plot_error_pitch_D)
-plot.figure(4)
-plot.xlabel("Time(sec)")
-plot.ylabel("Error(mm) | RC Value")
-plot.title("Roll Error PD | RC Value")
-plot.plot(plot_time_roll,plot_error_roll)
-#plot.plot(plot_time_roll,plot_rc_roll)
-#plot.plot(plot_time_roll,plot_error_roll_D)
-"""
-"""
-plot.figure(5)
-plot.xlabel("Time(sec)")
-plot.ylabel("Error(rads)")
-plot.title("Yaw")
-plot.plot(plot_time_yaw,plot_error_yaw)
-plot.plot(plot_time_yaw,plot_error_yaw_I)
-plot.figure(6)
-plot.xlabel("Time(sec)")
-plot.ylabel("Error(mm)")
-plot.title("Throttle")
-plot.plot(plot_time_throttle,plot_error_throttle)
-plot.plot(plot_time_throttle,plot_error_throttle_I)
-"""
-"""
-plot.figure(7)
-plot.xlabel("Time(sec)")
-plot.ylabel("Error(mm)")
-plot.title("Pitch Error PI")
-plot.plot(plot_time_pitch,plot_error_pitch)
-plot.plot(plot_time_pitch,plot_error_pitch_I)
-plot.figure(8)
-plot.xlabel("Time(sec)")
-plot.ylabel("Error(mm)")
-plot.title("Roll Error PI")
-plot.plot(plot_time_roll,plot_error_roll)
-plot.plot(plot_time_roll,plot_error_roll_I)
-plot.figure(9)
-plot.xlabel("x Location(mm)")
-plot.ylabel("y Location(mm)")
-plot.title("Location")
-plot.plot(plot_x_current, plot_y_current)
-plot.show()
-"""

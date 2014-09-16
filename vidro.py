@@ -337,7 +337,7 @@ def get_gains():
 	global pitch_K_D
 
 	#Get fill lines with the lines from the gain file
-	gainfile = open('/home/tom/RECUV/vidro/gains.txt', "r")
+	gainfile = open('/home/recuv/vidro/gains.txt', "r")
 	lines = gainfile.readlines()
 	gainfile.close()
 
@@ -692,7 +692,7 @@ def rc_go_to_heading(goal_heading):
 	global yaw_K_I
 
 	#Get rid of bad inputs
-	if goal_heading > math.py or goal_heading < math.py*-1:
+	if goal_heading > math.pi or goal_heading < math.pi*-1:
 		return 0
 
 	#Calculate delta t and set previous time ot current time
