@@ -6,6 +6,11 @@ import curses
 import utm
 import matplotlib.pyplot as plot
 
+#Location of the gains file:
+#Change these as needed. Have only on uncommented
+gains_location = '/home/tom/RECUV/vidro/gains.txt'
+gains_location = '/home/recuv/vidro/gains.txt'
+
 #Global variable for determining whether to use SITL or Vicon
 sitl = True
 
@@ -838,6 +843,7 @@ timer = time.clock()
 screen.clear()
 screen.refresh()
 
+#Reset for RC values and plots
 reset = False
 
 #Main program loop
@@ -845,6 +851,8 @@ reset = False
 while v.channel_readback['5'] > 1500:
 
 	while v.channel_readback['6'] < 1500:
+
+		#Clear the screen
 		screen.erase()
 
 		#Set the gains from the gain file
@@ -852,13 +860,32 @@ while v.channel_readback['5'] > 1500:
 
 		#Setting goal
 		rc_go_to_alt(500)
-		"""
-		yaw_error = rc_go_to_heading(.78539816)
-		if yaw_error < .1 and yaw_error > -.1:
-			rc_go_to_xy(1000, 1000)
-		"""
 		rc_go_to_heading(0)
 		rc_go_to_xy(500, 500)
+
+		#Add values to arrays for plotting
+		plot_error_yaw.append(error_yaw)
+		plot_error_yaw_I.append(I_error_yaw)
+		plot_time_yaw.append(previous_time_yaw)
+
+		plot_error_throttle.append(error_alt)
+		plot_error_throttle_I.append(I_error_alt)
+		plot_time_throttle.append(previous_time_alt)
+
+		plot_error_pitch.append(error_pitch)
+		plot_error_pitch_I.append(I_error_pitch)
+		plot_time_pitch.append(previous_time_xy)
+		plot_error_pitch_D.append(D_error_pitch)
+		plot_rc_pitch.append(v.channel_readback['2'])
+
+		plot_error_roll.append(error_roll)
+		plot_error_roll_I.append(I_error_roll)
+		plot_time_roll.append(previous_time_xy)
+		plot_rc_roll.append(v.channel_readback['1'])
+		plot_error_roll_D.append(D_error_roll)
+
+		plot_x_current.append(x_current)
+		plot_y_current.append(y_current)
 
 		#Print out of time
 		curses_print("Time: " + str((time.clock()-timer)*10),0,0)
@@ -874,13 +901,112 @@ while v.channel_readback['5'] > 1500:
 
 		#Sleep
 		time.sleep(.1)
-		#Make it so next time out of loop RC resets
+
+		#Set the reset for RC Values and plotting
 		reset = True
+
 
 	if reset == True:
 		rc_all_reset()
 		reset = False
+		#Plots
+		"""
+		plot.figure(1)
+		plot.xlabel("Time(sec)")
+		plot.ylabel("Error(rads)")
+		plot.title("Yaw")
+		plot.plot(plot_time_yaw,plot_error_yaw)
+		"""
+		"""
+		plot.figure(2)
+		plot.xlabel("Time(sec)")
+		plot.ylabel("Error(mm)")
+		plot.title("Throttle")
+		plot.plot(plot_time_throttle,plot_error_throttle)
+		"""
+		"""
+		plot.figure(3)
+		plot.xlabel("Time(sec)")
+		plot.ylabel("Error(mm) | RC Value")
+		plot.title("Pitch Error PD | RC Value")
+		plot.plot(plot_time_pitch,plot_error_pitch)
+		#plot.plot(plot_time_pitch,plot_rc_pitch)
+		#plot.plot(plot_time_pitch,plot_error_pitch_D)
+		"""
+		"""
+		plot.figure(4)
+		plot.xlabel("Time(sec)")
+		plot.ylabel("Error(mm) | RC Value")
+		plot.title("Roll Error PD | RC Value")
+		plot.plot(plot_time_roll,plot_error_roll)
+		#plot.plot(plot_time_roll,plot_rc_roll)
+		#plot.plot(plot_time_roll,plot_error_roll_D)
+		"""
+		"""
+		plot.figure(5)
+		plot.xlabel("Time(sec)")
+		plot.ylabel("Error(rads)")
+		plot.title("Yaw")
+		plot.plot(plot_time_yaw,plot_error_yaw)
+		plot.plot(plot_time_yaw,plot_error_yaw_I
+		"""
+		"""
+		plot.figure(6)
+		plot.xlabel("Time(sec)")
+		plot.ylabel("Error(mm)")
+		plot.title("Throttle")
+		plot.plot(plot_time_throttle,plot_error_throttle)
+		plot.plot(plot_time_throttle,plot_error_throttle_I)
+		"""
+		"""
+		plot.figure(7)
+		plot.xlabel("Time(sec)")
+		plot.ylabel("Error(mm)")
+		plot.title("Pitch Error PI")
+		plot.plot(plot_time_pitch,plot_error_pitch)
+		plot.plot(plot_time_pitch,plot_error_pitch_I)
+		"""
+		"""
+		plot.figure(8)
+		plot.xlabel("Time(sec)")
+		plot.ylabel("Error(mm)")
+		plot.title("Roll Error PI")
+		plot.plot(plot_time_roll,plot_error_roll)
+		plot.plot(plot_time_roll,plot_error_roll_I)
+		"""
+		"""
+		plot.figure(9)
+		plot.xlabel("x Location(mm)")
+		plot.ylabel("y Location(mm)")
+		plot.title("Location")
+		plot.plot(plot_x_current, plot_y_current)
+		"""
+		"""
+		plot.show()
+		"""
+		plot_error_yaw[:]=[]
+		plot_error_yaw_I[:]=[]
+		plot_time_yaw[:]=[]
+
+		plot_error_throttle[:]=[]
+		plot_error_throttle_I[:]=[]
+		plot_time_throttle[:]=[]
+
+		plot_error_pitch[:]=[]
+		plot_error_pitch_I[:]=[]
+		plot_error_pitch_D[:]=[]
+		plot_time_pitch[:]=[]
+		plot_rc_pitch[:]=[]
+
+		plot_error_roll[:]=[]
+		plot_error_roll_I[:]=[]
+		plot_error_roll_D[:]=[]
+		plot_time_roll[:]=[]
+		plot_rc_roll[:]=[]
+
+		plot_x_current[:]=[]
+		plot_y_current[:]=[]
+
 
 disconnect_vicon()
 disarm()
-

@@ -337,7 +337,7 @@ def get_gains():
 	global pitch_K_D
 
 	#Get fill lines with the lines from the gain file
-	gainfile = open('/home/recuv/vidro/gains.txt', "r")
+	gainfile = open('/home/tom/RECUV/vidro/gains.txt', "r")
 	lines = gainfile.readlines()
 	gainfile.close()
 
@@ -674,9 +674,9 @@ def rc_go_to_alt(goal_alt):
 
 	#Send RC value
 	curses_print("T: "+ str(int(1370+error_alt*alt_K_P+I_error_alt*alt_K_I)) + " = 1370 + " + str(error_alt*alt_K_P) + " + " + str(I_error_alt*alt_K_I), 19, 0)
-	
+
 	rc_throttle(1370+error_alt*alt_K_P+I_error_alt*alt_K_I)
-	
+
 	return error_alt
 
 def rc_go_to_heading(goal_heading):

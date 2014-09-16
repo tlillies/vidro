@@ -337,7 +337,7 @@ def get_gains():
 	global pitch_K_D
 
 	#Get fill lines with the lines from the gain file
-	gainfile = open('/home/tom/RECUV/vidro/vidro/gains.txt', "r")
+	gainfile = open('/home/tom/RECUV/vidro/gains.txt', "r")
 	lines = gainfile.readlines()
 	gainfile.close()
 
@@ -482,7 +482,6 @@ def rc_all_reset():
 	rc_pitch_reset()
 	rc_throttle_reset()
 	rc_yaw_reset()
-	rc_six_reset()
 
 def rc_check_dup(channel, value):
 	"""
@@ -731,9 +730,6 @@ def rc_go_to_xy(goal_x, goal_y):
 	global D_error_pitch
 	global I_error_roll
 	global I_error_pitch
-	global sum_lat
-	global sum_lon
-	global count_lat_lon
 	global error_roll
 	global error_pitch
 	global x_current
@@ -748,7 +744,10 @@ def rc_go_to_xy(goal_x, goal_y):
 	global error_y
 
 	#Get current heading for shifting axis
-	heading = (get_yaw_degrees())*-1
+	if sitl == True:
+		heading = get_yaw_degrees()
+	else:
+		heading = get_yaw_degrees()*-1
 
 	#Calculate current position
 	x_current = get_position()[0]
@@ -775,6 +774,7 @@ def rc_go_to_xy(goal_x, goal_y):
 	#Total error from current point to goal point
 	total_error = math.sqrt(error_x*error_x+error_y*error_y)
 
+	#Angle on x-y(lat/lon) axis to point
 	waypoint_angle = math.degrees(math.atan2(error_y,error_x))
 
 	#Calculate the offset of the vehicle from the x-y (lat-lon) axis
