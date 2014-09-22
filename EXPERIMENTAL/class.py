@@ -1,4 +1,3 @@
-from droneapi.lib import VehicleMode
 from pymavlink import mavutil
 import sys, math, time
 import socket, struct, threading
@@ -153,8 +152,10 @@ class ViconStreamer:
 
 class Vidro:
 
-	def __init__(self, sitl):
+	def __init__(self, sitl, baud, device):
 		self.sitl = sitl
+		self.baud = baud
+		self.device = device
 
 		#Home x,y,x position
 		self.home_x = 0
@@ -166,6 +167,24 @@ class Vidro:
 		self.home_lon = 0
 		self.home_alt = 0
 
+		#Last updated lat,lon, and alt for sitl
+		self.current_lat = 0
+		self.current_lon = 0
+		self.current_alt = 0
+
+		#Last updated position
+		self.current_x = 0
+		self.current_y = 0
+		self.current_z = 0
+
+		#Last updated rc channel's values'
+		self.current_rc_channels = [None] * 5
+
+		#Last updated attitude
+		self.current_pitch = 0
+		self.current_yaw = 0
+		self.current_roll = 0
+
 		#Fence for safety (Not implemented yet)
 		self.fence_x_min = 0
 		self.fence_x_max = 0
@@ -174,18 +193,52 @@ class Vidro:
 		self.fence_z_min = 0
 		self.fence_z_max = 0
 
-		#Last updated position
-		self.current_x = 0
-		self.current_y = 0
-		self.current_z = 0
+	def connect_mavlink(self):
+		"""
+		Initialize connection to pixhawk and make sure to get first heartbeat message
+		"""
+		self.master = mavutil.mavlink_connection(self.device, self.baud)
+		msg = m.recv_match(type='HEARTBEAT', blocking=True)
+		print("Heartbeat from APM (system %u component %u)" % (m.target_system, m.target_system))
 
-	def connect_droneapi(self):
+	def get_mavlink(self):
 		"""
-		Connects to droneapi. This is needed for getting data from the copter and connecting to MavProxy
+		Function for getting the general mavlink message and changing class variables based on that message.
+		It looks for 5 different message types:
+		-'BAD_DATA'
+		-'RC_CHANNELS_RAW'
+		-'GLOBAL_POSITION_INT' (for SITL only)
+		-'ATTITUDE'
+		-'HEARTBEAT'
+		This is non-blocking so does not gaurantee to chnage any values.
 		"""
-		self.api = local_connect()
-		self.v = api.get_vehicles()[0]
-		print "API Connected..."
+		self.msg = master.recv_match(blocking=False)
+
+		if self.msg:
+
+			if self.msg.get_type() == "BAD_DATA":
+				if mavutil.all_printable(self.msg.data):
+					print "Whoops, got bad data", self.msg.data
+
+			if self.msg.get_type() == "RC_CHANNELS_RAW":
+				self.curent_rc_channels[0] = self.msg.chan1_raw
+				self.curent_rc_channels[1] = self.msg.chan2_raw
+				self.curent_rc_channels[2] = self.msg.chan3_raw
+				self.curent_rc_channels[3] = self.msg.chan4_raw
+				self.curent_rc_channels[4] = self.msg.chan5_raw
+				self.curent_rc_channels[5] = self.msg.chan6_raw
+
+			if self.msg.get_type() == "GLOBAL_POSITION_INT":
+				self.current_lat = self.msg.lat
+				self.current_lon = self.msg.lon
+				self.current_alt = self.msg.alt
+
+			if msg_type == "ATTITUDE":
+				self.current_roll = msg.roll*180/math.pi
+				self.cureent_pitch = msg.pitch*180/math.pi
+				self.current_yaw = msg.yaw*180/math.pi
+
+			#if msg_type == "HEARTBEAT":
 
 	def connect_vicon(self):
 		"""
@@ -205,10 +258,11 @@ class Vidro:
 
 	def connect(self):
 		"""
-		Connects to droneapi and vicon
+		Connects to mavlink and vicon
 		"""
-		self.connect_droneapi()
-		self.connect_vicon()
+		self.connect_mavlink()
+		if self.sitl == False:
+			self.connect_vicon()
 
 	def close(self):
 		"""
@@ -334,7 +388,7 @@ class Vidro:
 
 	def rc_check_dup(self, channel, value):
 		"""
-		Check for duplicate RC value. This is used to check to see if the RC value is already set to the vlue being passed in.
+		Check for duplicate RC value. This is used to check to see if the RC value is already set to the value being passed in.
 		"""
 		if self.v.channel_readback[channel] == value:
 			return True
@@ -344,25 +398,25 @@ class Vidro:
 		"""
 		Returns the altitude in mm in SITL
 		"""
-		return self.v.location_list[2]*1000
+		return self.current_alt
 
 	def get_lat(self):
 		"""
 		Returns the latitude of the copter in SITL
 		"""
-		return self.v.location_list[0]
+		return self.current_lat
 
 	def get_lon(self):
 		"""
 		Returns the longitude of the copter in SITL
 		"""
-		return self.v.location_list[1]
+		return self.current_lon
 
 	def get_roll(self):
 		"""
 		Returns the roll in radians
 		"""
-		return self.v.attitude_list[2]
+		return self.current_roll
 
 	def get_yaw_radians(self):
 		"""
@@ -372,7 +426,7 @@ class Vidro:
 		"""
 		yaw = None
 		if self.sitl == True:
-			yaw = self.v.attitude_list[1]
+			yaw = self.current_yaw
 		else:
 			yaw = self.get_vicon()[6]
 		return yaw
@@ -394,7 +448,7 @@ class Vidro:
 		"""
 		Returns the pitch of the copter in radians
 		"""
-		return self.v.attitude_list[0]
+		return self.current_pitch
 
 	def get_position(self):
 		"""
