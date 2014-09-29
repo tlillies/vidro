@@ -1,3 +1,8 @@
+"""
+Class for handling the PID controller
+"""
+
+
 from vidro_class import Vidro, ViconStreamer
 import sys, math, time
 import socket, struct, threading

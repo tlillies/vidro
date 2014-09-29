@@ -1,3 +1,7 @@
+"""
+Simple pymavlink example to test getting and sending RC Values
+"""
+
 from pymavlink import mavutil
 import sys, math, time
 import socket, struct, threading

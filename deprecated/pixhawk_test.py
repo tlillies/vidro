@@ -337,7 +337,7 @@ def get_gains():
 	global pitch_K_D
 
 	#Get fill lines with the lines from the gain file
-	gainfile = open('/home/tom/RECUV/vidro/vidro/gains.txt', "r")
+	gainfile = open('/home/recuv/vidro/gains.txt', "r")
 	lines = gainfile.readlines()
 	gainfile.close()
 
@@ -482,7 +482,6 @@ def rc_all_reset():
 	rc_pitch_reset()
 	rc_throttle_reset()
 	rc_yaw_reset()
-	rc_six_reset()
 
 def rc_check_dup(channel, value):
 	"""
@@ -526,7 +525,7 @@ def get_yaw_radians():
 	if sitl == True:
 		yaw = v.attitude_list[1]
 	else:
-		yaw =  (vicon_data()[6])*-1
+		yaw =  ((vicon_data()[6]))*-1
 	return yaw
 
 def get_yaw_degrees():
@@ -559,8 +558,8 @@ def get_position():
 		position[1] = calc_sitl_distance_y()
 		position[2] = get_alt()
 	else:
-		position[0] = (vicon_data()[1] - home_x)*-1
-		position[1] = (vicon_data()[2] - home_y)*-1
+		position[0] = (vicon_data()[1] - home_x)
+		position[1] = (vicon_data()[2] - home_y)
 		position[2] = vicon_data()[3] - home_z
 
 	return position
@@ -692,7 +691,7 @@ def rc_go_to_heading(goal_heading):
 	global yaw_K_I
 
 	#Get rid of bad inputs
-	if goal_heading > 3.1415926 or goal_heading < -3.14159:
+	if goal_heading > math.pi or goal_heading < math.pi*-1:
 		return 0
 
 	#Calculate delta t and set previous time ot current time
@@ -731,9 +730,6 @@ def rc_go_to_xy(goal_x, goal_y):
 	global D_error_pitch
 	global I_error_roll
 	global I_error_pitch
-	global sum_lat
-	global sum_lon
-	global count_lat_lon
 	global error_roll
 	global error_pitch
 	global x_current
@@ -747,32 +743,15 @@ def rc_go_to_xy(goal_x, goal_y):
 	global error_x
 	global error_y
 
-	#Average out lat and lon (May not be needed. Need to text this)
-	sum_lat += get_lat()
-	sum_lon += get_lon()
-	count_lat_lon += 1
-	average_lat = 0.0
-	average_lon = 0.0
-	if count_lat_lon != 1:
-		return
-	average_lat = sum_lat / 1.0
-	average_lon = sum_lon / 1.0
-	sum_lat = 0
-	sum_lon = 0
-	count_lat_lon = 0
-
 	#Get current heading for shifting axis
-	heading = (get_yaw_degrees())*-1
+	if sitl == True:
+		heading = get_yaw_degrees()
+	else:
+		heading = get_yaw_degrees()*-1
 
-	#Calculate current position (Need to find which one works best)
-	#x_current = calc_sitl_distance_x()
-	#y_current = calc_sitl_distance_y()
+	#Calculate current position
 	x_current = get_position()[0]
 	y_current = get_position()[1]
-	#x_current = calc_sitl_distance(home_lat, home_lon, home_lat, average_lon)
-	#y_current = calc_sitl_distance(home_lat, home_lon, average_lat, home_lon)
-	#x_current = calc_utm_distance(home_lat, home_lon, home_lat, get_lon())
-	#y_current = calc_utm_distance(home_lat, home_lon, get_lat(), home_lon)
 
 	#Assign distance with appropriate sign
 	if sitl == True:
@@ -795,19 +774,7 @@ def rc_go_to_xy(goal_x, goal_y):
 	#Total error from current point to goal point
 	total_error = math.sqrt(error_x*error_x+error_y*error_y)
 
-	"""
 	#Angle on x-y(lat/lon) axis to point
-	waypoint_angle = math.degrees(math.atan(error_y/error_x))
-
-	#Put angle in the correct quadrant
-	if error_x < 0 and error_y < 0:
-		waypoint_angle += 180
-	if error_x < 0 and error_y > 0:
-		waypoint_angle += 180
-	if error_x > 0 and error_y < 0:
-		waypoint_angle += 360
-	"""
-
 	waypoint_angle = math.degrees(math.atan2(error_y,error_x))
 
 	#Calculate the offset of the vehicle from the x-y (lat-lon) axis
@@ -827,9 +794,6 @@ def rc_go_to_xy(goal_x, goal_y):
 	curses_print("Roll Error: " + str(round(error_roll)), 13, 1)
 	curses_print("Pitch Error: " + str(round(error_pitch)), 13, 0)
 	curses_print("Total Error: " + str(round(total_error)), 16, 0)
-	#curses_print("Lat, Lon: " + str(home_lat) + ", " + str(home_lon), 18)
-	#curses_print("Lat, Lon: " + str(average_lat) + ", " + str(average_lon), 19)
-
 
 	#Calculate delta-t for integration
 	current_time = ((time.clock()-timer)*10)

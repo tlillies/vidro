@@ -1,3 +1,7 @@
+"""
+Class for connecting to vicon and the APM
+This is currently the main file used
+"""
 from pymavlink import mavutil
 import sys, math, time
 import socket, struct, threading
