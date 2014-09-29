@@ -158,48 +158,58 @@ class Vidro:
 		self.device = device
 
 		#Home x,y,x position
-		self.home_x = 0
-		self.home_y = 0
-		self.home_z = 0
+		self.home_x = None
+		self.home_y = None
+		self.home_z = None
 
 		#Home lat,lon, and alt for sitl
-		self.home_lat = 0
-		self.home_lon = 0
-		self.home_alt = 0
+		self.home_lat = None
+		self.home_lon = None
+		self.home_alt = None
 
 		#Last updated lat,lon, and alt for sitl
-		self.current_lat = 0
-		self.current_lon = 0
-		self.current_alt = 0
+		self.current_lat = None
+		self.current_lon = None
+		self.current_alt = None
 
 		#Last updated position
-		self.current_x = 0
-		self.current_y = 0
-		self.current_z = 0
+		self.current_x = None
+		self.current_y = None
+		self.current_z = None
 
 		#Last updated rc channel's values'
-		self.current_rc_channels = [None] * 5
+		self.current_rc_channels = [None] * 6
+
+		#Last updated rc overrides
+		self.current_rc_overrides = [0] * 6
 
 		#Last updated attitude
-		self.current_pitch = 0
-		self.current_yaw = 0
-		self.current_roll = 0
+		self.current_pitch = None
+		self.current_yaw = None
+		self.current_roll = None
 
 		#Fence for safety (Not implemented yet)
-		self.fence_x_min = 0
-		self.fence_x_max = 0
-		self.fence_y_min = 0
-		self.fence_y_max = 0
-		self.fence_z_min = 0
-		self.fence_z_max = 0
+		self.fence_x_min = None
+		self.fence_x_max = None
+		self.fence_y_min = None
+		self.fence_y_max = None
+		self.fence_z_min = None
+		self.fence_z_max = None
+
+		self.clock = time.clock()
+
+		self.rc_msg_time = 0
 
 	def connect_mavlink(self):
 		"""
 		Initialize connection to pixhawk and make sure to get first heartbeat message
 		"""
 		self.master = mavutil.mavlink_connection(self.device, self.baud)
-		msg = m.recv_match(type='HEARTBEAT', blocking=True)
-		print("Heartbeat from APM (system %u component %u)" % (m.target_system, m.target_system))
+		msg = self.master.recv_match(type='HEARTBEAT', blocking=True)
+		print("Heartbeat from APM (system %u component %u)" % (self.master.target_system, self.master.target_system))
+		while (self.current_rc_channels[0] == None) or (self.current_lat == None) or (self.current_roll == None):
+			self.get_mavlink()
+		print("Got RC Channels, Global Position, and Attitude")
 
 	def get_mavlink(self):
 		"""
@@ -212,7 +222,7 @@ class Vidro:
 		-'HEARTBEAT'
 		This is non-blocking so does not gaurantee to chnage any values.
 		"""
-		self.msg = master.recv_match(blocking=False)
+		self.msg = self.master.recv_match(blocking=False)
 
 		if self.msg:
 
@@ -221,22 +231,24 @@ class Vidro:
 					print "Whoops, got bad data", self.msg.data
 
 			if self.msg.get_type() == "RC_CHANNELS_RAW":
-				self.curent_rc_channels[0] = self.msg.chan1_raw
-				self.curent_rc_channels[1] = self.msg.chan2_raw
-				self.curent_rc_channels[2] = self.msg.chan3_raw
-				self.curent_rc_channels[3] = self.msg.chan4_raw
-				self.curent_rc_channels[4] = self.msg.chan5_raw
-				self.curent_rc_channels[5] = self.msg.chan6_raw
+				self.current_rc_channels[0] = self.msg.chan1_raw
+				self.current_rc_channels[1] = self.msg.chan2_raw
+				self.current_rc_channels[2] = self.msg.chan3_raw
+				self.current_rc_channels[3] = self.msg.chan4_raw
+				self.current_rc_channels[4] = self.msg.chan5_raw
+				self.current_rc_channels[5] = self.msg.chan6_raw
+
+				self.rc_msg_time = time.clock()-self.rc_msg_time
 
 			if self.msg.get_type() == "GLOBAL_POSITION_INT":
 				self.current_lat = self.msg.lat
 				self.current_lon = self.msg.lon
 				self.current_alt = self.msg.alt
 
-			if msg_type == "ATTITUDE":
-				self.current_roll = msg.roll*180/math.pi
-				self.cureent_pitch = msg.pitch*180/math.pi
-				self.current_yaw = msg.yaw*180/math.pi
+			if self.msg.get_type() == "ATTITUDE":
+				self.current_roll = self.msg.roll*180/math.pi
+				self.cureent_pitch = self.msg.pitch*180/math.pi
+				self.current_yaw = self.msg.yaw*180/math.pi
 
 			#if msg_type == "HEARTBEAT":
 
@@ -330,53 +342,61 @@ class Vidro:
 			rc_value = rc_min
 		return rc_value
 
+	def flush(self):
+		pass
+
+	def send_rc_overrides(self):
+		self.master.mav.rc_channels_override_send(self.master.target_system, self.master.target_component, self.current_rc_overrides[0], self.current_rc_overrides[1], self.current_rc_overrides[2], self.current_rc_overrides[3], self.current_rc_overrides[4], self.current_rc_overrides[5], 0, 0)
+		self.flush()
+
+	def send_rc_overrides_other(self, pitch, roll, throttle, yaw, five, six):
+		self.master.mav.rc_channels_override_send(self.master.target_system, self.master.target_component, pitch, roll, throttle, yaw, five, six, 0, 0)
+		self.flush()
+
 	## Set RC Channels ##
 	def set_rc_roll(self, rc_value):
 		rc_value = self.rc_filter(rc_value,1200,1800)
-		if self.rc_check_dup('1', rc_value) == False:
-			self.v.channel_override = { "1" : rc_value}
-			self.v.flush()
+		self.current_rc_overrides[0] = rc_value
+		self.send_rc_overrides()
 
 	def set_rc_pitch(self, rc_value):
 		rc_value = self.rc_filter(rc_value, 1200, 1800)
-		if self.rc_check_dup('2', rc_value) == False:
-			self.v.channel_override = { "2" : rc_value}
-			self.v.flush()
+		self.current_rc_overrides[1] = rc_value
+		self.send_rc_overrides()
 
 	def set_rc_throttle(self, rc_value):
 		rc_value = self.rc_filter(rc_value, 1100, 1900)
-		if self.rc_check_dup('3', rc_value) == False:
-			self.v.channel_override = { "3" : rc_value}
-			self.v.flush()
+		self.current_rc_overrides[2] =  rc_value
+		self.send_rc_overrides()
 
 	def set_rc_yaw(self, rc_value):
-		rc_value = self.rc_filter(rc_value, 1100, 19000)
-		if self.rc_check_dup('4', rc_value) == False:
-			self.v.channel_override = { "4" : rc_value}
-			self.v.flush()
+		rc_value = self.rc_filter(rc_value, 1100, 1900)
+		if rc_value == self.current_rc_channels[3]:
+			rc_value = -1
+		self.current_rc_overrides[3] = rc_value
+		self.send_rc_overrides()
+
 
 	## Reset RC Channels ##
 	def rc_roll_reset(self):
-		self.set_rc_roll(-1)
+		self.set_rc_roll(0)
 
 	def rc_pitch_reset(self):
-		self.set_rc_pitch(-1)
+		self.set_rc_pitch(0)
 
 	def rc_throttle_reset(self):
-		self.set_rc_throttle(-1)
+		self.set_rc_throttle(0)
 
 	def rc_yaw_reset(self):
-		self.set_rc_yaw(-1)
+		self.set_rc_yaw(0)
 
 	def rc_channel_five_reset(self):
-		if self.rc_check_dup('6', -1) == False:
-			self.v.channel_override = { "6" : -1}
-			self.v.flush()
+		self.current_rc_overrides[4] = 0
+		self.send_rc_overrides()
 
 	def rc_channel_six_reset(self):
-		if self.rc_check_dup('6', -1) == False:
-			self.v.channel_override = { "6" : -1}
-			self.v.flush()
+		self.current_rc_overrides[5] = 0
+		self.send_rc_overrides()
 
 	def rc_all_reset(self):
 		self.rc_roll_reset()
