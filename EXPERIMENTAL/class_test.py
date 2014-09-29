@@ -16,7 +16,7 @@ while vidro.current_rc_channels[4] < 1500:
 		print str(vidro.current_rc_channels[3]) + "   " + str(vidro.rc_msg_time) + "   " + str(cycles_message) + "   " + str(cycles_change)
 		vidro.set_rc_yaw(vidro.current_rc_channels[3]+10)
 		vidro.get_mavlink()
-		time.sleep(.02)
+		time.sleep(.01)
 
 		if vidro.rc_msg_time < previous_time:
 			cycles_message = 0
@@ -33,7 +33,7 @@ while vidro.current_rc_channels[4] < 1500:
 		print str(vidro.current_rc_channels[3]) + " " + str(vidro.rc_msg_time) + "   " + str(cycles_message) + "   " + str(cycles_change)
 		vidro.set_rc_yaw(vidro.current_rc_channels[3]-10)
 		vidro.get_mavlink()
-		time.sleep(.02)
+		time.sleep(.01)
 
 		if vidro.rc_msg_time < previous_time:
 			cycles_message = 0
@@ -47,5 +47,5 @@ while vidro.current_rc_channels[4] < 1500:
 		previous_rc = vidro.current_rc_channels[3]
 
 	vidro.get_mavlink()
-	time.sleep(.02)
+	time.sleep(.01)
 vidro.close()
