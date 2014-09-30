@@ -175,6 +175,8 @@ class Vidro:
 		self.current_lat = None
 		self.current_lon = None
 		self.current_alt = None
+		
+		self.ground_alt = 0
 
 		#Last updated position
 		self.current_x = None
@@ -209,11 +211,16 @@ class Vidro:
 		Initialize connection to pixhawk and make sure to get first heartbeat message
 		"""
 		self.master = mavutil.mavlink_connection(self.device, self.baud)
+		print "Attempting to get HEARTBEAT message from APM..."
 		msg = self.master.recv_match(type='HEARTBEAT', blocking=True)
 		print("Heartbeat from APM (system %u component %u)" % (self.master.target_system, self.master.target_system))
-		while (self.current_rc_channels[0] == None) or (self.current_lat == None) or (self.current_roll == None):
+		print "Getting inital values RC, global psition, and attitude from APM"
+		while (self.current_rc_channels[0] == None) or (self.current_alt == None) or (self.current_roll == None):
 			self.get_mavlink()
-		print("Got RC Channels, Global Position, and Attitude")
+		print("Got RC channels, global position, and attitude")
+		self.ground_alt = self.current_alt
+		self.current_alt = 0
+		print("Successfully set ground altitude")
 
 	def get_mavlink(self):
 		"""
@@ -247,7 +254,7 @@ class Vidro:
 			if self.msg.get_type() == "GLOBAL_POSITION_INT":
 				self.current_lat = self.msg.lat
 				self.current_lon = self.msg.lon
-				self.current_alt = self.msg.alt/1000
+				self.current_alt = self.msg.alt-self.ground_alt
 
 			if self.msg.get_type() == "ATTITUDE":
 				self.current_roll = self.msg.roll*180/math.pi
@@ -320,22 +327,6 @@ class Vidro:
 		self.fence_z_min = min_z
 		self.fence_z_max = max_z
 
-	def arm(self):
-		"""
-		Arms the quadcopter
-		"""
-		print "Arming..."
-		self.v.armed = True
-		self.v.flush()
-
-	def disarm(self):
-		"""
-		Disarms the quadcopter.
-		"""
-		print "Disarming..."
-		self.v.armed = False
-		self.v.flush()
-
 	def rc_filter(self, rc_value, rc_min, rc_max):
 		"""
 		Filter for the RC values to filter out RC values out of RC range. Returns filtered RC value
@@ -370,6 +361,8 @@ class Vidro:
 
 	def set_rc_throttle(self, rc_value):
 		rc_value = self.rc_filter(rc_value, 1100, 1900)
+		if rc_value == self.current_rc_channels[2]:
+			rc_value = -1
 		self.current_rc_overrides[2] =  rc_value
 		self.send_rc_overrides()
 

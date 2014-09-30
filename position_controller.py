@@ -17,15 +17,19 @@ class PositionController:
 		self.timer = time.clock()
 		
 		#Previous errors for calculating I and D
-		self.previous_time_alt = 0
+		self.previous_time_alt = (time.clock()-self.timer)*10
 		self.I_error_alt = 0
+		self.D_error_alt = 0
 		self.error_alt = 0
+		self.previous_error_alt = 0
 
-		self.previous_time_yaw = 0
+		self.previous_time_yaw = (time.clock()-self.timer)*10
 		self.I_error_yaw = 0
+		self.D_error_yaw = 0
 		self.error_yaw = 0
+		self.previous_error_yaw = 0
 
-		self.previous_time_xy = 0
+		self.previous_time_xy = (time.clock()-self.timer)*10
 		self.previous_error_pitch = 0
 		self.previous_error_roll = 0
 		self.D_error_roll = 0
@@ -38,19 +42,21 @@ class PositionController:
 		self.error_y = 0
 
 		#Gains for PID controller
-		self.alt_K_P = 0
-		self.alt_K_I = 0
+		self.alt_K_P = .05
+		self.alt_K_I = .00003
+		self.alt_K_D = 0
 
-		self.yaw_K_P = 0
-		self.yaw_K_I = 0
+		self.yaw_K_P = 130
+		self.yaw_K_I = 10
+		self.yaw_K_D = 0
 
-		self.roll_K_P = 0
-		self.roll_K_I = 0
-		self.roll_K_D = 0
+		self.roll_K_P = .12
+		self.roll_K_I = .0006
+		self.roll_K_D = .05
 
-		self.pitch_K_P = 0
-		self.pitch_K_I = 0
-		self.pitch_K_D = 0
+		self.pitch_K_P = .12
+		self.pitch_K_I = .0006
+		self.pitch_K_D = .05
 
 	def rc_alt(self, goal_alt):
 		"""
@@ -60,19 +66,10 @@ class PositionController:
 		current_time = ((time.clock()-self.timer)*10)
 		delta_t = current_time - self.previous_time_alt
 		self.previous_time_alt = current_time
-
 		#Get error
 		self.error_alt = goal_alt - self.vidro.get_alt()
-
 		#Get error I
 		self.I_error_alt = self.I_error_alt + self.error_alt*delta_t
-
-		#Print alt data
-		#curses_print("Throttle RC Level: " + str(v.channel_readback['3']), 6, 1)
-		#curses_print("Error: " + str(error_alt), 7, 1)
-		#curses_print("Altitude:" + str(get_alt()), 8, 1)
-		#curses_print("T: "+ str(int(1630+error_alt*alt_K_P+I_error_alt*alt_K_I)) + " = 1630 + " + str(error_alt*alt_K_P) + " + " + str(I_error_alt*alt_K_I), 19, 0)
-
 		#Send RC value
 		self.vidro.set_rc_throttle(1630 + self.error_alt*self.alt_K_P + self.I_error_alt*self.alt_K_I)
 

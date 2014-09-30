@@ -15,7 +15,7 @@ cycles_message = 0
 cycles_change = 0
 previous_time = 0
 previous_rc = 0
-while vidro.current_rc_channels[4] < 1500:
+while vidro.current_rc_channels[4] > 1500:
 	while vidro.current_rc_channels[3] < 1800:
 		print str(vidro.current_rc_channels[3]) + "   " + str(vidro.rc_msg_time) + "   " + str(cycles_message) + "   " + str(cycles_change)
 		vidro.set_rc_yaw(vidro.current_rc_channels[3]+10)
