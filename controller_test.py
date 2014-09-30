@@ -30,21 +30,22 @@ vidro = Vidro(True, 115200,"127.0.0.1:14551")
 vidro.connect()
 controller = PositionController(vidro)
 
-screen = curses.initscr()
-screen.clear()
-screen.refresh()
+#screen = curses.initscr()
+#screen.clear()
+#screen.refresh()
 
 while vidro.current_rc_channels[4] > 1600:
 	
 	controller.rc_alt(1000)
 	
-	curses_print("Throttle RC Level: " + str(vidro.current_rc_channels[2]), 6, 1)
-	curses_print("Error: " + str(controller.error_alt), 7, 1)
-	curses_print("Altitude:" + str(vidro.get_alt()), 8, 1)
-	curses_print("T: "+ str(int(1630+controller.error_alt*controller.alt_K_P+controller.I_error_alt*controller.alt_K_I)) + " = 1630 + " + str(controller.error_alt*controller.alt_K_P) + " + " + str(controller.I_error_alt*controller.alt_K_I), 19, 0)
-	screen.refresh()
-	screen.clear()
-	time.sleep(.01)
+	#curses_print("Throttle RC Override: " + str(vidro.current_rc_overrides[2]), 5, 1)
+	#curses_print("Throttle RC Level: " + str(vidro.current_rc_channels[2]), 6, 1)
+	#curses_print("Error: " + str(controller.error_alt), 7, 1)
+	#curses_print("Altitude:" + str(vidro.get_alt()), 8, 1)
+	#curses_print("T: "+ str(int(1630+controller.error_alt*controller.alt_K_P+controller.I_error_alt*controller.alt_K_I)) + " = 1630 + " + str(controller.error_alt*controller.alt_K_P) + " + " + str(controller.I_error_alt*controller.alt_K_I), 19, 0)
+	#screen.refresh()
+	#screen.clear()
+	time.sleep(.005)
 	
 	#controller.rc_yaw()
 	#controller.rc_xy()

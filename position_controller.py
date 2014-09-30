@@ -43,7 +43,7 @@ class PositionController:
 
 		#Gains for PID controller
 		self.alt_K_P = .05
-		self.alt_K_I = .00003
+		self.alt_K_I = .003
 		self.alt_K_D = 0
 
 		self.yaw_K_P = 130
@@ -72,7 +72,8 @@ class PositionController:
 		self.I_error_alt = self.I_error_alt + self.error_alt*delta_t
 		#Send RC value
 		self.vidro.set_rc_throttle(1630 + self.error_alt*self.alt_K_P + self.I_error_alt*self.alt_K_I)
-
+		print ("override %f") % self.vidro.current_rc_overrides[2]
+		print ("set to %f") % self.vidro.current_rc_channels[2]
 		return self.error_alt
 
 	def rc_yaw(self, goal_heading):
