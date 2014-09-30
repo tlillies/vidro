@@ -74,7 +74,7 @@ class PositionController:
 		#curses_print("T: "+ str(int(1630+error_alt*alt_K_P+I_error_alt*alt_K_I)) + " = 1630 + " + str(error_alt*alt_K_P) + " + " + str(I_error_alt*alt_K_I), 19, 0)
 
 		#Send RC value
-		self.vidro.rc_throttle(1630 + self.error_alt*self.alt_K_P + self.I_error_alt*self.alt_K_I)
+		self.vidro.set_rc_throttle(1630 + self.error_alt*self.alt_K_P + self.I_error_alt*self.alt_K_I)
 
 		return self.error_alt
 
@@ -190,15 +190,3 @@ class PositionController:
 		#Send RC values
 		self.vidro.rc_pitch( 1540 + (self.error_pitch*self.pitch_K_P) + (self.I_error_pitch*self.pitch_K_I) + (self.D_error_pitch*self.pitch_K_D) )
 		self.vidro.rc_roll(  1540 + (self.error_roll*self.roll_K_P) + (self.I_error_roll*self.roll_K_I) + (self.D_error_roll*self.roll_K_D) )
-		
-
-vidro = Vidro(True, 115200,"127.0.0.1:14551")
-vidro.connect()
-controller = PositionController(vidro)
-while vidro.current_rc_channels[4] < 1600:
-	controller.rc_alt()
-	controller.rc_yaw()
-	controller.rc_xy()
-	vidro.get_mavlink()
-	time.sleep(.01)
-vidro.close()

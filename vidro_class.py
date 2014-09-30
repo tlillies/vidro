@@ -247,7 +247,7 @@ class Vidro:
 			if self.msg.get_type() == "GLOBAL_POSITION_INT":
 				self.current_lat = self.msg.lat
 				self.current_lon = self.msg.lon
-				self.current_alt = self.msg.alt
+				self.current_alt = self.msg.alt/1000
 
 			if self.msg.get_type() == "ATTITUDE":
 				self.current_roll = self.msg.roll*180/math.pi
