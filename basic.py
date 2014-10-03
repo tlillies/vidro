@@ -25,12 +25,12 @@ while True:
 	if msg:
 		if msg.get_type() == "BAD_DATA":
 			if mavutil.all_printable(msg.data):
-				print "Whoops, got bad data", msg.data		
+				print "Whoops, got bad data", msg.data
 		if msg.get_type() == "RC_CHANNELS_RAW":
 			channel_1 = msg.chan1_raw
 			print channel_1
-			
-		master.mav.rc_channels_override_send(master.target_system, master.target_component, channel_1+1, 0, 0, 0, 0, 0, 0, 0)
 
-	
+		master.mav.rc_channels_override_send(master.target_system, master.target_component, channel_1+1.0, 0, 0, 0, 0, 0, 0, 0)
+
+
 	time.sleep(.01)

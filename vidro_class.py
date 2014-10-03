@@ -175,7 +175,7 @@ class Vidro:
 		self.current_lat = None
 		self.current_lon = None
 		self.current_alt = None
-		
+
 		self.ground_alt = 0
 
 		#Last updated position
@@ -343,7 +343,6 @@ class Vidro:
 	def send_rc_overrides(self):
 		self.master.mav.rc_channels_override_send(self.master.target_system, self.master.target_component, self.current_rc_overrides[0], self.current_rc_overrides[1], self.current_rc_overrides[2], self.current_rc_overrides[3], self.current_rc_overrides[4], self.current_rc_overrides[5], 0, 0)
 		self.flush()
-
 	def send_rc_overrides_other(self, pitch, roll, throttle, yaw, five, six):
 		self.master.mav.rc_channels_override_send(self.master.target_system, self.master.target_component, pitch, roll, throttle, yaw, five, six, 0, 0)
 		self.flush()
@@ -361,15 +360,11 @@ class Vidro:
 
 	def set_rc_throttle(self, rc_value):
 		rc_value = self.rc_filter(rc_value, 1100, 1900)
-		if rc_value == self.current_rc_channels[2]:
-			rc_value = -1
 		self.current_rc_overrides[2] =  rc_value
 		self.send_rc_overrides()
 
 	def set_rc_yaw(self, rc_value):
 		rc_value = self.rc_filter(rc_value, 1100, 1900)
-		if rc_value == self.current_rc_channels[3]:
-			rc_value = -1
 		self.current_rc_overrides[3] = rc_value
 		self.send_rc_overrides()
 
@@ -474,7 +469,7 @@ class Vidro:
 		"""
 		position=[None]*3
 
-		if sitl == True:
+		if self.sitl == True:
 			position[0] = self.calc_sitl_distance_x()
 			position[1] = self.calc_sitl_distance_y()
 			position[2] = self.get_alt()
@@ -554,12 +549,12 @@ class Vidro:
 		Calculate x distance in SITL (lat)
 		X axis is north/south (change in lat)
 		"""
-		return self.calc_sitl_distance(home_lat, home_lon, home_lat, get_lon())
+		return self.calc_sitl_distance(self.home_lat, self.home_lon, self.home_lat, self.get_lon())
 
 	def calc_sitl_distance_y(self):
 		"""
 		Calculate y distance in SITL (lon)
 		Y axis is east/west (change in lon)
 		"""
-		return self.calc_sitl_distance(home_lat, home_lon, get_lat(), home_lon)
+		return self.calc_sitl_distance(self.home_lat, self.home_lon, self.get_lat(), self.home_lon)
 
