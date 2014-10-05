@@ -42,19 +42,19 @@ class PositionController:
 		self.error_y = 0
 
 		#Gains for PID controller
-		self.alt_K_P = .05
-		self.alt_K_I = .003
+		self.alt_K_P = .005
+		self.alt_K_I = .00003
 		self.alt_K_D = 0
 
-		self.yaw_K_P = 130
-		self.yaw_K_I = 10
+		self.yaw_K_P = 10
+		self.yaw_K_I = 0
 		self.yaw_K_D = 0
 
-		self.roll_K_P = .12
+		self.roll_K_P = .01
 		self.roll_K_I = .0006
 		self.roll_K_D = .05
 
-		self.pitch_K_P = .12
+		self.pitch_K_P = .01
 		self.pitch_K_I = .0006
 		self.pitch_K_D = .05
 
@@ -73,8 +73,12 @@ class PositionController:
 		#Get error I
 		self.I_error_alt = self.I_error_alt + self.error_alt*delta_t
 
+		#Get error D
+		self.D_error_alt = (self.error_alt-self.previous_error_alt)/delta_t
+		self.previous_error_alt = self.error_alt
+
 		#Send RC value
-		self.vidro.set_rc_throttle(round(1630 + self.error_alt*self.alt_K_P + self.I_error_alt*self.alt_K_I))
+		self.vidro.set_rc_throttle(round(1370 + self.error_alt*self.alt_K_P + self.I_error_alt*self.alt_K_I + self.D_error_alt*self.alt_K_D))
 
 		return self.error_alt
 
@@ -98,8 +102,12 @@ class PositionController:
 		#Get error I
 		self.I_error_yaw = self.I_error_yaw + self.error_yaw*delta_t
 
+		#Get error D
+		self.D_error_yaw = (self.error_yaw-self.previous_error_yaw)/delta_t
+		self.previous_error_yaw = self.error_yaw
+
 		#Send RC value
-		self.vidro.set_rc_yaw(1500 + self.error_yaw*self.yaw_K_P + self.I_error_yaw*self.yaw_K_I)
+		self.vidro.set_rc_yaw(1500 + self.error_yaw*self.yaw_K_P + self.I_error_yaw*self.yaw_K_I + self.D_error_yaw*self.yaw_K_D)
 
 		return self.error_yaw
 
@@ -121,9 +129,9 @@ class PositionController:
 
 		#Assign distance with appropriate sign
 		if self.vidro.sitl == True:
-			if self.vidro.get_lat() < home_lat:
+			if self.vidro.get_lat() < self.vidro.home_lat:
 				self.y_current *= -1
-			if self.vidro.get_lon() < home_lon:
+			if self.vidro.get_lon() < self.vidro.home_lon:
 				self.x_current *= -1
 
 		#Calculate the error in the x-y(lat/lon) axis
@@ -170,5 +178,5 @@ class PositionController:
 		#curses_print("R: " +  str(int(1540+error_roll*roll_K_P+I_error_roll*roll_K_I+D_error_roll*roll_K_D)) + " = 1540 + " + str(error_roll*roll_K_P) + " + " + str(I_error_roll*roll_K_I) + " + " + str(D_error_roll*roll_K_D), 22, 0)
 
 		#Send RC values
-		self.vidro.set_rc_pitch( 1540 + (self.error_pitch*self.pitch_K_P) + (self.I_error_pitch*self.pitch_K_I) + (self.D_error_pitch*self.pitch_K_D) )
-		self.vidro.set_rc_roll(  1540 + (self.error_roll*self.roll_K_P) + (self.I_error_roll*self.roll_K_I) + (self.D_error_roll*self.roll_K_D) )
+		self.vidro.set_rc_pitch( 1535 + (self.error_pitch*self.pitch_K_P) + (self.I_error_pitch*self.pitch_K_I) + (self.D_error_pitch*self.pitch_K_D) )
+		self.vidro.set_rc_roll(  1535 + (self.error_roll*self.roll_K_P) + (self.I_error_roll*self.roll_K_I) + (self.D_error_roll*self.roll_K_D) )

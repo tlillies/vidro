@@ -214,13 +214,16 @@ class Vidro:
 		print "Attempting to get HEARTBEAT message from APM..."
 		msg = self.master.recv_match(type='HEARTBEAT', blocking=True)
 		print("Heartbeat from APM (system %u component %u)" % (self.master.target_system, self.master.target_system))
-		print "Getting inital values RC, global psition, and attitude from APM"
+		print "Getting inital values RC, global psition, and attitude from APM..."
 		while (self.current_rc_channels[0] == None) or (self.current_alt == None) or (self.current_roll == None):
 			self.get_mavlink()
 		print("Got RC channels, global position, and attitude")
 		self.ground_alt = self.current_alt
 		self.current_alt = 0
 		print("Successfully set ground altitude")
+		self.home_lat = self.current_lat
+		self.home_lon = self.current_lon
+		print("Successfully set home latitude and longitude")
 
 	def get_mavlink(self):
 		"""
@@ -252,8 +255,8 @@ class Vidro:
 				self.rc_msg_time = time.clock()-self.rc_msg_time
 
 			if self.msg.get_type() == "GLOBAL_POSITION_INT":
-				self.current_lat = self.msg.lat
-				self.current_lon = self.msg.lon
+				self.current_lat = self.msg.lat * 1.0e-7
+				self.current_lon = self.msg.lon * 1.0e-7
 				self.current_alt = self.msg.alt-self.ground_alt
 
 			if self.msg.get_type() == "ATTITUDE":
