@@ -65,9 +65,6 @@ while vidro.current_rc_channels[4] > 1600:
 	controller.rc_yaw(0)
 	controller.rc_xy(0,0)
 
-	curses_print("Lat: " + str(vidro.current_lat), 1, 1)
-	curses_print("Lon: " + str(vidro.current_lon), 2, 1)
-
 	#Print alt data
 	curses_print("Throttle RC Override: " + str(vidro.current_rc_overrides[2]), 5, 1)
 	curses_print("Throttle RC Level: " + str(vidro.current_rc_channels[2]), 6, 1)
