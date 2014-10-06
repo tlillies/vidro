@@ -162,14 +162,14 @@ class Vidro:
 		self.device = device
 
 		#Home x,y,x position
-		self.home_x = None
-		self.home_y = None
-		self.home_z = None
+		self.home_x = 0
+		self.home_y = 0
+		self.home_z = 0
 
 		#Home lat,lon, and alt for sitl
-		self.home_lat = None
-		self.home_lon = None
-		self.home_alt = None
+		self.home_lat = 0
+		self.home_lon = 0
+		self.home_alt = 0
 
 		#Last updated lat,lon, and alt for sitl
 		self.current_lat = None
@@ -218,12 +218,13 @@ class Vidro:
 		while (self.current_rc_channels[0] == None) or (self.current_alt == None) or (self.current_roll == None):
 			self.get_mavlink()
 		print("Got RC channels, global position, and attitude")
-		self.ground_alt = self.current_alt
-		self.current_alt = 0
-		print("Successfully set ground altitude")
-		self.home_lat = self.current_lat
-		self.home_lon = self.current_lon
-		print("Successfully set home latitude and longitude")
+		if self.sitl == True:
+			self.ground_alt = self.current_alt
+			self.current_alt = 0
+			print("Successfully set ground altitude")
+			self.home_lat = self.current_lat
+			self.home_lon = self.current_lon
+			print("Successfully set home latitude and longitude")
 
 	def get_mavlink(self):
 		"""
@@ -254,17 +255,16 @@ class Vidro:
 
 				self.rc_msg_time = time.clock()-self.rc_msg_time
 
-			if self.msg.get_type() == "GLOBAL_POSITION_INT":
-				self.current_lat = self.msg.lat * 1.0e-7
-				self.current_lon = self.msg.lon * 1.0e-7
-				self.current_alt = self.msg.alt-self.ground_alt
+			if self.sitl == True:
+				if self.msg.get_type() == "GLOBAL_POSITION_INT":
+					self.current_lat = self.msg.lat * 1.0e-7
+					self.current_lon = self.msg.lon * 1.0e-7
+					self.current_alt = self.msg.alt-self.ground_alt
 
 			if self.msg.get_type() == "ATTITUDE":
 				self.current_roll = self.msg.roll*180/math.pi
 				self.cureent_pitch = self.msg.pitch*180/math.pi
 				self.current_yaw = self.msg.yaw*180/math.pi
-
-			#if msg_type == "HEARTBEAT":
 
 	def connect_vicon(self):
 		"""
@@ -275,6 +275,9 @@ class Vidro:
 		self.streams = self.s.selectStreams(["Time", "t-", "a-"])
 		self.s.startStreams(verbose=False)
 		print "Vicon Connected..."
+		self.home_x = self.get_position()[0]
+		self.home_y = self.get_position()[1]
+		self.home_z = self.get_position()[2]
 
 	def disconnect_vicon(self):
 		"""
