@@ -29,7 +29,7 @@ class ViconStreamer:
 		# of what the Vicon documentation claims it is
 		self._viconSend([1,0])
 		print ">> Receiving stream info..."
-		self._streamNames = s._viconReceive()
+		self._streamNames = self._viconReceive()
 
 	def _send(self, msg):
 		totalsent = 0
@@ -147,7 +147,7 @@ class ViconStreamer:
 
 	def _processStream(self):
 		while self._streaming:
-			self.data = s._viconReceive()
+			self.data = self._viconReceive()
 			if self._verbose:
 				print "  ".join([self._streamNames[i] for i in self._desiredStreams])
 				for i in self._desiredStreams:
@@ -272,7 +272,7 @@ class Vidro:
 		"""
 		self.s = ViconStreamer()
 		self.s.connect("Vicon", 800)
-		self.streams = s.selectStreams(["Time", "t-", "a-"])
+		self.streams = self.s.selectStreams(["Time", "t-", "a-"])
 		self.s.startStreams(verbose=False)
 		print "Vicon Connected..."
 
