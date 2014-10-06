@@ -240,7 +240,6 @@ class Vidro:
 		self.msg = self.master.recv_match(blocking=False)
 
 		if self.msg:
-
 			if self.msg.get_type() == "BAD_DATA":
 				if mavutil.all_printable(self.msg.data):
 					print "Whoops, got bad data", self.msg.data
@@ -255,11 +254,10 @@ class Vidro:
 
 				self.rc_msg_time = time.clock()-self.rc_msg_time
 
-			if self.sitl == True:
-				if self.msg.get_type() == "GLOBAL_POSITION_INT":
-					self.current_lat = self.msg.lat * 1.0e-7
-					self.current_lon = self.msg.lon * 1.0e-7
-					self.current_alt = self.msg.alt-self.ground_alt
+			if self.msg.get_type() == "GLOBAL_POSITION_INT":
+				self.current_lat = self.msg.lat * 1.0e-7
+				self.current_lon = self.msg.lon * 1.0e-7
+				self.current_alt = self.msg.alt-self.ground_alt
 
 			if self.msg.get_type() == "ATTITUDE":
 				self.current_roll = self.msg.roll*180/math.pi
@@ -275,6 +273,8 @@ class Vidro:
 		self.streams = self.s.selectStreams(["Time", "t-", "a-"])
 		self.s.startStreams(verbose=False)
 		print "Vicon Connected..."
+		#print self.s.getData()[0]
+		print self.s.getData()[1]
 		self.home_x = self.get_position()[0]
 		self.home_y = self.get_position()[1]
 		self.home_z = self.get_position()[2]
