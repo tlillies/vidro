@@ -144,6 +144,7 @@ while vidro.current_rc_channels[4] > 1600:
 
 	#Plots
 	if switch == True:
+		"""
 		plot.figure(1)
 		plot.xlabel("Time(sec)")
 		plot.ylabel("Error(rads)")
@@ -169,6 +170,7 @@ while vidro.current_rc_channels[4] > 1600:
 		plot.plot(plot_time_roll,plot_error_roll)
 		#plot.plot(plot_time_roll,plot_rc_roll)
 		#plot.plot(plot_time_roll,plot_error_roll_D)
+		"""
 		"""
 		plot.figure(5)
 		plot.xlabel("Time(sec)")
@@ -226,6 +228,8 @@ while vidro.current_rc_channels[4] > 1600:
 
 		plot_x_current[:]=[]
 		plot_y_current[:]=[]
+
+		switch = False
 
 	vidro.get_mavlink()
 

@@ -9,24 +9,24 @@ import utm
 
 ###################################################################################
 ## A simple module for retrieving data from a Vicon motion capture system
-################################################################################### 
+###################################################################################
 ## Copyright (c) 2014, Cameron Finucane <cpf37@cornell.edu>
 ## All rights reserved.
-## 
+##
 ## Redistribution and use in source and binary forms, with or without modification,
 ## are permitted provided that the following conditions are met:
-## 
+##
 ## 1. Redistributions of source code must retain the above copyright notice, this
 ## list of conditions and the following disclaimer.
-## 
+##
 ## 2. Redistributions in binary form must reproduce the above copyright notice,
 ## this list of conditions and the following disclaimer in the documentation and/or
 ## other materials provided with the distribution.
-## 
+##
 ## 3. Neither the name of the copyright holder nor the names of its contributors
 ## may be used to endorse or promote products derived from this software without
 ## specific prior written permission.
-## 
+##
 ## THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 ## ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 ## WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -37,7 +37,7 @@ import utm
 ## ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 ## (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ## SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-################################################################################### 
+###################################################################################
 
 class ViconStreamer:
     # based on example from http://docs.python.org/howto/sockets.html
@@ -159,8 +159,8 @@ class ViconStreamer:
                 strlen = struct.unpack("<1L", msg)
                 msg = self._receive(strlen[0])
                 strs.append(msg)
-            return strs 
-        elif header[0] == 2:  
+            return strs
+        elif header[0] == 2:
             # data packet
             msg = self._receive(length[0]*8)
             body = struct.unpack("<" + str(length[0]) + "d", msg)
@@ -303,8 +303,9 @@ class Vidro:
 		self.streams = self.s.selectStreams(["Time", "t-", "a-"])
 		self.s.startStreams(verbose=False)
 		print "Vicon Connected..."
-		#print self.s.getData()[0]
-		print self.s.getData()[1]
+		while self.s.getData() == None:
+			pass
+		print "Got inital vicon position"
 		self.home_x = self.get_position()[0]
 		self.home_y = self.get_position()[1]
 		self.home_z = self.get_position()[2]
@@ -512,7 +513,7 @@ class Vidro:
 		else:
 			position[0] = self.get_vicon()[1] - self.home_x
 			position[1] = self.get_vicon()[2] - self.home_y
-			psoition[2] = self.get_vicon()[3] - self.home_z
+			position[2] = self.get_vicon()[3] - self.home_z
 
 		return position
 
