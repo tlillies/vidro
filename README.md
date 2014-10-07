@@ -21,7 +21,7 @@ This is the class for connecting to the APM and vicon. It is able to handle SITL
 
 Example PID controller using rc overrides.
 
-### sitl_.py ###
+### sitl_controller_test.py ###
 
 SITL implementation of vidro and override controller to close the loop.
 
