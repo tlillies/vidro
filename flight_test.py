@@ -144,6 +144,8 @@ while vidro.current_rc_channels[4] > 1600:
 
 	#Plots
 	if switch == True:
+		vidro.rc_all_reset()
+		
 		"""
 		plot.figure(1)
 		plot.xlabel("Time(sec)")

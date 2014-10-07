@@ -244,6 +244,7 @@ class Vidro:
 		print "Attempting to get HEARTBEAT message from APM..."
 		msg = self.master.recv_match(type='HEARTBEAT', blocking=True)
 		print("Heartbeat from APM (system %u component %u)" % (self.master.target_system, self.master.target_system))
+		self.send_rc_overrides()
 		print "Getting inital values RC, global psition, and attitude from APM..."
 		while (self.current_rc_channels[0] == None) or (self.current_alt == None) or (self.current_roll == None):
 			self.get_mavlink()
@@ -408,16 +409,20 @@ class Vidro:
 
 	## Reset RC Channels ##
 	def rc_roll_reset(self):
-		self.set_rc_roll(0)
+		self.current_rc_overrides[0] = 0
+		self.send_rc_overrides()
 
 	def rc_pitch_reset(self):
-		self.set_rc_pitch(0)
+		self.current_rc_overrides[1] = 0
+		self.send_rc_overrides()
 
 	def rc_throttle_reset(self):
-		self.set_rc_throttle(0)
+		self.current_rc_overrides[2] = 0
+		self.send_rc_overrides()
 
 	def rc_yaw_reset(self):
-		self.set_rc_yaw(0)
+		self.current_rc_overrides[3] = 0
+		self.send_rc_overrides()
 
 	def rc_channel_five_reset(self):
 		self.current_rc_overrides[4] = 0
@@ -432,8 +437,6 @@ class Vidro:
 		self.rc_pitch_reset()
 		self.rc_throttle_reset()
 		self.rc_yaw_reset()
-		self.rc_channel_five_reset()
-		self.rc_channel_six_reset()
 
 	def rc_check_dup(self, channel, value):
 		"""
