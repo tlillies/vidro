@@ -68,7 +68,7 @@ class PositionController:
 		self.previous_time_alt = current_time
 
 		#Get error
-		self.error_alt = goal_alt - self.vidro.get_alt()
+		self.error_alt = goal_alt - self.vidro.get_position()[2]
 
 		#Get error I
 		self.I_error_alt = self.I_error_alt + self.error_alt*delta_t
