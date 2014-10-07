@@ -247,7 +247,7 @@ class Vidro:
 		print "Getting inital values RC, global psition, and attitude from APM..."
 		while (self.current_rc_channels[0] == None) or (self.current_alt == None) or (self.current_roll == None):
 			self.get_mavlink()
-		self.master.mav.heartbeat_send(mavutil.mavlink.MAV_TYPE_GCS, mavutil.mavlink.MAV_AUTOPILOT_INVALID, 0, 0, 0)
+		self.master.mav.param_request_list_send(self.master.target_system, self.master.target_component)
 		print("Got RC channels, global position, and attitude")
 		if self.sitl == True:
 			self.ground_alt = self.current_alt
