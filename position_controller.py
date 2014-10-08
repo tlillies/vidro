@@ -64,16 +64,20 @@ class PositionController:
 			self.base_rc_pitch = 1535
 			self.base_rc_throttle = 1370
 			self.base_rc_yaw = 1500
+
+			self.gains_file_path = '/home/tom/RECUV/vidro/vidro/sitl_gains.txt'
+			#self.gains_file_path = '/home/tom/RECUV/vidro/vidro/sitl_gains.txt'
 		else:
 			self.base_rc_roll = 0
 			self.base_rc_pitch = 0
 			self.base_rc_throttle = 0
 			self.base_rc_yaw = 0
 
-		self.gains_file_path = '/home/tom/RECUV/vidro/vidro/gains.txt'
-		#self.gains_file_path = '/home/tom/RECUV/vidro/vidro/gains.txt'
+			self.gains_file_path = '/home/tom/RECUV/vidro/vidro/gains.txt'
+			#self.gains_file_path = '/home/tom/RECUV/vidro/vidro/gains.txt'
 
-	def update_gains():
+
+	def update_gains(self):
 		"""
 		Update gains from the gains file
 		"""

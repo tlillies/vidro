@@ -275,7 +275,7 @@ class Vidro:
 		self.msg = self.master.recv_match(blocking=False)
 
 		if self.msg:
-			#print self.msg.get_type()
+			print self.msg.get_type()
 			if self.msg.get_type() == "BAD_DATA":
 				if mavutil.all_printable(self.msg.data):
 					print "Whoops, got bad data", self.msg.data
