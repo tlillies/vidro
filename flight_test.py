@@ -63,6 +63,8 @@ switch = False
 
 while vidro.current_rc_channels[4] > 1600:
 
+	controller.update_gains()
+
 	controller.I_error_alt = 0
 	controller.I_error_pitch = 0
 	controller.I_error_roll = 0

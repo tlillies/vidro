@@ -70,11 +70,29 @@ class PositionController:
 			self.base_rc_throttle = 0
 			self.base_rc_yaw = 0
 
+		self.gains_file_path = '/home/tom/RECUV/vidro/vidro/gains.txt'
+		#self.gains_file_path = '/home/tom/RECUV/vidro/vidro/gains.txt'
+
 	def update_gains():
 		"""
 		Update gains from the gains file
 		"""
-		pass
+		#Get fill lines with the lines from the gain file
+		gainfile = open(self.gains_file_path, "r")
+		lines = gainfile.readlines()
+		gainfile.close()
+
+		#Set the gain files from the values from the file
+		self.alt_K_P = float(lines[1])
+		self.alt_K_I = float(lines[3])
+		self.yaw_K_P = float(lines[5])
+		self.yaw_K_I = float(lines[7])
+		self.roll_K_P = float(lines[9])
+		self.roll_K_I = float(lines[11])
+		self.roll_K_D = float(lines[13])
+		self.pitch_K_P = float(lines[15])
+		self.pitch_K_I = float(lines[17])
+		self.pitch_K_D = float(lines[19])
 
 	def rc_alt(self, goal_alt):
 		"""
