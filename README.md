@@ -33,9 +33,9 @@ TODO
 ======
 
 * fix connection for actuall hardware (Only is able to connect after connecting to GCS? only getting heartbeat before that...)
-* print curses over certain intervals so loop can run full cpu
-* create veiw_rc.py script
-* create script for finding rc limits
+* <del>print curses over certain intervals so loop can run full cpu</del> NEED TO TEST
+* ~create veiw_rc.py script~ NEED TO TEST
+* ~create script for finding rc limits~ NEED TO TEST
 * tune sitl controller
-* read gains from file in controller.py
+* ~read gains from file in controller.py~ NEED TO TEST
 * __clean!!__
