@@ -248,11 +248,7 @@ class Vidro:
 		print "Attempting to get HEARTBEAT message from APM..."
 		msg = self.master.recv_match(type='HEARTBEAT', blocking=True)
 		print("Heartbeat from APM (system %u component %u)" % (self.master.target_system, self.master.target_system))
-
-		#self.master.mav.heartbeat_send(mavutil.mavlink.MAV_TYPE_GCS, mavutil.mavlink.MAV_AUTOPILOT_INVALID, 0, 0, 0)
-
-		#self.master.param_request_list_send(self.master.target_system, self.master.target_system)
-
+		self.master.mav.request_data_stream_send(self.master.target_system, self.master.target_component, 0, 50, 1)
 		print "Getting inital values RC, global psition, and attitude from APM..."
 		while (self.current_rc_channels[0] == None) or (self.current_alt == None) or (self.current_roll == None):
 			self.get_mavlink()
