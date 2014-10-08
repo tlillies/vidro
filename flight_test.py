@@ -97,7 +97,7 @@ while vidro.current_rc_channels[4] > 1600:
 		curses_print("Heading Degrees: " + str(vidro.get_yaw_degrees()), 9, 0)
 		curses_print("Y: "+ str(int(controller.base_rc_yaw+controller.error_yaw*controller.yaw_K_P+controller.I_error_yaw*controller.yaw_K_I)) + " = "+ str(controller.base_rc_yaw) + " + " + str(controller.error_yaw*controller.yaw_K_P) + " + " + str(controller.I_error_yaw*controller.yaw_K_I) + " + " + str(controller.D_error_yaw*controller.yaw_K_D), 20, 0)
 
-		#Print functions for curses
+		#Print pitch and roll
 		curses_print("Pitch RC Level: " + str(vidro.current_rc_channels[1]), 11, 0)
 		curses_print("Roll RC Level: " + str(vidro.current_rc_channels[0]), 11, 1)
 		curses_print("Pitch: " + str(vidro.get_pitch()), 12, 0)
