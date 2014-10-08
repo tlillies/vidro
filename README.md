@@ -36,7 +36,7 @@ TODO
 * Reduce the latency!!!!!!
 * tune sitl controller
 * __clean!!__
-* <del>print curses over certain intervals so loop can run full cpu</del> <del>NEED TO TEST</dev> Make less jumpy?
+* <del>print curses over certain intervals so loop can run full cpu</del> <del>NEED TO TEST</del> Make less jumpy?
 * <del>create veiw_rc.py script</del> NEED TO TEST
 * <del>create script for finding rc limits</del> NEED TO TEST
 * <del>read gains from file in controller.py</del> NEED TO TEST
