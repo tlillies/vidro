@@ -81,9 +81,9 @@ while vidro.current_rc_channels[4] > 1600:
 
 	while vidro.current_rc_channels[5] > 1600:
 
-		controller.rc_alt(1000)
+		controller.rc_alt(500)
 		controller.rc_yaw(0)
-		#controller.rc_xy(0,0)
+		controller.rc_xy(500,500)
 
 		if round((round(time.clock(),3) % .05),2) == 0:
 
@@ -145,7 +145,9 @@ while vidro.current_rc_channels[4] > 1600:
 
 	#Plots
 	if switch == True:
-		vidro.rc_all_reset()
+
+		while vidro.current_rc_channels[2] > 1400:
+			vidro.rc_all_reset()
 
 		"""
 		plot.figure(1)

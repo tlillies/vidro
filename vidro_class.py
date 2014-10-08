@@ -248,7 +248,7 @@ class Vidro:
 		print "Attempting to get HEARTBEAT message from APM..."
 		msg = self.master.recv_match(type='HEARTBEAT', blocking=True)
 		print("Heartbeat from APM (system %u component %u)" % (self.master.target_system, self.master.target_system))
-		#The max rate (the second to last argument in the line below) is 25 Hz. You must chnage the firmware to get a fast rate than that. 
+		#The max rate (the second to last argument in the line below) is 25 Hz. You must chnage the firmware to get a fast rate than that.
 		#It may be possible to get up to 500 Hz??
 		#This may be useful later down the road to decrease latency
 		#It also may be helpful to only stream needed data instead of all data
@@ -279,10 +279,10 @@ class Vidro:
 		self.msg = self.master.recv_match(blocking=False)
 
 		if self.msg:
-			print self.msg.get_type()
-			if self.msg.get_type() == "BAD_DATA":
-				if mavutil.all_printable(self.msg.data):
-					print "Whoops, got bad data", self.msg.data
+			#print self.msg.get_type()
+			#if self.msg.get_type() == "BAD_DATA":
+				#if mavutil.all_printable(self.msg.data):
+					#print "Whoops, got bad data", self.msg.data
 
 			if self.msg.get_type() == "RC_CHANNELS_RAW":
 				self.current_rc_channels[0] = self.msg.chan1_raw

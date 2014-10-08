@@ -68,10 +68,10 @@ class PositionController:
 			self.gains_file_path = '/home/tom/RECUV/vidro/vidro/sitl_gains.txt'
 			#self.gains_file_path = '/home/tom/RECUV/vidro/vidro/sitl_gains.txt'
 		else:
-			self.base_rc_roll = 0
-			self.base_rc_pitch = 0
-			self.base_rc_throttle = 0
-			self.base_rc_yaw = 0
+			self.base_rc_roll = 1500
+			self.base_rc_pitch = 1500
+			self.base_rc_throttle = 1500
+			self.base_rc_yaw = 1500
 
 			self.gains_file_path = '/home/tom/RECUV/vidro/vidro/gains.txt'
 			#self.gains_file_path = '/home/tom/RECUV/vidro/vidro/gains.txt'
@@ -161,7 +161,7 @@ class PositionController:
 		if self.vidro.sitl == True:
 			heading = self.vidro.get_yaw_degrees()
 		else:
-			heading = self.vidro.get_yaw_degrees()*-1
+			heading = self.vidro.get_yaw_degrees()
 
 		#Calculate current position
 		self.x_current = self.vidro.get_position()[0]
