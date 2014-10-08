@@ -186,10 +186,14 @@ class ViconStreamer:
 
 class Vidro:
 
-	def __init__(self, sitl, baud, device):
+	def __init__(self, sitl):
 		self.sitl = sitl
-		self.baud = baud
-		self.device = device
+		if self.sitl == True:
+			self.baud = 115200
+			self.device = "127.0.0.1:14551"
+		else:
+			self.baud = 57600
+			self.device = '/dev/ttyUSB0'
 
 		#Home x,y,x position
 		self.home_x = 0
