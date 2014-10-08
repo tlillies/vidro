@@ -248,6 +248,10 @@ class Vidro:
 		print "Attempting to get HEARTBEAT message from APM..."
 		msg = self.master.recv_match(type='HEARTBEAT', blocking=True)
 		print("Heartbeat from APM (system %u component %u)" % (self.master.target_system, self.master.target_system))
+		#The max rate (the second to last argument in the line below) is 25 Hz. You must chnage the firmware to get a fast rate than that. 
+		#It may be possible to get up to 500 Hz??
+		#This may be useful later down the road to decrease latency
+		#It also may be helpful to only stream needed data instead of all data
 		self.master.mav.request_data_stream_send(self.master.target_system, self.master.target_component, 0, 50, 1)
 		print "Getting inital values RC, global psition, and attitude from APM..."
 		while (self.current_rc_channels[0] == None) or (self.current_alt == None) or (self.current_roll == None):
