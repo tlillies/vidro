@@ -70,6 +70,12 @@ class PositionController:
 			self.base_rc_throttle = 0
 			self.base_rc_yaw = 0
 
+	def update_gains():
+		"""
+		Update gains from the gains file
+		"""
+		pass
+
 	def rc_alt(self, goal_alt):
 		"""
 		Will send copter based off of throttle to 'goal_alt'
