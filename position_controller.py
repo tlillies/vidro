@@ -125,7 +125,7 @@ class PositionController:
 		self.previous_error_yaw = self.error_yaw
 
 		#Send RC value
-		self.vidro.set_rc_yaw(vidro.base_rc_yaw + self.error_yaw*self.yaw_K_P + self.I_error_yaw*self.yaw_K_I + self.D_error_yaw*self.yaw_K_D)
+		self.vidro.set_rc_yaw(self.base_rc_yaw + self.error_yaw*self.yaw_K_P + self.I_error_yaw*self.yaw_K_I + self.D_error_yaw*self.yaw_K_D)
 
 		return self.error_yaw
 
@@ -196,5 +196,5 @@ class PositionController:
 		#curses_print("R: " +  str(int(1540+error_roll*roll_K_P+I_error_roll*roll_K_I+D_error_roll*roll_K_D)) + " = 1540 + " + str(error_roll*roll_K_P) + " + " + str(I_error_roll*roll_K_I) + " + " + str(D_error_roll*roll_K_D), 22, 0)
 
 		#Send RC values
-		self.vidro.set_rc_pitch( vidro.base_rc_pitch + (self.error_pitch*self.pitch_K_P) + (self.I_error_pitch*self.pitch_K_I) + (self.D_error_pitch*self.pitch_K_D) )
-		self.vidro.set_rc_roll(  vidro.base_rc_roll + (self.error_roll*self.roll_K_P) + (self.I_error_roll*self.roll_K_I) + (self.D_error_roll*self.roll_K_D) )
+		self.vidro.set_rc_pitch( self.base_rc_pitch + (self.error_pitch*self.pitch_K_P) + (self.I_error_pitch*self.pitch_K_I) + (self.D_error_pitch*self.pitch_K_D) )
+		self.vidro.set_rc_roll(  self.base_rc_roll + (self.error_roll*self.roll_K_P) + (self.I_error_roll*self.roll_K_I) + (self.D_error_roll*self.roll_K_D) )

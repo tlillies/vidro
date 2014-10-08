@@ -65,7 +65,11 @@ while vidro.current_rc_channels[4] > 1600:
 	controller.rc_yaw(0)
 	controller.rc_xy(0,0)
 
-	if (time.clock() % .1) == 0
+	if round((round(time.clock(),3) % .05),2) == 0:
+
+		screen.clear()
+		screen.refresh()
+
 		#Print alt data
 		curses_print("Throttle RC Override: " + str(vidro.current_rc_overrides[2]), 5, 1)
 		curses_print("Throttle RC Level: " + str(vidro.current_rc_channels[2]), 6, 1)
@@ -92,6 +96,8 @@ while vidro.current_rc_channels[4] > 1600:
 		curses_print("P: " +  str(int(controller.base_rc_pitch+controller.error_pitch*controller.pitch_K_P+controller.I_error_pitch*controller.pitch_K_I+controller.D_error_pitch*controller.pitch_K_D)) + " = " + str(controller.base_rc_pitch) + " + " + str(controller.error_pitch*controller.pitch_K_P) + " + " + str(controller.I_error_pitch*controller.pitch_K_I) + " + " + str(controller.D_error_pitch*controller.pitch_K_D), 21, 0)
 		curses_print("R: " +  str(int(controller.base_rc_roll+controller.error_roll*controller.roll_K_P+controller.I_error_roll*controller.roll_K_I+controller.D_error_roll*controller.roll_K_D)) + " = " + str(controller.base_rc_roll) + " + " + str(controller.error_roll*controller.roll_K_P) + " + " + str(controller.I_error_roll*controller.roll_K_I) + " + " + str(controller.D_error_roll*controller.roll_K_D), 22, 0)
 
+		screen.refresh()
+
 	#Add values to arrays for plotting
 	plot_error_yaw.append(controller.error_yaw)
 	plot_error_yaw_I.append(controller.I_error_yaw)
@@ -115,10 +121,6 @@ while vidro.current_rc_channels[4] > 1600:
 
 	plot_x_current.append(vidro.get_position()[0])
 	plot_y_current.append(vidro.get_position()[1])
-
-	screen.refresh()
-	screen.clear()
-	screen.refresh()
 
 	vidro.get_mavlink()
 
