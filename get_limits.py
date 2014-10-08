@@ -34,28 +34,37 @@ screen = curses.initscr()
 screen.clear()
 screen.refresh()
 
+RC_yaw_min = controller.base_rc_yaw
+RC_yaw_max = controller.base_rc_yaw
+RC_throttle_min = controller.base_rc_throttle
+RC_throttle_max = controller.base_rc_throttle
+RC_pitch_min = controller.base_rc_pitch
+RC_pitch_max = controller.base_rc_pitch
+RC_roll_min = controller.base_rc_roll
+RC_roll_max = controller.base_rc_roll
+
 while True:
 
 	screen.erase()
-	if v.channel_readback['1'] < RC_roll_min:
-		RC_roll_min = v.channel_readback['1']
-	if v.channel_readback['1'] > RC_roll_max:
-		RC_roll_max = v.channel_readback['1']
+	if vidro.current_rc_channels[0] < RC_roll_min:
+		RC_roll_min = vidro.current_rc_channels[0]
+	if vidro.current_rc_channels[0] > RC_roll_max:
+		RC_roll_max = vidro.current_rc_channels[0]
 
-	if v.channel_readback['2'] < RC_pitch_min:
-		RC_pitch_min = v.channel_readback['2']
-	if v.channel_readback['2'] > RC_pitch_max:
-		RC_pitch_max = v.channel_readback['2']
+	if vidro.current_rc_channels[1] < RC_pitch_min:
+		RC_pitch_min = vidro.current_rc_channels[1]
+	if vidro.current_rc_channels[1] > RC_pitch_max:
+		RC_pitch_max = vidro.current_rc_channels[1]
 
-	if v.channel_readback['3'] < RC_throttle_min:
-		RC_throttle_min = v.channel_readback['3']
-	if v.channel_readback['3'] > RC_throttle_max:
-		RC_throttle_max = v.channel_readback['3']
+	if vidro.current_rc_channels[2] < RC_throttle_min:
+		RC_throttle_min = vidro.current_rc_channels[2]
+	if vidro.current_rc_channels[2] > RC_throttle_max:
+		RC_throttle_max = vidro.current_rc_channels[2]
 
-	if v.channel_readback['4'] < RC_yaw_min:
-		RC_yaw_min = v.channel_readback['4']
-	if v.channel_readback['4'] > RC_yaw_max:
-		RC_yaw_max = v.channel_readback['4']
+	if vidro.current_rc_channels[3] < RC_yaw_min:
+		RC_yaw_min = vidro.current_rc_channels[3]
+	if vidro.current_rc_channels[3] > RC_yaw_max:
+		RC_yaw_max = vidro.current_rc_channels[3]
 
 	curses_print("Roll: " + str(v.channel_readback['1']), 0,0)
 	curses_print("Pitch: " + str(v.channel_readback['2']), 1,0)
@@ -64,10 +73,26 @@ while True:
 	time.sleep(.1)
 
 	screen.refresh()
-	time.sleep(.02)
 	screen.clear()
 	screen.refresh()
 
 	vidro.get_mavlink()
 
 vidro.close()
+
+screen.clear()
+screen.refresh()
+
+curses_print("Roll Min: " + str(RC_roll_min), 0,0)
+curses_print("Roll Max: " + str(RC_roll_max), 1,0)
+
+curses_print("Pitch Min " + str(RC_pitch_min), 3,0)
+curses_print("Pitch Max: " + str(RC_pitch_max), 4,0)
+
+curses_print("Throttle Min: " + str(RC_throttle_min), 6,0)
+curses_print("Throttle Max: " + str(RC_throttle_max), 7,0)
+
+curses_print("Yaw Min: " + str(RC_yaw_min), 9,0)
+curses_print("Yaw Max: " + str(RC_yaw_max), 10,0)
+
+screen.refresh()
