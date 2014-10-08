@@ -51,7 +51,7 @@ def curses_print(string, line, col):
 
 	screen.refresh()
 
-vidro = Vidro(True, 115200,"127.0.0.1:14551")
+vidro = Vidro(True)
 vidro.connect()
 controller = PositionController(vidro)
 

@@ -26,7 +26,7 @@ def curses_print(string, line, col):
 
 	screen.refresh()
 
-vidro = Vidro(False, 57600, '/dev/ttyUSB0')
+vidro = Vidro(False)
 vidro.connect()
 controller = PositionController(vidro)
 
