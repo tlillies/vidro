@@ -36,7 +36,6 @@ screen.refresh()
 
 while True:
 
-
 	curses_print("Roll: " + str(vidro.current_rc_channels[0],0,0)
 	curses_print("Pitch: " + str(vidro.current_rc_channels[1],1,0)
 	curses_print("Throttle: " + str(vidro.current_rc_channels[2],2,0)

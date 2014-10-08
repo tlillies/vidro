@@ -58,6 +58,18 @@ class PositionController:
 		self.pitch_K_I = .0006
 		self.pitch_K_D = .05
 
+		#Base RC values
+		if self.vidro.sitl == True:
+			self.base_rc_roll = 1535
+			self.base_rc_pitch = 1535
+			self.base_rc_throttle = 1370
+			self.base_rc_yaw = 1500
+		else:
+			self.base_rc_roll = 0
+			self.base_rc_pitch = 0
+			self.base_rc_throttle = 0
+			self.base_rc_yaw = 0
+
 	def rc_alt(self, goal_alt):
 		"""
 		Will send copter based off of throttle to 'goal_alt'
@@ -78,7 +90,7 @@ class PositionController:
 		self.previous_error_alt = self.error_alt
 
 		#Send RC value
-		self.vidro.set_rc_throttle(round(1370 + self.error_alt*self.alt_K_P + self.I_error_alt*self.alt_K_I + self.D_error_alt*self.alt_K_D))
+		self.vidro.set_rc_throttle(round(self.base_rc_throttle + self.error_alt*self.alt_K_P + self.I_error_alt*self.alt_K_I + self.D_error_alt*self.alt_K_D))
 
 		return self.error_alt
 
@@ -107,7 +119,7 @@ class PositionController:
 		self.previous_error_yaw = self.error_yaw
 
 		#Send RC value
-		self.vidro.set_rc_yaw(1500 + self.error_yaw*self.yaw_K_P + self.I_error_yaw*self.yaw_K_I + self.D_error_yaw*self.yaw_K_D)
+		self.vidro.set_rc_yaw(vidro.base_rc_yaw + self.error_yaw*self.yaw_K_P + self.I_error_yaw*self.yaw_K_I + self.D_error_yaw*self.yaw_K_D)
 
 		return self.error_yaw
 
@@ -178,5 +190,5 @@ class PositionController:
 		#curses_print("R: " +  str(int(1540+error_roll*roll_K_P+I_error_roll*roll_K_I+D_error_roll*roll_K_D)) + " = 1540 + " + str(error_roll*roll_K_P) + " + " + str(I_error_roll*roll_K_I) + " + " + str(D_error_roll*roll_K_D), 22, 0)
 
 		#Send RC values
-		self.vidro.set_rc_pitch( 1535 + (self.error_pitch*self.pitch_K_P) + (self.I_error_pitch*self.pitch_K_I) + (self.D_error_pitch*self.pitch_K_D) )
-		self.vidro.set_rc_roll(  1535 + (self.error_roll*self.roll_K_P) + (self.I_error_roll*self.roll_K_I) + (self.D_error_roll*self.roll_K_D) )
+		self.vidro.set_rc_pitch( vidro.base_rc_pitch + (self.error_pitch*self.pitch_K_P) + (self.I_error_pitch*self.pitch_K_I) + (self.D_error_pitch*self.pitch_K_D) )
+		self.vidro.set_rc_roll(  vidro.base_rc_roll + (self.error_roll*self.roll_K_P) + (self.I_error_roll*self.roll_K_I) + (self.D_error_roll*self.roll_K_D) )
