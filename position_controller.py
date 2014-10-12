@@ -20,18 +20,19 @@ class PositionController:
 		self.previous_time_alt = (time.clock()-self.timer)*10
 		self.I_error_alt = 0
 		self.D_error_alt = 0
+		self.previous_error_alt = None
 		self.error_alt = 0
-		self.previous_error_alt = 0
+
 
 		self.previous_time_yaw = (time.clock()-self.timer)*10
 		self.I_error_yaw = 0
 		self.D_error_yaw = 0
 		self.error_yaw = 0
-		self.previous_error_yaw = 0
+		self.previous_error_yaw = None
 
 		self.previous_time_xy = (time.clock()-self.timer)*10
-		self.previous_error_pitch = 0
-		self.previous_error_roll = 0
+		self.previous_error_pitch = None
+		self.previous_error_roll = None
 		self.D_error_roll = 0
 		self.D_error_pitch = 0
 		self.I_error_roll = 0
@@ -63,10 +64,10 @@ class PositionController:
 			self.base_rc_roll = 1535
 			self.base_rc_pitch = 1535
 			self.base_rc_throttle = 1370
-			self.base_rc_yaw = 1500
+			self.base_rc_yaw = 1470
 
-			self.gains_file_path = '/home/tom/RECUV/vidro/vidro/sitl_gains.txt'
-			#self.gains_file_path = '/home/tom/RECUV/vidro/vidro/sitl_gains.txt'
+			self.gains_file_path = '/home/tom/RECUV/vidro/vidro/gains_sitl.txt'
+			#self.gains_file_path = '/home/tom/RECUV/vidro/vidro/gains_sitl.txt'
 		else:
 			self.base_rc_roll = 1500
 			self.base_rc_pitch = 1500
@@ -89,14 +90,16 @@ class PositionController:
 		#Set the gain files from the values from the file
 		self.alt_K_P = float(lines[1])
 		self.alt_K_I = float(lines[3])
-		self.yaw_K_P = float(lines[5])
-		self.yaw_K_I = float(lines[7])
-		self.roll_K_P = float(lines[9])
-		self.roll_K_I = float(lines[11])
-		self.roll_K_D = float(lines[13])
-		self.pitch_K_P = float(lines[15])
-		self.pitch_K_I = float(lines[17])
-		self.pitch_K_D = float(lines[19])
+		self.alt_K_D = float(lines[5])
+		self.yaw_K_P = float(lines[7])
+		self.yaw_K_I = float(lines[9])
+		self.yaw_K_D = float(lines[11])
+		self.roll_K_P = float(lines[13])
+		self.roll_K_I = float(lines[15])
+		self.roll_K_D = float(lines[17])
+		self.pitch_K_P = float(lines[19])
+		self.pitch_K_I = float(lines[21])
+		self.pitch_K_D = float(lines[23])
 
 	def rc_alt(self, goal_alt):
 		"""
@@ -111,11 +114,18 @@ class PositionController:
 		self.error_alt = goal_alt - self.vidro.get_position()[2]
 
 		#Get error I
-		self.I_error_alt = self.I_error_alt + self.error_alt*delta_t
+		if abs(self.error_alt) < 300:
+			self.I_error_alt = self.I_error_alt + self.error_alt*delta_t
+		else:
+			self.I_error_alt = 0
 
 		#Get error D
-		self.D_error_alt = (self.error_alt-self.previous_error_alt)/delta_t
-		self.previous_error_alt = self.error_alt
+		if self.previous_error_alt == None:
+			self.previous_error_alt = self.error_alt
+
+		if self.error_alt != self.previous_error_alt:
+			self.D_error_alt = (self.error_alt-self.previous_error_alt)/delta_t
+			self.previous_error_alt = self.error_alt
 
 		#Send RC value
 		self.vidro.set_rc_throttle(round(self.base_rc_throttle + self.error_alt*self.alt_K_P + self.I_error_alt*self.alt_K_I + self.D_error_alt*self.alt_K_D))
@@ -143,6 +153,9 @@ class PositionController:
 		self.I_error_yaw = self.I_error_yaw + self.error_yaw*delta_t
 
 		#Get error D
+		if self.previous_error_yaw == None:
+			self.previous_error_yaw = self.error_yaw
+
 		self.D_error_yaw = (self.error_yaw-self.previous_error_yaw)/delta_t
 		self.previous_error_yaw = self.error_yaw
 
@@ -208,6 +221,11 @@ class PositionController:
 		self.I_error_pitch = self.I_error_pitch + self.error_pitch*delta_t
 
 		#Calculate the D error for roll and pitch
+		if self.previous_error_roll == None:
+			self.previous_error_roll = self.error_roll
+		if self.previous_error_pitch == None:
+			self.previous_error_pitch = self.error_pitch
+
 		self.D_error_roll = (self.error_roll-self.previous_error_roll)/delta_t
 		self.D_error_pitch = (self.error_pitch-self.previous_error_pitch)/delta_t
 

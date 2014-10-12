@@ -9,10 +9,12 @@ import matplotlib.pyplot as plot
 #Plot arrays to start previous data fro plotting
 plot_error_yaw=[]
 plot_error_yaw_I=[]
+plot_error_yaw_D=[]
 plot_time_yaw=[]
 
 plot_error_throttle=[]
 plot_error_throttle_I=[]
+plot_error_throttle_D=[]
 plot_time_throttle=[]
 
 plot_error_pitch=[]
@@ -78,6 +80,7 @@ while vidro.current_rc_channels[4] > 1600:
 		curses_print("Error: " + str(controller.error_alt), 7, 1)
 		curses_print("Altitude:" + str(vidro.get_position()[2]), 8, 1)
 		curses_print("T: "+ str(int(controller.base_rc_throttle+controller.error_alt*controller.alt_K_P+controller.I_error_alt*controller.alt_K_I)) + " = "+ str(controller.base_rc_throttle) + " + " + str(controller.error_alt*controller.alt_K_P) + " + " + str(controller.I_error_alt*controller.alt_K_I) + " + " + str(controller.D_error_alt*controller.alt_K_D), 19, 0)
+		curses_print(str(controller.alt_K_D),0,0)
 
 		#Print yaw data
 		curses_print("Yaw RC Level: " + str(vidro.current_rc_channels[3]), 6, 0)
@@ -103,10 +106,12 @@ while vidro.current_rc_channels[4] > 1600:
 	#Add values to arrays for plotting
 	plot_error_yaw.append(controller.error_yaw)
 	plot_error_yaw_I.append(controller.I_error_yaw)
+	plot_error_yaw_D.append(controller.D_error_yaw)
 	plot_time_yaw.append(controller.previous_time_yaw)
 
 	plot_error_throttle.append(controller.error_alt)
 	plot_error_throttle_I.append(controller.I_error_alt)
+	plot_error_throttle_D.append(controller.D_error_alt*controller.alt_K_D)
 	plot_time_throttle.append(controller.previous_time_alt)
 
 	plot_error_pitch.append(controller.error_pitch)
@@ -124,6 +129,7 @@ while vidro.current_rc_channels[4] > 1600:
 	plot_x_current.append(vidro.get_position()[0])
 	plot_y_current.append(vidro.get_position()[1])
 
+	time.sleep(.005)
 	vidro.get_mavlink()
 
 vidro.get_mavlink()
@@ -140,7 +146,7 @@ plot.xlabel("Time(sec)")
 plot.ylabel("Error(mm)")
 plot.title("Throttle")
 plot.plot(plot_time_throttle,plot_error_throttle)
-
+"""
 plot.figure(3)
 plot.xlabel("Time(sec)")
 plot.ylabel("Error(mm) | RC Value")
@@ -155,6 +161,7 @@ plot.title("Roll Error PD | RC Value")
 plot.plot(plot_time_roll,plot_error_roll)
 #plot.plot(plot_time_roll,plot_rc_roll)
 #plot.plot(plot_time_roll,plot_error_roll_D)
+"""
 """
 plot.figure(5)
 plot.xlabel("Time(sec)")
@@ -183,9 +190,11 @@ plot.title("Roll Error PI")
 plot.plot(plot_time_roll,plot_error_roll)
 plot.plot(plot_time_roll,plot_error_roll_I)
 """
+"""
 plot.figure(9)
 plot.xlabel("x Location(mm)")
 plot.ylabel("y Location(mm)")
 plot.title("Location")
 plot.plot(plot_x_current, plot_y_current)
+"""
 plot.show()
