@@ -51,7 +51,7 @@ def curses_print(string, line, col):
 
 	screen.refresh()
 
-vidro = Vidro(False)
+vidro = Vidro(True)
 vidro.connect()
 controller = PositionController(vidro)
 
