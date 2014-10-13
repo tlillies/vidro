@@ -149,17 +149,21 @@ while vidro.current_rc_channels[4] > 1600:
 	#Erase Plots
 	if switch == True:
 		"""
+		plot.figure(1).clf()
 		plot.figure(1)
 		plot.xlabel("Time(sec)")
 		plot.ylabel("Error(rads)")
 		plot.title("Yaw")
 		plot.plot(plot_time_yaw,plot_error_yaw)
+
+		plot.figure(2).clf()
 		plot.figure(2)
 		plot.xlabel("Time(sec)")
 		plot.ylabel("Error(mm)")
 		plot.title("Throttle")
 		plot.plot(plot_time_throttle,plot_error_throttle)
 
+		plot.figure(3).clf()
 		plot.figure(3)
 		plot.xlabel("Time(sec)")
 		plot.ylabel("Error(mm) | RC Value")
@@ -167,6 +171,8 @@ while vidro.current_rc_channels[4] > 1600:
 		plot.plot(plot_time_pitch,plot_error_pitch)
 		#plot.plot(plot_time_pitch,plot_rc_pitch)
 		#plot.plot(plot_time_pitch,plot_error_pitch_D)
+
+		plot.figure(4).clf()
 		plot.figure(4)
 		plot.xlabel("Time(sec)")
 		plot.ylabel("Error(mm) | RC Value")
@@ -176,12 +182,15 @@ while vidro.current_rc_channels[4] > 1600:
 		#plot.plot(plot_time_roll,plot_error_roll_D)
 		"""
 		"""
+		plot.figure(5).clf()
 		plot.figure(5)
 		plot.xlabel("Time(sec)")
 		plot.ylabel("Error(rads)")
 		plot.title("Yaw")
 		plot.plot(plot_time_yaw,plot_error_yaw)
 		plot.plot(plot_time_yaw,plot_error_yaw_I)
+
+		plot.figure(6).clf()
 		plot.figure(6)
 		plot.xlabel("Time(sec)")
 		plot.ylabel("Error(mm)")
@@ -190,12 +199,15 @@ while vidro.current_rc_channels[4] > 1600:
 		plot.plot(plot_time_throttle,plot_error_throttle_I)
 		"""
 		"""
+		plot.figure(7).clf()
 		plot.figure(7)
 		plot.xlabel("Time(sec)")
 		plot.ylabel("Error(mm)")
 		plot.title("Pitch Error PI")
 		plot.plot(plot_time_pitch,plot_error_pitch)
 		plot.plot(plot_time_pitch,plot_error_pitch_I)
+
+		plot.figure(8).clf()
 		plot.figure(8)
 		plot.xlabel("Time(sec)")
 		plot.ylabel("Error(mm)")
@@ -203,6 +215,7 @@ while vidro.current_rc_channels[4] > 1600:
 		plot.plot(plot_time_roll,plot_error_roll)
 		plot.plot(plot_time_roll,plot_error_roll_I)
 		"""
+		plot.figure(9).clf()
 		plot.figure(9)
 		plot.xlabel("x Location(mm)")
 		plot.ylabel("y Location(mm)")
