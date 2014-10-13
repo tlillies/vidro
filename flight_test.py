@@ -61,6 +61,8 @@ screen.refresh()
 
 switch = False
 
+plot.ion()
+
 while vidro.current_rc_channels[4] > 1600:
 
 	controller.update_gains()
@@ -142,6 +144,7 @@ while vidro.current_rc_channels[4] > 1600:
 
 		switch = True
 		vidro.get_mavlink()
+		time.sleep(.005)
 
 	#Plots
 	if switch == True:
@@ -237,5 +240,6 @@ while vidro.current_rc_channels[4] > 1600:
 		switch = False
 
 	vidro.get_mavlink()
+	time.sleep(.005)
 
 vidro.close()
