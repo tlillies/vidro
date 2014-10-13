@@ -65,7 +65,7 @@ while vidro.current_rc_channels[4] > 1600:
 
 	controller.update_gains()
 
-	controller.rc_alt(1000)
+	controller.rc_alt(3000)
 	controller.rc_yaw(0)
 	controller.rc_xy(0,0)
 
