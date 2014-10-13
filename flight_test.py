@@ -142,16 +142,6 @@ while vidro.current_rc_channels[4] > 1600:
 		plot_x_current.append(vidro.get_position()[0])
 		plot_y_current.append(vidro.get_position()[1])
 
-		switch = True
-		vidro.get_mavlink()
-		time.sleep(.005)
-
-	#Plots
-	if switch == True:
-
-		while vidro.current_rc_channels[2] > 1400:
-			vidro.rc_all_reset()
-
 		"""
 		plot.figure(1)
 		plot.xlabel("Time(sec)")
@@ -212,7 +202,18 @@ while vidro.current_rc_channels[4] > 1600:
 		plot.ylabel("y Location(mm)")
 		plot.title("Location")
 		plot.plot(plot_x_current, plot_y_current)
-		plot.show()
+		plot.draw()
+
+		switch = True
+		vidro.get_mavlink()
+		time.sleep(.005)
+		plot.pause(.0001)
+
+	#Plots
+	if switch == True:
+
+		while vidro.current_rc_channels[2] > 1400:
+			vidro.rc_all_reset()
 
 		plot_error_yaw[:]=[]
 		plot_error_yaw_I[:]=[]
