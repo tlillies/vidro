@@ -100,8 +100,9 @@ while vidro.current_rc_channels[4] > 1600:
 			curses_print("T: "+ str(int(controller.base_rc_throttle+controller.error_alt*controller.alt_K_P+controller.I_error_alt*controller.alt_K_I)) + " = "+ str(controller.base_rc_throttle) + " + " + str(controller.error_alt*controller.alt_K_P) + " + " + str(controller.I_error_alt*controller.alt_K_I) + " + " + str(controller.D_error_alt*controller.alt_K_D), 19, 0)
 
 			#Print yaw data
-			curses_print("Yaw RC Level: " + str(vidro.current_rc_channels[3]), 6, 0)
-			curses_print("Error: " + str(controller.error_yaw), 7, 0)
+			curses_print("Yaw RC Level: " + str(vidro.current_rc_channels[3]), 5, 0)
+			curses_print("Error: " + str(controller.error_yaw), 6, 0)
+			curses_print("IMU YAW: " + str(vidro.current_yaw, 7, 0)
 			curses_print("Heading Radians: " + str(vidro.get_yaw_radians()), 8, 0)
 			curses_print("Heading Degrees: " + str(vidro.get_yaw_degrees()), 9, 0)
 			curses_print("Y: "+ str(int(controller.base_rc_yaw+controller.error_yaw*controller.yaw_K_P+controller.I_error_yaw*controller.yaw_K_I)) + " = "+ str(controller.base_rc_yaw) + " + " + str(controller.error_yaw*controller.yaw_K_P) + " + " + str(controller.I_error_yaw*controller.yaw_K_I) + " + " + str(controller.D_error_yaw*controller.yaw_K_D), 20, 0)
