@@ -33,8 +33,8 @@ TODO
 ======
 
 * Figure out how to hand back RC out of inner loop in flight_test because of latency
-* Reduce the latency!!!!!!
-* tune sitl controller
+* <del>Reduce the latency!!!!!!</del>
+* tune sitl controller [(1.5/4) done]
 * __clean!!__
 * <del>print curses over certain intervals so loop can run full cpu</del> <del>NEED TO TEST</del> Make less jumpy?
 * <del>create veiw_rc.py script</del> NEED TO TEST
