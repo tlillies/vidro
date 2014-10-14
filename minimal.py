@@ -182,7 +182,7 @@ class ViconStreamer:
                     print self.data[i], "  ",
                 print
 
-f = serial.Serial('/dev/ttyUSB0', 57600, timeout=0)
+f = serial.Serial('/dev/ttyUSB0', 57600, timeout=0, writeTimeout=0)
 
 mav = mavlink.MAVLink(f)
 
@@ -199,17 +199,18 @@ while s.getData() == None:
 	pass
 print "Got inital vicon position"
 
-try:
-    while 1 :
+home_z = s.getData()[3]
 
+goal_z = 1000
+rc_base = 1500
+gain = .05
+
+try:
+    while target_system == -1:
         try:
             a = f.read(1)
             msg = mav.parse_char(str(a))
             if msg is not None:
-                if msg.get_type() == "RC_CHANNELS_RAW":
-                    print "SRV: %g %g %g %g %g %g" % (msg.chan1_raw, msg.chan2_raw, msg.chan3_raw, msg.chan4_raw, msg.chan5_raw, msg.chan6_raw)
-                    print s.getData()
-                    if msg.
                 if msg.get_type() == "HEARTBEAT":
                     print "HEARTBEAT: %g %g" % (msg.get_srcSystem(), msg.get_srcComponent())
                     if ( target_system == -1 ) :
@@ -217,6 +218,26 @@ try:
                         target_component = msg.get_srcComponent()
                         mav.request_data_stream_send(target_system, target_component, mavlink.MAV_DATA_STREAM_ALL, 1, 0) # Turn off all telemetry first
                         mav.request_data_stream_send(target_system, target_component, mavlink.MAV_DATA_STREAM_RC_CHANNELS, 20, 1) # Turn on R/C servo reads at this rate
+               # print "Got Message type %s!" % msg.get_type()
+        except mavlink.MAVError as err:
+            #None
+            print "Oops, MAVLink Error: %s!" % err.message
+	
+    while 1 :
+        try:
+            a = f.read(1)
+            msg = mav.parse_char(str(a))
+            if msg is not None:
+                if msg.get_type() == "RC_CHANNELS_RAW":
+                    print "SRV: %g %g %g %g %g %g" % (msg.chan1_raw, msg.chan2_raw, msg.chan3_raw, msg.chan4_raw, msg.chan5_raw, msg.chan6_raw)
+                    print s.getData()[3] - home_z
+                    if msg.chan6_raw < 1600:
+                        error = goal_z - (s.getData()[3] - home_z)
+                        throttle_override = (gain * error) + rc_base
+                        print throttle_override
+                        mav.rc_channels_override_send(target_system, target_component, 0, 0, throttle_override, 0, 0, 0, 0, 0)
+                    else:
+                        mav.rc_channels_override_send(target_system, target_component, 0, 0, 0, 0, 0, 0, 0, 0)
                 #print "Got Message type %s!" % msg.get_type()
         except mavlink.MAVError as err:
             #None

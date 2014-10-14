@@ -51,7 +51,7 @@ def curses_print(string, line, col):
 
 	screen.refresh()
 
-vidro = Vidro(True)
+vidro = Vidro(False)
 vidro.connect()
 controller = PositionController(vidro)
 
@@ -147,7 +147,7 @@ while vidro.current_rc_channels[4] > 1600:
 
 		switch = True
 		vidro.get_mavlink()
-		time.sleep(.0005)
+		#time.sleep(.0005)
 
 	#Erase Plots
 	if switch == True:
@@ -265,8 +265,8 @@ while vidro.current_rc_channels[4] > 1600:
 	curses_print(str(vidro.current_rc_channels[4]),9,0)
 	curses_print(str(vidro.current_rc_channels[5]),10,0)
 
-	vidro.rc_all_reset()
+	#vidro.rc_all_reset()
 	vidro.get_mavlink()
-	time.sleep(.0005)
+	#time.sleep(.0005)
 
 vidro.close()

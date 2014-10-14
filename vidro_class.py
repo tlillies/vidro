@@ -255,9 +255,11 @@ class Vidro:
 		#It may be possible to get up to 500 Hz??
 		#This may be useful later down the road to decrease latency
 		#It also may be helpful to only stream needed data instead of all data
-		self.master.mav.request_data_stream_send(self.master.target_system, self.master.target_component, 0, 25, 1)
+		self.master.mav.request_data_stream_send(self.master.target_system, self.master.target_component, 0, 1, 0) #All
+		self.master.mav.request_data_stream_send(self.master.target_system, self.master.target_component, 3, 25, 1) #RC channels
+		self.master.mav.request_data_stream_send(self.master.target_system, self.master.target_component, 6, 25, 1) #Position
 		print "Getting inital values RC, global psition, and attitude from APM..."
-		while (self.current_rc_channels[0] == None) or (self.current_alt == None) or (self.current_roll == None):
+		while (self.current_rc_channels[0] == None) or (self.current_alt == None):
 			self.get_mavlink()
 		print("Got RC channels, global position, and attitude")
 		if self.sitl == True:
@@ -302,16 +304,6 @@ class Vidro:
 				self.current_lat = self.msg.lat * 1.0e-7
 				self.current_lon = self.msg.lon * 1.0e-7
 				self.current_alt = self.msg.alt-self.ground_alt
-
-			if self.msg.get_type() == "ATTITUDE":
-				self.current_roll = self.msg.roll*180/math.pi
-				self.cureent_pitch = self.msg.pitch*180/math.pi
-				self.current_yaw = self.msg.yaw*180/math.pi
-
-			if self.msg.get_type() == "SYS_STATUS":
-				self.battery_level = self.msg.battery_remaining
-				self.drop_rate_comm = self.msg.drop_rate_comm
-				self.errors_comm = self.msg.erros_comm
 
 	def connect_vicon(self):
 		"""
@@ -393,16 +385,10 @@ class Vidro:
 			rc_value = rc_min
 		return rc_value
 
-	def flush(self):
-		pass
-
 	def send_rc_overrides(self):
 		self.master.mav.rc_channels_override_send(self.master.target_system, self.master.target_component, self.current_rc_overrides[0], self.current_rc_overrides[1], self.current_rc_overrides[2], self.current_rc_overrides[3], self.current_rc_overrides[4], self.current_rc_overrides[5], 0, 0)
-		self.flush()
-	def send_rc_overrides_other(self, pitch, roll, throttle, yaw, five, six):
-		self.master.mav.rc_channels_override_send(self.master.target_system, self.master.target_component, pitch, roll, throttle, yaw, five, six, 0, 0)
-		self.flush()
-
+		#self.master.mav.file.fd.flush()
+		
 	## Set RC Channels ##
 	def set_rc_roll(self, rc_value):
 		rc_value = self.rc_filter(rc_value,1200,1800)
