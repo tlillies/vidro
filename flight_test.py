@@ -51,7 +51,7 @@ def curses_print(string, line, col):
 
 	screen.refresh()
 
-vidro = Vidro(False)
+vidro = Vidro(True)
 vidro.connect()
 controller = PositionController(vidro)
 
@@ -62,6 +62,8 @@ screen.refresh()
 switch = False
 
 plot.ion()
+
+timer = time.clock()
 
 while vidro.current_rc_channels[4] > 1600:
 
@@ -84,8 +86,8 @@ while vidro.current_rc_channels[4] > 1600:
 	while vidro.current_rc_channels[5] > 1600:
 
 		controller.rc_alt(500)
-		controller.rc_yaw(0)
-		controller.rc_xy(500,500)
+		#controller.rc_yaw(0)
+		#controller.rc_xy(500,500)
 
 		if round((round(time.clock(),3) % .05),2) == 0:
 
@@ -102,7 +104,7 @@ while vidro.current_rc_channels[4] > 1600:
 			#Print yaw data
 			curses_print("Yaw RC Level: " + str(vidro.current_rc_channels[3]), 5, 0)
 			curses_print("Error: " + str(controller.error_yaw), 6, 0)
-			curses_print("IMU YAW: " + str(vidro.current_yaw, 7, 0)
+			curses_print("IMU YAW: " + str(vidro.current_yaw), 7, 0)
 			curses_print("Heading Radians: " + str(vidro.get_yaw_radians()), 8, 0)
 			curses_print("Heading Degrees: " + str(vidro.get_yaw_degrees()), 9, 0)
 			curses_print("Y: "+ str(int(controller.base_rc_yaw+controller.error_yaw*controller.yaw_K_P+controller.I_error_yaw*controller.yaw_K_I)) + " = "+ str(controller.base_rc_yaw) + " + " + str(controller.error_yaw*controller.yaw_K_P) + " + " + str(controller.I_error_yaw*controller.yaw_K_I) + " + " + str(controller.D_error_yaw*controller.yaw_K_D), 20, 0)
@@ -145,7 +147,7 @@ while vidro.current_rc_channels[4] > 1600:
 
 		switch = True
 		vidro.get_mavlink()
-		time.sleep(.005)
+		time.sleep(.0005)
 
 	#Erase Plots
 	if switch == True:
@@ -250,8 +252,21 @@ while vidro.current_rc_channels[4] > 1600:
 
 		switch = False
 
+	screen.clear()
+	screen.refresh()
+	curses_print("Under transmitter controll", 0, 0)
+	curses_print(str((time.clock()-timer)*10), 1, 0)
+	curses_print(str(vidro.rc_msg_time), 3, 0)
+
+	curses_print(str(vidro.current_rc_channels[0]),5,0)
+	curses_print(str(vidro.current_rc_channels[1]),6,0)
+	curses_print(str(vidro.current_rc_channels[2]),7,0)
+	curses_print(str(vidro.current_rc_channels[3]),8,0)
+	curses_print(str(vidro.current_rc_channels[4]),9,0)
+	curses_print(str(vidro.current_rc_channels[5]),10,0)
+
 	vidro.rc_all_reset()
 	vidro.get_mavlink()
-	time.sleep(.005)
+	time.sleep(.0005)
 
 vidro.close()

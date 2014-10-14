@@ -239,6 +239,9 @@ class Vidro:
 		self.clock = time.clock()
 
 		self.rc_msg_time = 0
+		self.previous_rc_message = 0
+
+		self.battery_level = None
 
 	def connect_mavlink(self):
 		"""
@@ -252,7 +255,7 @@ class Vidro:
 		#It may be possible to get up to 500 Hz??
 		#This may be useful later down the road to decrease latency
 		#It also may be helpful to only stream needed data instead of all data
-		self.master.mav.request_data_stream_send(self.master.target_system, self.master.target_component, 0, 50, 1)
+		self.master.mav.request_data_stream_send(self.master.target_system, self.master.target_component, 0, 25, 1)
 		print "Getting inital values RC, global psition, and attitude from APM..."
 		while (self.current_rc_channels[0] == None) or (self.current_alt == None) or (self.current_roll == None):
 			self.get_mavlink()
@@ -292,7 +295,8 @@ class Vidro:
 				self.current_rc_channels[4] = self.msg.chan5_raw
 				self.current_rc_channels[5] = self.msg.chan6_raw
 
-				self.rc_msg_time = time.clock()-self.rc_msg_time
+				self.rc_msg_time = time.clock() - self.clock - self.previous_rc_message
+				self.previous_rc_message = time.clock() - self.clock
 
 			if self.msg.get_type() == "GLOBAL_POSITION_INT":
 				self.current_lat = self.msg.lat * 1.0e-7
@@ -303,6 +307,11 @@ class Vidro:
 				self.current_roll = self.msg.roll*180/math.pi
 				self.cureent_pitch = self.msg.pitch*180/math.pi
 				self.current_yaw = self.msg.yaw*180/math.pi
+
+			if self.msg.get_type() == "SYS_STATUS":
+				self.battery_level = self.msg.battery_remaining
+				self.drop_rate_comm = self.msg.drop_rate_comm
+				self.errors_comm = self.msg.erros_comm
 
 	def connect_vicon(self):
 		"""
