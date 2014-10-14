@@ -28,16 +28,3 @@ SITL implementation of vidro and override controller to close the loop.
 ### flight_test.py ###
 
 Implementation of vidro and rc override controller to close the loop.
-
-TODO
-======
-
-* Figure out how to hand back RC out of inner loop in flight_test because of latency
-* <del>Reduce the latency!!!!!!</del>
-* tune sitl controller [(1.5/4) done]
-* __clean!!__
-* <del>print curses over certain intervals so loop can run full cpu</del> <del>NEED TO TEST</del> Make less jumpy?
-* <del>create veiw_rc.py script</del> NEED TO TEST
-* <del>create script for finding rc limits</del> NEED TO TEST
-* <del>read gains from file in controller.py</del> NEED TO TEST
-* <del>fix connection for actuall hardware (Only is able to connect after connecting to GCS? only getting heartbeat before that...)</del>
