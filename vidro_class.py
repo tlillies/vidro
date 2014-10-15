@@ -299,6 +299,8 @@ class Vidro:
 
 				self.rc_msg_time = time.clock() - self.clock - self.previous_rc_message
 				self.previous_rc_message = time.clock() - self.clock
+				
+				self.send_rc_overrides()
 
 			if self.msg.get_type() == "GLOBAL_POSITION_INT":
 				self.current_lat = self.msg.lat * 1.0e-7
@@ -393,48 +395,46 @@ class Vidro:
 	def set_rc_roll(self, rc_value):
 		rc_value = self.rc_filter(rc_value,1200,1800)
 		self.current_rc_overrides[0] = rc_value
-		self.send_rc_overrides()
 
 	def set_rc_pitch(self, rc_value):
 		rc_value = self.rc_filter(rc_value, 1200, 1800)
 		self.current_rc_overrides[1] = rc_value
-		self.send_rc_overrides()
+		
 
 	def set_rc_throttle(self, rc_value):
 		rc_value = self.rc_filter(rc_value, 1100, 1900)
 		self.current_rc_overrides[2] =  rc_value
-		self.send_rc_overrides()
+		
 
 	def set_rc_yaw(self, rc_value):
 		rc_value = self.rc_filter(rc_value, 1100, 1900)
 		self.current_rc_overrides[3] = rc_value
-		self.send_rc_overrides()
+		
 
 
 	## Reset RC Channels ##
 	def rc_roll_reset(self):
 		self.current_rc_overrides[0] = 0
-		self.send_rc_overrides()
+		
 
 	def rc_pitch_reset(self):
 		self.current_rc_overrides[1] = 0
-		self.send_rc_overrides()
+		
 
 	def rc_throttle_reset(self):
 		self.current_rc_overrides[2] = 0
-		self.send_rc_overrides()
+		
 
 	def rc_yaw_reset(self):
 		self.current_rc_overrides[3] = 0
-		self.send_rc_overrides()
+		
 
 	def rc_channel_five_reset(self):
 		self.current_rc_overrides[4] = 0
-		self.send_rc_overrides()
+		
 
 	def rc_channel_six_reset(self):
 		self.current_rc_overrides[5] = 0
-		self.send_rc_overrides()
 
 	def rc_all_reset(self):
 		self.rc_roll_reset()
