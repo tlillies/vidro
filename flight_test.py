@@ -147,7 +147,6 @@ while vidro.current_rc_channels[4] > 1600:
 
 		switch = True
 		vidro.get_mavlink()
-		#time.sleep(.0005)
 
 	#Erase Plots
 	if switch == True:
@@ -224,8 +223,10 @@ while vidro.current_rc_channels[4] > 1600:
 		plot.ylabel("y Location(mm)")
 		plot.title("Location")
 		plot.plot(plot_x_current, plot_y_current)
+		"""
 		plot.draw()
 		plot.pause(.0001)
+		"""
 
 		plot_error_yaw[:]=[]
 		plot_error_yaw_I[:]=[]
@@ -265,8 +266,7 @@ while vidro.current_rc_channels[4] > 1600:
 	curses_print(str(vidro.current_rc_channels[4]),9,0)
 	curses_print(str(vidro.current_rc_channels[5]),10,0)
 
-	#vidro.rc_all_reset()
+	vidro.rc_all_reset()
 	vidro.get_mavlink()
-	#time.sleep(.0005)
 
 vidro.close()
