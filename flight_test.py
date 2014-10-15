@@ -67,8 +67,6 @@ timer = time.clock()
 
 while vidro.current_rc_channels[4] > 1600:
 
-	controller.update_gains()
-
 	controller.I_error_alt = 0
 	controller.I_error_pitch = 0
 	controller.I_error_roll = 0
@@ -82,6 +80,9 @@ while vidro.current_rc_channels[4] > 1600:
 	vidro.previous_error_yaw = 0
 	vidro.previous_error_roll = 0
 	vidro.previous_error_pitch = 0
+	
+	if vidro.current_rc_channels[5] > 1600:
+		controller.update_gains()
 
 	while vidro.current_rc_channels[5] > 1600:
 

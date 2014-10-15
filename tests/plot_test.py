@@ -2,12 +2,15 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 
-plt.axis([0, 1000, 0, 1])
-plt.ion()
+plt.figure(1)
+#plt.axis([0, 1000, 0, 1])
+#plt.ion()
 
-for i in range(1000):
+for i in range(100):
     y = np.random.random()
     plt.scatter(i, y)
-    plt.draw()
+    
     time.sleep(0.005)
-    plt.pause(0.0001)
+    print y
+plt.draw()
+plt.pause(0.0001)
