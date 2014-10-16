@@ -129,7 +129,6 @@ while vidro.current_rc_channels[4] > 1600:
 	plot_x_current.append(vidro.get_position()[0])
 	plot_y_current.append(vidro.get_position()[1])
 
-	time.sleep(.005)
 	vidro.get_mavlink()
 
 vidro.get_mavlink()

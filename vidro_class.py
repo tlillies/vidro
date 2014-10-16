@@ -255,13 +255,21 @@ class Vidro:
 		#It may be possible to get up to 500 Hz??
 		#This may be useful later down the road to decrease latency
 		#It also may be helpful to only stream needed data instead of all data
-		self.master.mav.request_data_stream_send(self.master.target_system, self.master.target_component, 0, 1, 0) #All
-		self.master.mav.request_data_stream_send(self.master.target_system, self.master.target_component, 3, 25, 1) #RC channels
-		self.master.mav.request_data_stream_send(self.master.target_system, self.master.target_component, 6, 25, 1) #Position
+		if self.sitl == True:
+			self.master.mav.request_data_stream_send(self.master.target_system, self.master.target_component, 0, 25, 1)
+		else:
+			self.master.mav.request_data_stream_send(self.master.target_system, self.master.target_component, 0, 1, 0) #All
+			self.master.mav.request_data_stream_send(self.master.target_system, self.master.target_component, 3, 25, 1) #RC channels
+			self.master.mav.request_data_stream_send(self.master.target_system, self.master.target_component, 6, 25, 1) #Position
 		print "Getting inital values RC, global psition, and attitude from APM..."
-		while (self.current_rc_channels[0] == None) or (self.current_alt == None):
-			self.get_mavlink()
-		print("Got RC channels, global position, and attitude")
+		if self.sitl == False:
+			while (self.current_rc_channels[0] == None) or (self.current_alt == None):
+				self.get_mavlink()
+			print("Got RC channels and global position")
+		else:
+			while (self.current_rc_channels[0] == None) or (self.current_alt == None) or (self.current_yaw == None):
+				self.get_mavlink()
+			print("Got RC channels, global position, and attitude")
 		if self.sitl == True:
 			self.ground_alt = self.current_alt
 			self.current_alt = 0
@@ -299,13 +307,17 @@ class Vidro:
 
 				self.rc_msg_time = time.clock() - self.clock - self.previous_rc_message
 				self.previous_rc_message = time.clock() - self.clock
-				
+
 				self.send_rc_overrides()
 
 			if self.msg.get_type() == "GLOBAL_POSITION_INT":
 				self.current_lat = self.msg.lat * 1.0e-7
 				self.current_lon = self.msg.lon * 1.0e-7
 				self.current_alt = self.msg.alt-self.ground_alt
+
+			if self.sitl == True:
+				if self.msg.get_type() == "ATTITUDE":
+					self.current_yaw = self.msg.yaw*180/math.pi
 
 	def connect_vicon(self):
 		"""
@@ -390,7 +402,7 @@ class Vidro:
 	def send_rc_overrides(self):
 		self.master.mav.rc_channels_override_send(self.master.target_system, self.master.target_component, self.current_rc_overrides[0], self.current_rc_overrides[1], self.current_rc_overrides[2], self.current_rc_overrides[3], self.current_rc_overrides[4], self.current_rc_overrides[5], 0, 0)
 		#self.master.mav.file.fd.flush()
-		
+
 	## Set RC Channels ##
 	def set_rc_roll(self, rc_value):
 		rc_value = self.rc_filter(rc_value,1200,1800)
@@ -399,39 +411,39 @@ class Vidro:
 	def set_rc_pitch(self, rc_value):
 		rc_value = self.rc_filter(rc_value, 1200, 1800)
 		self.current_rc_overrides[1] = rc_value
-		
+
 
 	def set_rc_throttle(self, rc_value):
 		rc_value = self.rc_filter(rc_value, 1100, 1900)
 		self.current_rc_overrides[2] =  rc_value
-		
+
 
 	def set_rc_yaw(self, rc_value):
 		rc_value = self.rc_filter(rc_value, 1100, 1900)
 		self.current_rc_overrides[3] = rc_value
-		
+
 
 
 	## Reset RC Channels ##
 	def rc_roll_reset(self):
 		self.current_rc_overrides[0] = 0
-		
+
 
 	def rc_pitch_reset(self):
 		self.current_rc_overrides[1] = 0
-		
+
 
 	def rc_throttle_reset(self):
 		self.current_rc_overrides[2] = 0
-		
+
 
 	def rc_yaw_reset(self):
 		self.current_rc_overrides[3] = 0
-		
+
 
 	def rc_channel_five_reset(self):
 		self.current_rc_overrides[4] = 0
-		
+
 
 	def rc_channel_six_reset(self):
 		self.current_rc_overrides[5] = 0
