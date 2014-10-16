@@ -158,7 +158,8 @@ while vidro.current_rc_channels[4] > 1600:
 		plot.ylabel("Error(rads)")
 		plot.title("Yaw")
 		plot.plot(plot_time_yaw,plot_error_yaw)
-
+		"""
+		"""
 		plot.figure(2).clf()
 		plot.figure(2)
 		plot.xlabel("Time(sec)")
@@ -224,10 +225,11 @@ while vidro.current_rc_channels[4] > 1600:
 		plot.ylabel("y Location(mm)")
 		plot.title("Location")
 		plot.plot(plot_x_current, plot_y_current)
-		"""
+		
 		plot.draw()
 		plot.pause(.0001)
-		"""
+		#time.sleep(.05)
+		
 
 		plot_error_yaw[:]=[]
 		plot_error_yaw_I[:]=[]
