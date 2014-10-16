@@ -1,13 +1,13 @@
 alt_K_P:
-.01
+.017
 alt_K_I:
-.002
+.0005
 alt_K_D:
 0.00035
 yaw_K_P:
-50
+15
 yaw_K_I:
-5
+.5
 yaw_K_D:
 0
 roll_K_P:
