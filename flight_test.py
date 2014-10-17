@@ -80,7 +80,7 @@ while vidro.current_rc_channels[4] > 1600:
 	vidro.previous_error_yaw = 0
 	vidro.previous_error_roll = 0
 	vidro.previous_error_pitch = 0
-	
+
 	if vidro.current_rc_channels[5] > 1600:
 		controller.update_gains()
 
@@ -88,7 +88,7 @@ while vidro.current_rc_channels[4] > 1600:
 
 		controller.rc_alt(500)
 		#controller.rc_yaw(0)
-		#controller.rc_xy(500,500)
+		controller.rc_xy(500,500)
 
 		if round((round(time.clock(),3) % .05),2) == 0:
 
@@ -225,11 +225,11 @@ while vidro.current_rc_channels[4] > 1600:
 		plot.ylabel("y Location(mm)")
 		plot.title("Location")
 		plot.plot(plot_x_current, plot_y_current)
-		
+
 		plot.draw()
 		plot.pause(.0001)
 		#time.sleep(.05)
-		
+
 
 		plot_error_yaw[:]=[]
 		plot_error_yaw_I[:]=[]
