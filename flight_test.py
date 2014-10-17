@@ -149,6 +149,9 @@ while vidro.current_rc_channels[4] > 1600:
 		switch = True
 		vidro.get_mavlink()
 
+	vidro.rc_all_reset()
+	vidro.get_mavlink()
+
 	#Erase Plots
 	if switch == True:
 
@@ -267,8 +270,5 @@ while vidro.current_rc_channels[4] > 1600:
 	curses_print(str(vidro.current_rc_channels[3]),8,0)
 	curses_print(str(vidro.current_rc_channels[4]),9,0)
 	curses_print(str(vidro.current_rc_channels[5]),10,0)
-
-	vidro.rc_all_reset()
-	vidro.get_mavlink()
 
 vidro.close()
