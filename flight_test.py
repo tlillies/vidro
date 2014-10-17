@@ -227,13 +227,8 @@ while vidro.current_rc_channels[4] > 1600:
 
 		plot.draw()
 		plot.pause(.0001)
-<<<<<<< HEAD
-		#time.sleep(.05)
-
-=======
 		time.sleep(.02)
 
->>>>>>> f25ac2c2c214806e06277a3e574e0dbe22458fe5
 
 		plot_error_yaw[:]=[]
 		plot_error_yaw_I[:]=[]
