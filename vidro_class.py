@@ -242,6 +242,8 @@ class Vidro:
 		self.previous_rc_message = 0
 
 		self.battery_level = None
+		
+		self.vicon_error = False
 
 	def connect_mavlink(self):
 		"""
@@ -540,7 +542,18 @@ class Vidro:
 			position[0] = self.get_vicon()[1] - self.home_x
 			position[1] = self.get_vicon()[2] - self.home_y
 			position[2] = self.get_vicon()[3] - self.home_z
-
+			self.vicon_error = False
+			
+		if position[0] == None:
+			position[0] = 0
+			self.vicon_error = True
+		if position[1] == None:
+			position[1] = 0
+			self.vicon_error = True
+		if position[2] == None:
+			position[2] = 0
+			self.vicon_error = True
+			
 		return position
 
 	def get_distance_xy(self):

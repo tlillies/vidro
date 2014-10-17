@@ -94,6 +94,9 @@ while vidro.current_rc_channels[4] > 1600:
 
 			screen.clear()
 			screen.refresh()
+			
+			curses_print("Position: X: " + str(vidro.get_position()[0]) + " Y: " + str(vidro.get_position()[1]) + " Z: " + str(vidro.get_position()[2]),0,0)
+			curses_print("Vicon Error" + str(vidro.vicon_error),1,0)
 
 			#Print alt data
 			curses_print("Throttle RC Override: " + str(vidro.current_rc_overrides[2]), 5, 1)

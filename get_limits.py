@@ -43,7 +43,7 @@ RC_pitch_max = controller.base_rc_pitch
 RC_roll_min = controller.base_rc_roll
 RC_roll_max = controller.base_rc_roll
 
-while True:
+while vidro.current_rc_channels[4] > 1600:
 
 	screen.erase()
 	if vidro.current_rc_channels[0] < RC_roll_min:
@@ -66,11 +66,10 @@ while True:
 	if vidro.current_rc_channels[3] > RC_yaw_max:
 		RC_yaw_max = vidro.current_rc_channels[3]
 
-	curses_print("Roll: " + str(v.channel_readback['1']), 0,0)
-	curses_print("Pitch: " + str(v.channel_readback['2']), 1,0)
-	curses_print("Throttle: " + str(v.channel_readback['3']), 2,0)
-	curses_print("Yaw: " + str(v.channel_readback['4']), 3,0)
-	time.sleep(.1)
+	curses_print("Roll: " + str(vidro.current_rc_channels[0]),0,0)
+	curses_print("Pitch: " + str(vidro.current_rc_channels[1]),1,0)
+	curses_print("Throttle: " + str(vidro.current_rc_channels[2]),2,0)
+	curses_print("Yaw: " + str(vidro.current_rc_channels[3]),3,0)
 
 	screen.refresh()
 	screen.clear()
