@@ -242,7 +242,7 @@ class Vidro:
 		self.previous_rc_message = 0
 
 		self.battery_level = None
-		
+
 		self.vicon_error = False
 
 	def connect_mavlink(self):
@@ -498,7 +498,15 @@ class Vidro:
 		if self.sitl == True:
 			yaw = self.current_yaw
 		else:
-			yaw = (2*math.pi) % self.get_vicon()[6]
+			if self.get_vicon() != None:
+				if self.get_vicon()[6] != None and self.get_vicon()[6] != 0:
+					yaw = ((2*math.pi)*(1.0)) % (self.get_vicon()[6]*(1.0))
+				else:
+					yaw = 0
+					self.vicon_error = True
+			else:
+				yaw = 0
+				self.vicon_error = True
 		return yaw
 
 	def get_yaw_degrees(self):
@@ -544,7 +552,7 @@ class Vidro:
 				position[1] = self.get_vicon()[2] - self.home_y
 				position[2] = self.get_vicon()[3] - self.home_z
 				self.vicon_error = False
-				
+
 				if position[0] == None:
 					position[0] = 0
 					self.vicon_error = True
@@ -559,7 +567,7 @@ class Vidro:
 				position[1] = 0
 				position[2] = 0
 				self.vicon_error = True
-			
+
 		return position
 
 	def get_distance_xy(self):
