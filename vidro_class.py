@@ -539,20 +539,26 @@ class Vidro:
 				position[1] *= -1
 
 		else:
-			position[0] = self.get_vicon()[1] - self.home_x
-			position[1] = self.get_vicon()[2] - self.home_y
-			position[2] = self.get_vicon()[3] - self.home_z
-			self.vicon_error = False
-			
-		if position[0] == None:
-			position[0] = 0
-			self.vicon_error = True
-		if position[1] == None:
-			position[1] = 0
-			self.vicon_error = True
-		if position[2] == None:
-			position[2] = 0
-			self.vicon_error = True
+			if self.get_vicon() != None:
+				position[0] = self.get_vicon()[1] - self.home_x
+				position[1] = self.get_vicon()[2] - self.home_y
+				position[2] = self.get_vicon()[3] - self.home_z
+				self.vicon_error = False
+				
+				if position[0] == None:
+					position[0] = 0
+					self.vicon_error = True
+				if position[1] == None:
+					position[1] = 0
+					self.vicon_error = True
+				if position[2] == None:
+					position[2] = 0
+					self.vicon_error = True
+			else:
+				position[0] = 0
+				position[1] = 0
+				position[2] = 0
+				self.vicon_error = True
 			
 		return position
 
