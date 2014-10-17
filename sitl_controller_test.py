@@ -64,9 +64,17 @@ while vidro.current_rc_channels[4] > 1600:
 
 	controller.update_gains()
 
-	controller.rc_alt(3000)
-	controller.rc_yaw(0)
-	controller.rc_xy(1000,1000)
+	try:
+		controller.rc_alt(500)
+		#controller.rc_yaw(0)
+		#controller.rc_xy(500,500)
+		curses_print("No errors",2,0)
+	except:
+		controller.vidro.set_rc_throttle(controller.base_rc_throttle)
+		controller.vidro.set_rc_roll(controller.base_rc_roll)
+		controller.vidro.set_rc_pitch(controller.base_rc_pitch)
+		controller.vidro.set_rc_yaw(controller.base_rc_yaw)
+		curses_print("ERROR",2,0)
 
 	if round((round(time.clock(),3) % .05),2) == 0:
 

@@ -62,13 +62,13 @@ class PositionController:
 			self.base_rc_throttle = 1370
 			self.base_rc_yaw = 1470
 
-			self.gains_file_path = '/home/tom/RECUV/vidro/vidro/gains_sitl.txt'
-			#self.gains_file_path = '/home/recuv/sources/vidro/gains_sitl.txt'
+			#self.gains_file_path = '/home/tom/RECUV/vidro/vidro/gains_sitl.txt'
+			self.gains_file_path = '/home/recuv/sources/vidro/gains_sitl.txt'
 		else:
-			self.base_rc_roll = 1500
-			self.base_rc_pitch = 1500
-			self.base_rc_throttle = 1500
-			self.base_rc_yaw = 1500
+			self.base_rc_roll = 1620
+			self.base_rc_pitch = 1620
+			self.base_rc_throttle = 1430
+			self.base_rc_yaw = 1520
 
 			#self.gains_file_path = '/home/tom/RECUV/vidro/vidro/gains.txt'
 			self.gains_file_path = '/home/recuv/sources/vidro/gains.txt'
@@ -114,10 +114,11 @@ class PositionController:
 		self.error_alt = goal_alt - self.vidro.get_position()[2]
 
 		#Get error I
-		if abs(self.error_alt) < 300:
+		if abs(self.error_alt) < 1000:
 			self.I_error_alt = self.I_error_alt + self.error_alt*delta_t
 		else:
-			self.I_error_alt = 0
+			pass
+			#self.I_error_alt = 0
 
 		#Get error D
 		if self.previous_error_alt == None:

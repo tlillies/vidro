@@ -40,6 +40,7 @@ while True:
 	curses_print("Pitch: " + str(vidro.current_rc_channels[1]),1,0)
 	curses_print("Throttle: " + str(vidro.current_rc_channels[2]),2,0)
 	curses_print("Yaw: " + str(vidro.current_rc_channels[3]),3,0)
+	time.sleep(.005)
 	screen.refresh()
 	screen.clear()
 	screen.refresh()

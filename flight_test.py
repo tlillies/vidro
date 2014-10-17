@@ -87,9 +87,9 @@ while vidro.current_rc_channels[4] > 1600:
 	while vidro.current_rc_channels[5] > 1600:
 
 		try:
-			controller.rc_alt(500)
-			#controller.rc_yaw(0)
-			#controller.rc_xy(500,500)
+			controller.rc_alt(1000)
+			controller.rc_yaw(math.pi)
+			controller.rc_xy(0,0)
 			curses_print("No errors",2,0)
 		except:
 			controller.vidro.set_rc_throttle(controller.base_rc_throttle)
@@ -114,9 +114,10 @@ while vidro.current_rc_channels[4] > 1600:
 			curses_print("T: "+ str(int(controller.base_rc_throttle+controller.error_alt*controller.alt_K_P+controller.I_error_alt*controller.alt_K_I)) + " = "+ str(controller.base_rc_throttle) + " + " + str(controller.error_alt*controller.alt_K_P) + " + " + str(controller.I_error_alt*controller.alt_K_I) + " + " + str(controller.D_error_alt*controller.alt_K_D), 19, 0)
 
 			#Print yaw data
+			
 			curses_print("Yaw RC Level: " + str(vidro.current_rc_channels[3]), 5, 0)
 			curses_print("Error: " + str(controller.error_yaw), 6, 0)
-			curses_print("IMU YAW: " + str(vidro.current_yaw), 7, 0)
+			curses_print("raw vicon : " + str(vidro.get_vicon()[6]), 7, 0)
 			curses_print("Heading Radians: " + str(vidro.get_yaw_radians()), 8, 0)
 			curses_print("Heading Degrees: " + str(vidro.get_yaw_degrees()), 9, 0)
 			curses_print("Y: "+ str(int(controller.base_rc_yaw+controller.error_yaw*controller.yaw_K_P+controller.I_error_yaw*controller.yaw_K_I)) + " = "+ str(controller.base_rc_yaw) + " + " + str(controller.error_yaw*controller.yaw_K_P) + " + " + str(controller.I_error_yaw*controller.yaw_K_I) + " + " + str(controller.D_error_yaw*controller.yaw_K_D), 20, 0)
@@ -165,14 +166,15 @@ while vidro.current_rc_channels[4] > 1600:
 
 	#Erase Plots
 	if switch == True:
-
+		"""
 		plot.figure(1).clf()
 		plot.figure(1)
 		plot.xlabel("Time(sec)")
 		plot.ylabel("Error(rads)")
 		plot.title("Yaw")
 		plot.plot(plot_time_yaw,plot_error_yaw)
-
+		"""
+		"""
 		plot.figure(2).clf()
 		plot.figure(2)
 		plot.xlabel("Time(sec)")
@@ -180,6 +182,7 @@ while vidro.current_rc_channels[4] > 1600:
 		plot.title("Throttle")
 		plot.plot(plot_time_throttle,plot_error_throttle)
 		"""
+		
 		plot.figure(3).clf()
 		plot.figure(3)
 		plot.xlabel("Time(sec)")
@@ -197,7 +200,7 @@ while vidro.current_rc_channels[4] > 1600:
 		plot.plot(plot_time_roll,plot_error_roll)
 		#plot.plot(plot_time_roll,plot_rc_roll)
 		#plot.plot(plot_time_roll,plot_error_roll_D)
-		"""
+		
 		"""
 		plot.figure(5).clf()
 		plot.figure(5)
@@ -206,7 +209,8 @@ while vidro.current_rc_channels[4] > 1600:
 		plot.title("Yaw")
 		plot.plot(plot_time_yaw,plot_error_yaw)
 		plot.plot(plot_time_yaw,plot_error_yaw_I)
-
+		"""
+		"""
 		plot.figure(6).clf()
 		plot.figure(6)
 		plot.xlabel("Time(sec)")
@@ -223,7 +227,8 @@ while vidro.current_rc_channels[4] > 1600:
 		plot.title("Pitch Error PI")
 		plot.plot(plot_time_pitch,plot_error_pitch)
 		plot.plot(plot_time_pitch,plot_error_pitch_I)
-
+		"""
+		"""
 		plot.figure(8).clf()
 		plot.figure(8)
 		plot.xlabel("Time(sec)")
@@ -232,13 +237,14 @@ while vidro.current_rc_channels[4] > 1600:
 		plot.plot(plot_time_roll,plot_error_roll)
 		plot.plot(plot_time_roll,plot_error_roll_I)
 		"""
+		"""
 		plot.figure(9).clf()
 		plot.figure(9)
 		plot.xlabel("x Location(mm)")
 		plot.ylabel("y Location(mm)")
 		plot.title("Location")
 		plot.plot(plot_x_current, plot_y_current)
-
+		"""
 		plot.draw()
 		plot.pause(.0001)
 		time.sleep(.02)

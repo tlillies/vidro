@@ -407,21 +407,21 @@ class Vidro:
 
 	## Set RC Channels ##
 	def set_rc_roll(self, rc_value):
-		rc_value = self.rc_filter(rc_value,1200,1800)
+		rc_value = self.rc_filter(rc_value,1310,1858)
 		self.current_rc_overrides[0] = rc_value
 
 	def set_rc_pitch(self, rc_value):
-		rc_value = self.rc_filter(rc_value, 1200, 1800)
+		rc_value = self.rc_filter(rc_value, 1344, 1837)
 		self.current_rc_overrides[1] = rc_value
 
 
 	def set_rc_throttle(self, rc_value):
-		rc_value = self.rc_filter(rc_value, 1100, 1900)
+		rc_value = self.rc_filter(rc_value, 1110, 1641)
 		self.current_rc_overrides[2] =  rc_value
 
 
 	def set_rc_yaw(self, rc_value):
-		rc_value = self.rc_filter(rc_value, 1100, 1900)
+		rc_value = self.rc_filter(rc_value, 1277, 1931)
 		self.current_rc_overrides[3] = rc_value
 
 
@@ -500,7 +500,7 @@ class Vidro:
 		else:
 			if self.get_vicon() != None:
 				if self.get_vicon()[6] != None and self.get_vicon()[6] != 0:
-					yaw = ((2*math.pi)*(1.0)) % (self.get_vicon()[6]*(1.0))
+					yaw =  (self.get_vicon()[6]*(1.0)) % ((2*math.pi)*(1.0))
 					self.vicon_error = False
 				else:
 					yaw = 0
