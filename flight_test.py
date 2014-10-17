@@ -87,7 +87,7 @@ while vidro.current_rc_channels[4] > 1600:
 	while vidro.current_rc_channels[5] > 1600:
 
 		controller.rc_alt(500)
-		#controller.rc_yaw(0)
+		controller.rc_yaw(0)
 		controller.rc_xy(500,500)
 
 		if round((round(time.clock(),3) % .05),2) == 0:
@@ -151,22 +151,21 @@ while vidro.current_rc_channels[4] > 1600:
 
 	#Erase Plots
 	if switch == True:
-		"""
+
 		plot.figure(1).clf()
 		plot.figure(1)
 		plot.xlabel("Time(sec)")
 		plot.ylabel("Error(rads)")
 		plot.title("Yaw")
 		plot.plot(plot_time_yaw,plot_error_yaw)
-		"""
-		"""
+
 		plot.figure(2).clf()
 		plot.figure(2)
 		plot.xlabel("Time(sec)")
 		plot.ylabel("Error(mm)")
 		plot.title("Throttle")
 		plot.plot(plot_time_throttle,plot_error_throttle)
-
+		"""
 		plot.figure(3).clf()
 		plot.figure(3)
 		plot.xlabel("Time(sec)")
@@ -228,8 +227,13 @@ while vidro.current_rc_channels[4] > 1600:
 
 		plot.draw()
 		plot.pause(.0001)
+<<<<<<< HEAD
 		#time.sleep(.05)
 
+=======
+		time.sleep(.02)
+
+>>>>>>> f25ac2c2c214806e06277a3e574e0dbe22458fe5
 
 		plot_error_yaw[:]=[]
 		plot_error_yaw_I[:]=[]
