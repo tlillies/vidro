@@ -496,7 +496,7 @@ class Vidro:
 		if self.sitl == True:
 			yaw = self.current_yaw
 		else:
-			yaw = self.get_vicon()[6]
+			yaw = (2*math.pi) % self.get_vicon()[6]
 		return yaw
 
 	def get_yaw_degrees(self):
