@@ -529,6 +529,13 @@ class Vidro:
 			position[0] = self.calc_sitl_distance_x()
 			position[1] = self.calc_sitl_distance_y()
 			position[2] = self.get_alt()
+
+			#Assign distance with appropriate sign
+			if self.get_lat() < self.home_lat:
+				position[0] *= -1
+			if self.get_lon() < self.home_lon:
+				position[1] *= -1
+
 		else:
 			position[0] = self.get_vicon()[1] - self.home_x
 			position[1] = self.get_vicon()[2] - self.home_y

@@ -1,13 +1,9 @@
 """
 Class for handling the PID controller
 """
-
-
 from vidro_class import Vidro, ViconStreamer
 import sys, math, time
 import socket, struct, threading
-import curses
-import utm
 import matplotlib.pyplot as plot
 
 class PositionController:
@@ -181,13 +177,6 @@ class PositionController:
 		self.x_current = self.vidro.get_position()[0]
 		self.y_current = self.vidro.get_position()[1]
 
-		#Assign distance with appropriate sign
-		if self.vidro.sitl == True:
-			if self.vidro.get_lat() < self.vidro.home_lat:
-				self.y_current *= -1
-			if self.vidro.get_lon() < self.vidro.home_lon:
-				self.x_current *= -1
-
 		#Calculate the error in the x-y(lat/lon) axis
 		self.error_x = goal_x - self.x_current * 1.0
 		self.error_y = goal_y - self.y_current * 1.0
@@ -218,8 +207,15 @@ class PositionController:
 		self.previous_time_xy = current_time
 
 		#Calculate the I error for roll and pitch
-		self.I_error_roll = self.I_error_roll + self.error_roll*delta_t
-		self.I_error_pitch = self.I_error_pitch + self.error_pitch*delta_t
+		if abs(self.error_roll) < 300:
+			self.I_error_roll = self.I_error_roll + self.error_roll*delta_t
+		else:
+			self.I_eror_roll = 0
+
+		if abs(self.error_pitch) < 300:
+			self.I_error_pitch = self.I_error_pitch + self.error_pitch*delta_t
+		else:
+			self.I_error_pitch = 0
 
 		#Calculate the D error for roll and pitch
 		if self.previous_error_roll == None:
@@ -234,10 +230,6 @@ class PositionController:
 		if self.previous_error_pitch != self.error_pitch:
 			self.D_error_pitch = (self.error_pitch-self.previous_error_pitch)/delta_t
 			self.previous_error_pitch = self.error_pitch
-
-
-		#curses_print("P: " +  str(int(1540+error_pitch*pitch_K_P+I_error_pitch*pitch_K_I+D_error_pitch*pitch_K_D)) + " = 1540 + " + str(error_pitch*pitch_K_P) + " + " + str(I_error_pitch*pitch_K_I) + " + " + str(D_error_pitch*pitch_K_D), 21, 0)
-		#curses_print("R: " +  str(int(1540+error_roll*roll_K_P+I_error_roll*roll_K_I+D_error_roll*roll_K_D)) + " = 1540 + " + str(error_roll*roll_K_P) + " + " + str(I_error_roll*roll_K_I) + " + " + str(D_error_roll*roll_K_D), 22, 0)
 
 		#Send RC values
 		self.vidro.set_rc_pitch( self.base_rc_pitch + (self.error_pitch*self.pitch_K_P) + (self.I_error_pitch*self.pitch_K_I) + (self.D_error_pitch*self.pitch_K_D) )
