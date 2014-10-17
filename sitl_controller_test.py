@@ -3,7 +3,6 @@ from position_controller import PositionController
 import sys, math, time
 import socket, struct, threading
 import curses
-import utm
 import matplotlib.pyplot as plot
 
 #Plot arrays to start previous data fro plotting
@@ -67,12 +66,14 @@ while vidro.current_rc_channels[4] > 1600:
 
 	controller.rc_alt(3000)
 	controller.rc_yaw(0)
-	controller.rc_xy(0,0)
+	controller.rc_xy(1000,1000)
 
 	if round((round(time.clock(),3) % .05),2) == 0:
 
 		screen.clear()
 		screen.refresh()
+
+		curses_print("Position: X: " + str(vidro.get_position()[0]) + " Y: " + str(vidro.get_position()[1]) + " Z: " + str(vidro.get_position()[2]),0,0)
 
 		#Print alt data
 		curses_print("Throttle RC Override: " + str(vidro.current_rc_overrides[2]), 5, 1)
@@ -80,7 +81,6 @@ while vidro.current_rc_channels[4] > 1600:
 		curses_print("Error: " + str(controller.error_alt), 7, 1)
 		curses_print("Altitude:" + str(vidro.get_position()[2]), 8, 1)
 		curses_print("T: "+ str(int(controller.base_rc_throttle+controller.error_alt*controller.alt_K_P+controller.I_error_alt*controller.alt_K_I)) + " = "+ str(controller.base_rc_throttle) + " + " + str(controller.error_alt*controller.alt_K_P) + " + " + str(controller.I_error_alt*controller.alt_K_I) + " + " + str(controller.D_error_alt*controller.alt_K_D), 19, 0)
-		curses_print(str(controller.alt_K_D),0,0)
 
 		#Print yaw data
 		curses_print("Yaw RC Level: " + str(vidro.current_rc_channels[3]), 6, 0)
@@ -145,7 +145,7 @@ plot.xlabel("Time(sec)")
 plot.ylabel("Error(mm)")
 plot.title("Throttle")
 plot.plot(plot_time_throttle,plot_error_throttle)
-"""
+
 plot.figure(3)
 plot.xlabel("Time(sec)")
 plot.ylabel("Error(mm) | RC Value")
@@ -160,7 +160,7 @@ plot.title("Roll Error PD | RC Value")
 plot.plot(plot_time_roll,plot_error_roll)
 #plot.plot(plot_time_roll,plot_rc_roll)
 #plot.plot(plot_time_roll,plot_error_roll_D)
-"""
+
 """
 plot.figure(5)
 plot.xlabel("Time(sec)")
@@ -189,11 +189,11 @@ plot.title("Roll Error PI")
 plot.plot(plot_time_roll,plot_error_roll)
 plot.plot(plot_time_roll,plot_error_roll_I)
 """
-"""
+
 plot.figure(9)
 plot.xlabel("x Location(mm)")
 plot.ylabel("y Location(mm)")
 plot.title("Location")
 plot.plot(plot_x_current, plot_y_current)
-"""
+
 plot.show()
