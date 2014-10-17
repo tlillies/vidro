@@ -86,9 +86,17 @@ while vidro.current_rc_channels[4] > 1600:
 
 	while vidro.current_rc_channels[5] > 1600:
 
-		controller.rc_alt(500)
-		controller.rc_yaw(0)
-		controller.rc_xy(500,500)
+		try:
+			controller.rc_alt(500)
+			#controller.rc_yaw(0)
+			#controller.rc_xy(500,500)
+			curses_print("No errors",2,0)
+		except:
+			controller.vidro.set_rc_throttle(controller.base_rc_throttle)
+			controller.vidro.set_rc_roll(controller.base_rc_roll)
+			controller.vidro.set_rc_pitch(controller.base_rc_pitch)
+			controller.vidro.set_rc_yaw(controller.base_rc_yaw)
+			curses_print("ERROR",2,0)
 
 		if round((round(time.clock(),3) % .05),2) == 0:
 
@@ -96,7 +104,7 @@ while vidro.current_rc_channels[4] > 1600:
 			screen.refresh()
 			
 			curses_print("Position: X: " + str(vidro.get_position()[0]) + " Y: " + str(vidro.get_position()[1]) + " Z: " + str(vidro.get_position()[2]),0,0)
-			curses_print("Vicon Error" + str(vidro.vicon_error),1,0)
+			curses_print("Vicon Error: " + str(vidro.vicon_error),1,0)
 
 			#Print alt data
 			curses_print("Throttle RC Override: " + str(vidro.current_rc_overrides[2]), 5, 1)

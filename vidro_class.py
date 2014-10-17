@@ -501,6 +501,7 @@ class Vidro:
 			if self.get_vicon() != None:
 				if self.get_vicon()[6] != None and self.get_vicon()[6] != 0:
 					yaw = ((2*math.pi)*(1.0)) % (self.get_vicon()[6]*(1.0))
+					self.vicon_error = False
 				else:
 					yaw = 0
 					self.vicon_error = True
