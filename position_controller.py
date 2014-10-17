@@ -66,16 +66,16 @@ class PositionController:
 			self.base_rc_throttle = 1370
 			self.base_rc_yaw = 1470
 
-			#self.gains_file_path = '/home/tom/RECUV/vidro/vidro/gains_sitl.txt'
-			self.gains_file_path = '/home/recuv/sources/vidro/gains_sitl.txt'
+			self.gains_file_path = '/home/tom/RECUV/vidro/vidro/gains_sitl.txt'
+			#self.gains_file_path = '/home/recuv/sources/vidro/gains_sitl.txt'
 		else:
 			self.base_rc_roll = 1500
 			self.base_rc_pitch = 1500
 			self.base_rc_throttle = 1500
 			self.base_rc_yaw = 1500
 
-			self.gains_file_path = '/home/tom/RECUV/vidro/vidro/gains.txt'
-			#self.gains_file_path = '/home/recuv/sources/vidro/gains.txt'
+			#self.gains_file_path = '/home/tom/RECUV/vidro/vidro/gains.txt'
+			self.gains_file_path = '/home/recuv/sources/vidro/gains.txt'
 
 
 	def update_gains(self):
@@ -156,8 +156,9 @@ class PositionController:
 		if self.previous_error_yaw == None:
 			self.previous_error_yaw = self.error_yaw
 
-		self.D_error_yaw = (self.error_yaw-self.previous_error_yaw)/delta_t
-		self.previous_error_yaw = self.error_yaw
+		if self.previous_error_yaw != self.error_yaw:
+			self.D_error_yaw = (self.error_yaw-self.previous_error_yaw)/delta_t
+			self.previous_error_yaw = self.error_yaw
 
 		#Send RC value
 		self.vidro.set_rc_yaw(self.base_rc_yaw + self.error_yaw*self.yaw_K_P + self.I_error_yaw*self.yaw_K_I + self.D_error_yaw*self.yaw_K_D)
@@ -226,11 +227,14 @@ class PositionController:
 		if self.previous_error_pitch == None:
 			self.previous_error_pitch = self.error_pitch
 
-		self.D_error_roll = (self.error_roll-self.previous_error_roll)/delta_t
-		self.D_error_pitch = (self.error_pitch-self.previous_error_pitch)/delta_t
+		if self.previous_error_roll != self.error_roll:
+			self.D_error_roll = (self.error_roll-self.previous_error_roll)/delta_t
+			self.previous_error_roll = self.error_roll
 
-		self.previous_error_pitch = self.error_pitch
-		self.previous_error_roll = self.error_roll
+		if self.previous_error_pitch != self.error_pitch:
+			self.D_error_pitch = (self.error_pitch-self.previous_error_pitch)/delta_t
+			self.previous_error_pitch = self.error_pitch
+
 
 		#curses_print("P: " +  str(int(1540+error_pitch*pitch_K_P+I_error_pitch*pitch_K_I+D_error_pitch*pitch_K_D)) + " = 1540 + " + str(error_pitch*pitch_K_P) + " + " + str(I_error_pitch*pitch_K_I) + " + " + str(D_error_pitch*pitch_K_D), 21, 0)
 		#curses_print("R: " +  str(int(1540+error_roll*roll_K_P+I_error_roll*roll_K_I+D_error_roll*roll_K_D)) + " = 1540 + " + str(error_roll*roll_K_P) + " + " + str(I_error_roll*roll_K_I) + " + " + str(D_error_roll*roll_K_D), 22, 0)
