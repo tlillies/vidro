@@ -70,8 +70,8 @@ class PositionController:
 			self.base_rc_throttle = 1500
 			self.base_rc_yaw = 1500
 
-			#self.gains_file_path = '/home/tom/RECUV/vidro/vidro/gains.txt'
-			self.gains_file_path = '/home/recuv/sources/vidro/gains.txt'
+			self.gains_file_path = '/home/tom/RECUV/vidro/vidro/gains.txt'
+			#self.gains_file_path = '/home/recuv/sources/vidro/gains.txt'
 
 
 	def update_gains(self):
@@ -104,7 +104,7 @@ class PositionController:
 		if self.vidro.vicon_error == True:
 			self.vidro.set_rc_throttle(self.base_rc_throttle)
 			return 0
-		
+
 		#Calculate delta t and set previous time ot current time
 		current_time = ((time.clock()-self.timer)*10)
 		delta_t = current_time - self.previous_time_alt
@@ -140,7 +140,7 @@ class PositionController:
 		if self.vidro.vicon_error == True:
 			self.vidro.set_rc_yaw(self.base_rc_throttle)
 			return 0
-		
+
 		#Get rid of bad inputs
 		if goal_heading > math.pi or goal_heading < math.pi*-1:
 			return 0
