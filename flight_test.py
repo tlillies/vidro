@@ -88,7 +88,7 @@ while vidro.current_rc_channels[4] > 1600:
 
 		try:
 			controller.rc_alt(1000)
-			controller.rc_yaw(math.pi)
+			controller.rc_yaw(0)
 			controller.rc_xy(0,0)
 			curses_print("No errors",2,0)
 		except:
@@ -102,7 +102,7 @@ while vidro.current_rc_channels[4] > 1600:
 
 			screen.clear()
 			screen.refresh()
-			
+
 			curses_print("Position: X: " + str(vidro.get_position()[0]) + " Y: " + str(vidro.get_position()[1]) + " Z: " + str(vidro.get_position()[2]),0,0)
 			curses_print("Vicon Error: " + str(vidro.vicon_error),1,0)
 
@@ -114,7 +114,7 @@ while vidro.current_rc_channels[4] > 1600:
 			curses_print("T: "+ str(int(controller.base_rc_throttle+controller.error_alt*controller.alt_K_P+controller.I_error_alt*controller.alt_K_I)) + " = "+ str(controller.base_rc_throttle) + " + " + str(controller.error_alt*controller.alt_K_P) + " + " + str(controller.I_error_alt*controller.alt_K_I) + " + " + str(controller.D_error_alt*controller.alt_K_D), 19, 0)
 
 			#Print yaw data
-			
+
 			curses_print("Yaw RC Level: " + str(vidro.current_rc_channels[3]), 5, 0)
 			curses_print("Error: " + str(controller.error_yaw), 6, 0)
 			curses_print("raw vicon : " + str(vidro.get_vicon()[6]), 7, 0)
@@ -182,7 +182,7 @@ while vidro.current_rc_channels[4] > 1600:
 		plot.title("Throttle")
 		plot.plot(plot_time_throttle,plot_error_throttle)
 		"""
-		
+
 		plot.figure(3).clf()
 		plot.figure(3)
 		plot.xlabel("Time(sec)")
@@ -200,7 +200,7 @@ while vidro.current_rc_channels[4] > 1600:
 		plot.plot(plot_time_roll,plot_error_roll)
 		#plot.plot(plot_time_roll,plot_rc_roll)
 		#plot.plot(plot_time_roll,plot_error_roll_D)
-		
+
 		"""
 		plot.figure(5).clf()
 		plot.figure(5)

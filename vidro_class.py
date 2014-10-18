@@ -265,7 +265,7 @@ class Vidro:
 			self.master.mav.request_data_stream_send(self.master.target_system, self.master.target_component, 6, 25, 1) #Position
 		print "Getting inital values RC, global psition, and attitude from APM..."
 		if self.sitl == False:
-			while (self.current_rc_channels[0] == None) or (self.current_alt == None):
+			while (self.current_rc_channels[0] == None):
 				self.get_mavlink()
 			print("Got RC channels and global position")
 		else:
@@ -304,13 +304,15 @@ class Vidro:
 					self.current_rc_channels[3] = self.msg.chan4_raw
 					self.current_rc_channels[4] = self.msg.chan5_raw
 					self.current_rc_channels[5] = self.msg.chan6_raw
+				except:
+					pass
 
 				self.send_rc_overrides()
 
 			if self.sitl == True:
 				if self.msg.get_type() == "ATTITUDE":
 					self.current_yaw = self.msg.yaw*180/math.pi
-		
+
 				if self.msg.get_type() == "GLOBAL_POSITION_INT":
 					self.current_lat = self.msg.lat * 1.0e-7
 					self.current_lon = self.msg.lon * 1.0e-7

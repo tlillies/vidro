@@ -70,8 +70,8 @@ class PositionController:
 			self.base_rc_throttle = 1430
 			self.base_rc_yaw = 1520
 
-			#self.gains_file_path = '/home/tom/RECUV/vidro/vidro/gains.txt'
-			self.gains_file_path = '/home/recuv/sources/vidro/gains.txt'
+			self.gains_file_path = '/home/tom/RECUV/vidro/vidro/gains.txt'
+			#self.gains_file_path = '/home/recuv/sources/vidro/gains.txt'
 
 
 	def update_gains(self):
@@ -113,7 +113,7 @@ class PositionController:
 		except:
 			self.vidro.set_rc_throttle(self.base_rc_throttle)
 			return
-			
+
 		#Get error I
 		if abs(self.error_alt) < 1000:
 			self.I_error_alt = self.I_error_alt + self.error_alt*delta_t
@@ -154,14 +154,14 @@ class PositionController:
 		except:
 			self.vidro.set_rc_yaw(self.base_rc_yaw)
 			return
-			
-		if abs(yaw + (2*math.pi)) < abs(yaw)
+
+		if abs(yaw + (2*math.pi)) < abs(yaw):
 			yaw = yaw + (2*math.pi)
-		if abs(yaw - (2*math.pi)) < abs(yaw)
+		if abs(yaw - (2*math.pi)) < abs(yaw):
 			yaw = yaw - (2*math.pi)
-			
+
 		self.error_yaw = goal_heading - yaw
-			
+
 		#Get error I
 		self.I_error_yaw = self.I_error_yaw + self.error_yaw*delta_t
 
@@ -183,7 +183,7 @@ class PositionController:
 		"""
 		Sends quad copter to given x-y point
 		"""
-		
+
 		#Get current heading for shifting axis
 		if self.vidro.sitl == True:
 			heading = self.vidro.get_yaw_degrees()
