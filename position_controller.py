@@ -134,7 +134,6 @@ class PositionController:
 		#filter for D values
 		if self.D_error_alt != self.filter_value(5000,-5000,self.D_error_alt):
 			self.vidro.set_rc_throttle(self.base_rc_throttle)
-			self.D_error_alt = 0
 			self.P_error_alt = 0
 			self.I_error_alt = 0
 			return
@@ -192,7 +191,6 @@ class PositionController:
 		#filter for D values
 		if self.D_error_yaw != self.filter_value(5000,-5000,self.D_error_yaw):
 			self.vidro.set_rc_yaw(self.base_rc_yaw)
-			self.D_error_yaw = 0
 			self.P_error_yaw = 0
 			self.I_error_yaw = 0
 			return
@@ -301,10 +299,8 @@ class PositionController:
 			self.vidro.set_rc_roll(self.base_rc_roll)
 			self.P_error_roll = 0
 			self.I_error_roll = 0
-			self.D_error_roll = 0
 			self.P_error_pitch = 0
 			self.I_error_pitch = 0
-			self.D_error_pitch = 0
 			return
 
 
