@@ -157,10 +157,12 @@ class PositionController:
 
 		self.error_yaw = goal_heading - yaw
 
-		if abs(goal_heading - (yaw+2*math.pi)) < abs(self.error_yaw)
+		if abs(goal_heading - (yaw+2*math.pi)) < abs(self.error_yaw):
 			self.error_yaw = goal_heading - (yaw+2*math.pi)
-		if abs(goal_heading - (yaw-2*math.pi)) < abs(self.error_yaw)
+		if abs(goal_heading - (yaw-2*math.pi)) < abs(self.error_yaw):
 			self.error_yaw = goal_heading - (yaw-2*math.pi)
+
+		self.error_yaw = self.error_yaw * -1
 
 		#Get error I
 		self.I_error_yaw = self.I_error_yaw + self.error_yaw*delta_t

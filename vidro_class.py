@@ -547,9 +547,9 @@ class Vidro:
 
 		else:
 			try:
-				position[0] = self.get_vicon()[1] - self.home_x
-				position[1] = self.get_vicon()[2] - self.home_y
-				position[2] = self.get_vicon()[3] - self.home_z
+				position[0] = self.get_vicon()[1]
+				position[1] = self.get_vicon()[2]
+				position[2] = self.get_vicon()[3]
 				self.vicon_error = False
 			except:
 				position = None
