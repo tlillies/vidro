@@ -101,9 +101,6 @@ class PositionController:
 		"""
 		Will send copter based off of throttle to 'goal_alt'
 		"""
-		if self.vidro.vicon_error == True:
-			self.vidro.set_rc_throttle(self.base_rc_throttle)
-			return 0
 
 		#Calculate delta t and set previous time ot current time
 		current_time = ((time.clock()-self.timer)*10)
@@ -111,14 +108,17 @@ class PositionController:
 		self.previous_time_alt = current_time
 
 		#Get error
-		self.error_alt = goal_alt - self.vidro.get_position()[2]
-
+		try:
+			self.error_alt = goal_alt - self.vidro.get_position()[2]
+		except:
+			self.vidro.set_rc_throttle(self.base_rc_throttle)
+			return
+			
 		#Get error I
 		if abs(self.error_alt) < 1000:
 			self.I_error_alt = self.I_error_alt + self.error_alt*delta_t
 		else:
 			pass
-			#self.I_error_alt = 0
 
 		#Get error D
 		if self.previous_error_alt == None:
@@ -138,9 +138,6 @@ class PositionController:
 		Sends quad to given yaw
 		Imput is in radians from -pi to pi
 		"""
-		if self.vidro.vicon_error == True:
-			self.vidro.set_rc_yaw(self.base_rc_throttle)
-			return 0
 
 		#Get rid of bad inputs
 		if goal_heading > math.pi or goal_heading < math.pi*-1:
@@ -152,8 +149,19 @@ class PositionController:
 		self.previous_time_yaw = current_time
 
 		#Get error
-		self.error_yaw = goal_heading - self.vidro.get_yaw_radians()
-
+		try:
+			yaw = self.vidro.get_yaw_radians()
+		except:
+			self.vidro.set_rc_yaw(self.base_rc_yaw)
+			return
+			
+		if abs(yaw + (2*math.pi)) < abs(yaw)
+			yaw = yaw + (2*math.pi)
+		if abs(yaw - (2*math.pi)) < abs(yaw)
+			yaw = yaw - (2*math.pi)
+			
+		self.error_yaw = goal_heading - yaw
+			
 		#Get error I
 		self.I_error_yaw = self.I_error_yaw + self.error_yaw*delta_t
 
@@ -175,20 +183,24 @@ class PositionController:
 		"""
 		Sends quad copter to given x-y point
 		"""
-		if self.vidro.vicon_error == True:
-			self.vidro.set_rc_roll(self.base_rc_throttle)
-			self.vidro.set_rc_pitch(self.base_rc_throttle)
-			return 0
-
+		
 		#Get current heading for shifting axis
 		if self.vidro.sitl == True:
 			heading = self.vidro.get_yaw_degrees()
 		else:
-			heading = self.vidro.get_yaw_degrees()
+			try:
+				heading = self.vidro.get_yaw_degrees()
+			except:
+				self.vidro.set_rc_pitch(self.base_rc_pitch)
+				self.vidro.set_rc_roll(self.base_rc_roll)
 
 		#Calculate current position
-		self.x_current = self.vidro.get_position()[0]
-		self.y_current = self.vidro.get_position()[1]
+		try:
+			self.x_current = self.vidro.get_position()[0]
+			self.y_current = self.vidro.get_position()[1]
+		except:
+			self.vidro.set_rc_pitch(self.base_rc_pitch)
+			self.vidro.set_rc_roll(self.base_rc_roll)
 
 		#Calculate the error in the x-y(lat/lon) axis
 		self.error_x = goal_x - self.x_current * 1.0
