@@ -155,12 +155,12 @@ class PositionController:
 			self.vidro.set_rc_yaw(self.base_rc_yaw)
 			return
 			
-		if abs(yaw + (2*math.pi)) < abs(yaw)
-			yaw = yaw + (2*math.pi)
-		if abs(yaw - (2*math.pi)) < abs(yaw)
-			yaw = yaw - (2*math.pi)
-			
 		self.error_yaw = goal_heading - yaw
+		
+		if abs(goal_heading - (yaw+2*math.pi)) < abs(self.error_yaw)
+			self.error_yaw = goal_heading - (yaw+2*math.pi)
+		if abs(goal_heading - (yaw-2*math.pi)) < abs(self.error_yaw)
+			self.error_yaw = goal_heading - (yaw-2*math.pi)
 			
 		#Get error I
 		self.I_error_yaw = self.I_error_yaw + self.error_yaw*delta_t
@@ -193,6 +193,7 @@ class PositionController:
 			except:
 				self.vidro.set_rc_pitch(self.base_rc_pitch)
 				self.vidro.set_rc_roll(self.base_rc_roll)
+				return
 
 		#Calculate current position
 		try:
@@ -201,6 +202,7 @@ class PositionController:
 		except:
 			self.vidro.set_rc_pitch(self.base_rc_pitch)
 			self.vidro.set_rc_roll(self.base_rc_roll)
+			return
 
 		#Calculate the error in the x-y(lat/lon) axis
 		self.error_x = goal_x - self.x_current * 1.0
