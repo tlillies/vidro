@@ -295,31 +295,26 @@ class Vidro:
 
 		if self.msg:
 			#print self.msg.get_type()
-			#if self.msg.get_type() == "BAD_DATA":
-				#if mavutil.all_printable(self.msg.data):
-					#print "Whoops, got bad data", self.msg.data
 
 			if self.msg.get_type() == "RC_CHANNELS_RAW":
-				self.current_rc_channels[0] = self.msg.chan1_raw
-				self.current_rc_channels[1] = self.msg.chan2_raw
-				self.current_rc_channels[2] = self.msg.chan3_raw
-				self.current_rc_channels[3] = self.msg.chan4_raw
-				self.current_rc_channels[4] = self.msg.chan5_raw
-				self.current_rc_channels[5] = self.msg.chan6_raw
-
-				self.rc_msg_time = time.clock() - self.clock - self.previous_rc_message
-				self.previous_rc_message = time.clock() - self.clock
+				try:
+					self.current_rc_channels[0] = self.msg.chan1_raw
+					self.current_rc_channels[1] = self.msg.chan2_raw
+					self.current_rc_channels[2] = self.msg.chan3_raw
+					self.current_rc_channels[3] = self.msg.chan4_raw
+					self.current_rc_channels[4] = self.msg.chan5_raw
+					self.current_rc_channels[5] = self.msg.chan6_raw
 
 				self.send_rc_overrides()
-
-			if self.msg.get_type() == "GLOBAL_POSITION_INT":
-				self.current_lat = self.msg.lat * 1.0e-7
-				self.current_lon = self.msg.lon * 1.0e-7
-				self.current_alt = self.msg.alt-self.ground_alt
 
 			if self.sitl == True:
 				if self.msg.get_type() == "ATTITUDE":
 					self.current_yaw = self.msg.yaw*180/math.pi
+		
+				if self.msg.get_type() == "GLOBAL_POSITION_INT":
+					self.current_lat = self.msg.lat * 1.0e-7
+					self.current_lon = self.msg.lon * 1.0e-7
+					self.current_alt = self.msg.alt-self.ground_alt
 
 	def connect_vicon(self):
 		"""
@@ -498,15 +493,11 @@ class Vidro:
 		if self.sitl == True:
 			yaw = self.current_yaw
 		else:
-			if self.get_vicon() != None:
-				if self.get_vicon()[6] != None and self.get_vicon()[6] != 0:
-					yaw =  (self.get_vicon()[6]*(1.0)) % ((2*math.pi)*(1.0))
-					self.vicon_error = False
-				else:
-					yaw = 0
-					self.vicon_error = True
-			else:
-				yaw = 0
+			try:
+				yaw = self.get_vicon()[6]*(1.0)
+				self.vicon_error = False
+			except:
+				yaw = None
 				self.vicon_error = True
 		return yaw
 
@@ -516,12 +507,17 @@ class Vidro:
 		Works for SITL and Vicon
 		For SITL it returns that yaw givn by the copter and for the Vicon system it returns the yaw given by the Vicon
 		"""
-		degrees = math.degrees(self.get_yaw_radians())*-1
+		try:
+			yaw = math.degrees(self.get_vicon()[6]*(1.0)) % ((2*math.pi)*(1.0))*-1
+			self.vicon_error = False
+		except:
+			yaw = None
+			self.vicon_error = True
 
-		if degrees < 0.0:
-			degrees += 360
+		if yaw < 0.0:
+			yaw += 360
 
-		return degrees
+		return yaw
 
 	def get_pitch(self):
 		"""
@@ -548,27 +544,14 @@ class Vidro:
 				position[1] *= -1
 
 		else:
-			if self.get_vicon() != None:
+			try:
 				position[0] = self.get_vicon()[1] - self.home_x
 				position[1] = self.get_vicon()[2] - self.home_y
 				position[2] = self.get_vicon()[3] - self.home_z
 				self.vicon_error = False
-
-				if position[0] == None:
-					position[0] = 0
-					self.vicon_error = True
-				if position[1] == None:
-					position[1] = 0
-					self.vicon_error = True
-				if position[2] == None:
-					position[2] = 0
-					self.vicon_error = True
-			else:
-				position[0] = 0
-				position[1] = 0
-				position[2] = 0
+			except:
+				position = None
 				self.vicon_error = True
-
 		return position
 
 	def get_distance_xy(self):
@@ -620,20 +603,6 @@ class Vidro:
 
 		#Returns a distance in meters
 		return radius * c * 1000 * 1000
-
-
-	def calc_utm_distance(self, lat1, lon1, lat2, lon2):
-		"""
-		Returns distance in millimeters
-		This is not currently used in any of the code. Left for now in case needed
-		"""
-		point1 = utm.from_latlon(lat1, lon1)
-		point2 = utm.from_latlon(lat2, lon2)
-
-		x = point2[1]-point1[1]
-		y = point2[2]-point1[2]
-
-		return 1000*math.sqrt(x*x+y*y)
 
 	def calc_sitl_distance_x(self):
 		"""
