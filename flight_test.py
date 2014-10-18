@@ -86,17 +86,17 @@ while vidro.current_rc_channels[4] > 1600:
 
 	while vidro.current_rc_channels[5] > 1600:
 
-		try:
-			controller.rc_alt(1000)
-			controller.rc_yaw(math.pi)
-			controller.rc_xy(0,0)
-			curses_print("No errors",2,0)
-		except:
-			controller.vidro.set_rc_throttle(controller.base_rc_throttle)
-			controller.vidro.set_rc_roll(controller.base_rc_roll)
-			controller.vidro.set_rc_pitch(controller.base_rc_pitch)
-			controller.vidro.set_rc_yaw(controller.base_rc_yaw)
-			curses_print("ERROR",2,0)
+		#~ try:
+		controller.rc_alt(1000)
+		controller.rc_yaw(math.pi)
+		controller.rc_xy(0,0)
+		curses_print("No errors",2,0)
+		#~ except:
+			#~ controller.vidro.set_rc_throttle(controller.base_rc_throttle)
+			#~ controller.vidro.set_rc_roll(controller.base_rc_roll)
+			#~ controller.vidro.set_rc_pitch(controller.base_rc_pitch)
+			#~ controller.vidro.set_rc_yaw(controller.base_rc_yaw)
+			#~ curses_print("ERROR",2,0)
 
 		if round((round(time.clock(),3) % .05),2) == 0:
 
@@ -114,7 +114,6 @@ while vidro.current_rc_channels[4] > 1600:
 			curses_print("T: "+ str(int(controller.base_rc_throttle+controller.error_alt*controller.alt_K_P+controller.I_error_alt*controller.alt_K_I)) + " = "+ str(controller.base_rc_throttle) + " + " + str(controller.error_alt*controller.alt_K_P) + " + " + str(controller.I_error_alt*controller.alt_K_I) + " + " + str(controller.D_error_alt*controller.alt_K_D), 19, 0)
 
 			#Print yaw data
-
 			curses_print("Yaw RC Level: " + str(vidro.current_rc_channels[3]), 5, 0)
 			curses_print("Error: " + str(controller.error_yaw), 6, 0)
 			curses_print("raw vicon : " + str(vidro.get_vicon()[6]), 7, 0)

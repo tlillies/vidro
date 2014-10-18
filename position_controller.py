@@ -112,6 +112,9 @@ class PositionController:
 			self.error_alt = goal_alt - self.vidro.get_position()[2]
 		except:
 			self.vidro.set_rc_throttle(self.base_rc_throttle)
+			self.D_error_alt = 0
+			self.P_error_alt = 0
+			self.I_error_alt = 0
 			return
 
 		#Get error I
@@ -127,10 +130,13 @@ class PositionController:
 		if self.error_alt != self.previous_error_alt:
 			self.D_error_alt = (self.error_alt-self.previous_error_alt)/delta_t
 			self.previous_error_alt = self.error_alt
-			
+
 		#filter for D values
-		if self.D_error_alt != filter_value(4000,-4000,self.D_error_alt):
-			self.vidro.set_rc_alt(self.base_rc_alt)
+		if self.D_error_alt != self.filter_value(5000,-5000,self.D_error_alt):
+			self.vidro.set_rc_throttle(self.base_rc_throttle)
+			self.D_error_alt = 0
+			self.P_error_alt = 0
+			self.I_error_alt = 0
 			return
 
 		#Send RC value
@@ -158,6 +164,9 @@ class PositionController:
 			yaw = self.vidro.get_yaw_radians() - 0.0
 		except:
 			self.vidro.set_rc_yaw(self.base_rc_yaw)
+			self.D_error_yaw = 0
+			self.P_error_yaw = 0
+			self.I_error_yaw = 0
 			return
 
 		self.error_yaw = goal_heading - yaw
@@ -179,10 +188,13 @@ class PositionController:
 		if self.previous_error_yaw != self.error_yaw:
 			self.D_error_yaw = (self.error_yaw-self.previous_error_yaw)/delta_t
 			self.previous_error_yaw = self.error_yaw
-			
+
 		#filter for D values
-		if self.D_error_yaw != filter_value(4000,-4000,self.D_error_yaw):
+		if self.D_error_yaw != self.filter_value(5000,-5000,self.D_error_yaw):
 			self.vidro.set_rc_yaw(self.base_rc_yaw)
+			self.D_error_yaw = 0
+			self.P_error_yaw = 0
+			self.I_error_yaw = 0
 			return
 
 		#Send RC value
@@ -205,12 +217,18 @@ class PositionController:
 			except:
 				self.vidro.set_rc_pitch(self.base_rc_pitch)
 				self.vidro.set_rc_roll(self.base_rc_roll)
+				self.P_error_roll = 0
+				self.I_error_roll = 0
+				self.D_error_roll = 0
+				self.P_error_pitch = 0
+				self.I_error_pitch = 0
+				self.D_error_pitch = 0
 				return
-				
+
 		#Calculate current position
 		self.x_current = self.vidro.get_position()[0]
 		self.y_current = self.vidro.get_position()[1]
-		
+
 		#Calculate the error in the x-y(lat/lon) axis
 		try:
 			self.error_x = goal_x - self.x_current * 1.0
@@ -218,6 +236,12 @@ class PositionController:
 		except:
 			self.vidro.set_rc_pitch(self.base_rc_pitch)
 			self.vidro.set_rc_roll(self.base_rc_roll)
+			self.P_error_roll = 0
+			self.I_error_roll = 0
+			self.D_error_roll = 0
+			self.P_error_pitch = 0
+			self.I_error_pitch = 0
+			self.D_error_pitch = 0
 			return
 
 		#Make error not zero so you don't get a divid by zero error (Need to tes to see if needed)
@@ -269,22 +293,30 @@ class PositionController:
 		if self.previous_error_pitch != self.error_pitch:
 			self.D_error_pitch = (self.error_pitch-self.previous_error_pitch)/delta_t
 			self.previous_error_pitch = self.error_pitch
-			
+
+
 		#filter for D values
-		if self.D_error_roll != filter_value(5000,-5000,self.D_error_roll) or self.D_error_pitch != filter_value(5000,-5000,self.D_error_pitch):
+		if self.D_error_roll != self.filter_value(7000,-7000,self.D_error_roll) or self.D_error_pitch != self.filter_value(7000,-7000,self.D_error_pitch):
 			self.vidro.set_rc_pitch(self.base_rc_pitch)
 			self.vidro.set_rc_roll(self.base_rc_roll)
+			self.P_error_roll = 0
+			self.I_error_roll = 0
+			self.D_error_roll = 0
+			self.P_error_pitch = 0
+			self.I_error_pitch = 0
+			self.D_error_pitch = 0
 			return
+
 
 		#Send RC values
 		self.vidro.set_rc_pitch( self.base_rc_pitch + (self.error_pitch*self.pitch_K_P) + (self.I_error_pitch*self.pitch_K_I) + (self.D_error_pitch*self.pitch_K_D) )
 		self.vidro.set_rc_roll(  self.base_rc_roll + (self.error_roll*self.roll_K_P) + (self.I_error_roll*self.roll_K_I) + (self.D_error_roll*self.roll_K_D) )
-		
-	def filter_value(high, low, value):
+
+	def filter_value(self, high, low, value):
 		if high < low:
 			return None
 		if value > high:
 			value = high
-		if value < low
+		if value < low:
 			value = low
 		return value
