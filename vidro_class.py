@@ -186,7 +186,7 @@ class ViconStreamer:
 
 class Vidro:
 
-	def __init__(self, sitl):
+	def __init__(self, sitl,num_vicon_objs):
 		self.sitl = sitl
 		if self.sitl == True:
 			self.baud = 115200
@@ -322,6 +322,10 @@ class Vidro:
 		"""
 		Connects to vicon. This is needed to scream vicon data.
 		"""
+		if self.num_vicon_objs > 2:
+			print "WARNING: Number of vicon objects must be 2 > x > 0"
+		if self.num_vicon_objs < 1:
+			print "WARNING: Number of vicon objects must be 2 > x > 0"
 		self.s = ViconStreamer()
 		self.s.connect("Vicon", 800)
 		self.streams = self.s.selectStreams(["Time", "t-", "a-"])
@@ -359,13 +363,29 @@ class Vidro:
 		"""
 		Gets vicon data in the folling format:
 
-		vicon_data()[0] = time
-		vicon_data()[1] = x
-		vicon_data()[2] = y
-		vicon_data()[3] = z
-		vicon_data()[4] = x rotation
-		vicon_data()[5] = y rotation
-		vicon_data()[6] = z rotation
+		if num_vicon_objs == 1:
+			vicon_data()[0] = time
+			vicon_data()[1] = x
+			vicon_data()[2] = y
+			vicon_data()[3] = z
+			vicon_data()[4] = x rotation
+			vicon_data()[5] = y rotation
+			vicon_data()[6] = z rotation
+			
+		if num_vicon_objs == 2:
+			vicon_data()[0] = time
+			vicon_data()[1] = x_1
+			vicon_data()[2] = y_1
+			vicon_data()[3] = z_1
+			vicon_data()[4] = x_2
+			vicon_data()[5] = y_2
+			vicon_data()[6] = z_2
+			vicon_data()[7] = x_rotation_1
+			vicon_data()[8] = y_rotation_1
+			vicon_data()[9] = z_rotation_1 (yaw)
+			vicon_data()[10] = x_rotation_2
+			vicon_data()[11] = y_rotation_2
+			vicon_data()[12] = z_rotation_2 
 		"""
 		return self.s.getData()
 
@@ -496,7 +516,10 @@ class Vidro:
 			yaw = self.current_yaw
 		else:
 			try:
-				yaw = self.get_vicon()[6]*(1.0)
+				if num_vicon_objs == 1:
+					yaw = self.get_vicon()[6]*(1.0)
+				if num_vicon_objs == 2:
+					yaw = self.get_vicon()[9]*(1.0)
 				self.vicon_error = False
 			except:
 				yaw = None
@@ -510,7 +533,10 @@ class Vidro:
 		For SITL it returns that yaw givn by the copter and for the Vicon system it returns the yaw given by the Vicon
 		"""
 		try:
-			yaw = math.degrees(self.get_vicon()[6]*(1.0)) % ((2*math.pi)*(1.0))*-1
+			if num_vicon_objs == 1:
+				yaw = math.degrees(self.get_vicon()[6]*(1.0)) % ((2*math.pi)*(1.0))*-1
+			if num_vicon_objs == 2:
+				yaw = math.degrees(self.get_vicon()[9]*(1.0)) % ((2*math.pi)*(1.0))*-1
 			self.vicon_error = False
 		except:
 			yaw = None
