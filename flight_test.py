@@ -88,7 +88,7 @@ while vidro.current_rc_channels[4] > 1600:
 
 		#~ try:
 		controller.rc_alt(1000)
-		controller.rc_yaw(math.pi)
+		controller.rc_yaw(math.pi/2)
 		controller.rc_xy(0,0)
 		curses_print("No errors",2,0)
 		#~ except:
