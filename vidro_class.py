@@ -186,7 +186,7 @@ class ViconStreamer:
 
 class Vidro:
 
-	def __init__(self, sitl,num_vicon_objs):
+	def __init__(self, sitl,vicon_num):
 		self.sitl = sitl
 		if self.sitl == True:
 			self.baud = 115200
@@ -244,6 +244,8 @@ class Vidro:
 		self.battery_level = None
 
 		self.vicon_error = False
+
+		self.num_vicon_objs = vicon_num
 
 	def connect_mavlink(self):
 		"""
@@ -371,7 +373,7 @@ class Vidro:
 			vicon_data()[4] = x rotation
 			vicon_data()[5] = y rotation
 			vicon_data()[6] = z rotation
-			
+
 		if num_vicon_objs == 2:
 			vicon_data()[0] = time
 			vicon_data()[1] = x_1
@@ -385,7 +387,7 @@ class Vidro:
 			vicon_data()[9] = z_rotation_1 (yaw)
 			vicon_data()[10] = x_rotation_2
 			vicon_data()[11] = y_rotation_2
-			vicon_data()[12] = z_rotation_2 
+			vicon_data()[12] = z_rotation_2
 		"""
 		return self.s.getData()
 
@@ -537,9 +539,11 @@ class Vidro:
 				yaw = math.degrees(self.get_vicon()[6]*(1.0)) % ((2*math.pi)*(1.0))*-1
 			if num_vicon_objs == 2:
 				yaw = math.degrees(self.get_vicon()[9]*(1.0)) % ((2*math.pi)*(1.0))*-1
+				print self.get_vicon()[9]*(1.0)
 			self.vicon_error = False
 		except:
 			yaw = None
+			#print self.get_vicon()[9]*(1.0)
 			self.vicon_error = True
 
 		if yaw < 0.0:

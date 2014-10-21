@@ -56,8 +56,8 @@ def curses_print(string, line, col):
 		screen.addstr(line, 40, string)
 
 	screen.refresh()
-	
-	
+
+
 def filter_value(low,high,value):
 	if value < low:
 		value = low
@@ -106,11 +106,11 @@ while vidro.current_rc_channels[4] > 1600:
 			goal_z = vidro.get_vicon()[6]
 		except:
 			pass
-		
+
 		goal_z = filter_value(1000,5000,goal_z)
-		goal_z = filter_value(-2000,2000,goal_z)
-		goal_y = filter_value(-2000,2000,goal_z)
-		
+		goal_x = filter_value(-2000,2000,goal_x)
+		goal_y = filter_value(-2000,2000,goal_y)
+
 		#~ try:
 		controller.rc_alt(goal_z)
 		controller.rc_yaw(0)
@@ -129,7 +129,7 @@ while vidro.current_rc_channels[4] > 1600:
 			screen.refresh()
 
 			curses_print("Position: X: " + str(vidro.get_position()[0]) + " Y: " + str(vidro.get_position()[1]) + " Z: " + str(vidro.get_position()[2]),0,0)
-			curses_print("Wand:     X: " + str(vidro.get_position()[4]) + " Y: " + str(vidro.get_position()[5]) + " Z: " + str(vidro.get_position()[6]),1,0)
+			curses_print("Wand:     X: " + str(vidro.get_vicon()[4]) + " Y: " + str(vidro.get_vicon()[5]) + " Z: " + str(vidro.get_vicon()[6]),1,0)
 			curses_print("Goal:     X: " + str(goal_x) + " Y: " + str(goal_y) + " Z: " + str(goal_z),2,0)
 			curses_print("Vicon Error: " + str(vidro.vicon_error),3,0)
 
@@ -143,9 +143,9 @@ while vidro.current_rc_channels[4] > 1600:
 			#Print yaw data
 			curses_print("Yaw RC Level: " + str(vidro.current_rc_channels[3]), 5, 0)
 			curses_print("Error: " + str(controller.error_yaw), 6, 0)
-			curses_print("raw vicon : " + str(vidro.get_vicon()[6]), 7, 0)
+			curses_print("raw vicon : " + str(vidro.get_vicon()[9]), 7, 0)
 			curses_print("Heading Radians: " + str(vidro.get_yaw_radians()), 8, 0)
-			curses_print("Heading Degrees: " + str(vidro.get_yaw_degrees()), 9, 0)
+			#curses_print("Heading Degrees: " + str(vidro.get_yaw_degrees()), 9, 0)
 			curses_print("Y: "+ str(int(controller.base_rc_yaw+controller.error_yaw*controller.yaw_K_P+controller.I_error_yaw*controller.yaw_K_I)) + " = "+ str(controller.base_rc_yaw) + " + " + str(controller.error_yaw*controller.yaw_K_P) + " + " + str(controller.I_error_yaw*controller.yaw_K_I) + " + " + str(controller.D_error_yaw*controller.yaw_K_D), 20, 0)
 
 			#Print pitch and roll
