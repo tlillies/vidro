@@ -518,9 +518,9 @@ class Vidro:
 			yaw = self.current_yaw
 		else:
 			try:
-				if num_vicon_objs == 1:
+				if self.num_vicon_objs == 1:
 					yaw = self.get_vicon()[6]*(1.0)
-				if num_vicon_objs == 2:
+				if self.num_vicon_objs == 2:
 					yaw = self.get_vicon()[9]*(1.0)
 				self.vicon_error = False
 			except:
@@ -535,20 +535,18 @@ class Vidro:
 		For SITL it returns that yaw givn by the copter and for the Vicon system it returns the yaw given by the Vicon
 		"""
 		try:
-			if num_vicon_objs == 1:
+			if self.num_vicon_objs == 1:
 				yaw = math.degrees(self.get_vicon()[6]*(1.0)) % ((2*math.pi)*(1.0))*-1
-			if num_vicon_objs == 2:
+			if self.num_vicon_objs == 2:
 				yaw = math.degrees(self.get_vicon()[9]*(1.0)) % ((2*math.pi)*(1.0))*-1
-				print self.get_vicon()[9]*(1.0)
 			self.vicon_error = False
+			if yaw < 0.0:
+				yaw += 360
+				
 		except:
 			yaw = None
-			#print self.get_vicon()[9]*(1.0)
 			self.vicon_error = True
-
-		if yaw < 0.0:
-			yaw += 360
-
+			
 		return yaw
 
 	def get_pitch(self):

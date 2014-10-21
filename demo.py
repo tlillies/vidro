@@ -113,7 +113,7 @@ while vidro.current_rc_channels[4] > 1600:
 
 		#~ try:
 		controller.rc_alt(goal_z)
-		controller.rc_yaw(0)
+		#controller.rc_yaw(0)
 		controller.rc_xy(goal_x,goal_y)
 		curses_print("No errors",2,0)
 		#~ except:
@@ -144,7 +144,7 @@ while vidro.current_rc_channels[4] > 1600:
 			curses_print("Yaw RC Level: " + str(vidro.current_rc_channels[3]), 5, 0)
 			curses_print("Error: " + str(controller.error_yaw), 6, 0)
 			curses_print("raw vicon : " + str(vidro.get_vicon()[9]), 7, 0)
-			curses_print("Heading Radians: " + str(vidro.get_yaw_radians()), 8, 0)
+			#curses_print("Heading Radians: " + str(vidro.get_yaw_radians()), 8, 0)
 			#curses_print("Heading Degrees: " + str(vidro.get_yaw_degrees()), 9, 0)
 			curses_print("Y: "+ str(int(controller.base_rc_yaw+controller.error_yaw*controller.yaw_K_P+controller.I_error_yaw*controller.yaw_K_I)) + " = "+ str(controller.base_rc_yaw) + " + " + str(controller.error_yaw*controller.yaw_K_P) + " + " + str(controller.I_error_yaw*controller.yaw_K_I) + " + " + str(controller.D_error_yaw*controller.yaw_K_D), 20, 0)
 

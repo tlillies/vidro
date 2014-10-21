@@ -5,6 +5,7 @@ from vidro_class import Vidro, ViconStreamer
 import sys, math, time
 import socket, struct, threading
 import matplotlib.pyplot as plot
+import os
 
 class PositionController:
 	def __init__(self,vidro):
@@ -61,16 +62,18 @@ class PositionController:
 			self.base_rc_pitch = 1535
 			self.base_rc_throttle = 1370
 			self.base_rc_yaw = 1470
-
+			
+			self.gains_file_path = os.path.join(os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__))), 'gains_sitl.txt')
 			#self.gains_file_path = '/home/tom/RECUV/vidro/vidro/gains_sitl.txt'
-			self.gains_file_path = '/home/recuv/sources/vidro/gains_sitl.txt'
+			#self.gains_file_path = '/home/recuv/sources/vidro/gains_sitl.txt'
 		else:
 			self.base_rc_roll = 1620
 			self.base_rc_pitch = 1620
 			self.base_rc_throttle = 1430
 			self.base_rc_yaw = 1520
-
-			self.gains_file_path = '/home/tom/RECUV/vidro/vidro/gains.txt'
+			
+			self.gains_file_path = os.path.join(os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__))), 'gains.txt')
+			#self.gains_file_path = '/home/tom/RECUV/vidro/vidro/gains.txt'
 			#self.gains_file_path = '/home/recuv/sources/vidro/gains.txt'
 
 
