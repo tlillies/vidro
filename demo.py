@@ -3,7 +3,6 @@ from position_controller import PositionController
 import sys, math, time
 import socket, struct, threading
 import curses
-import utm
 import matplotlib.pyplot as plot
 
 #Plot arrays to start previous data for plotting
@@ -29,6 +28,8 @@ plot_rc_roll=[]
 
 plot_x_current=[]
 plot_y_current=[]
+plot_x_goal=[]
+plot_y_goal=[]
 
 goal_x = 0
 goal_y = 0
@@ -64,6 +65,8 @@ def filter_value(low,high,value):
 	if value > high:
 		value = high
 	return value
+
+logging.basicConfig(filename='demo.log', level=logging.DEBUG)
 
 vidro = Vidro(False)
 vidro.connect()
@@ -105,6 +108,7 @@ while vidro.current_rc_channels[4] > 1600:
 			goal_y = vidro.get_vicon()[5]
 			goal_z = vidro.get_vicon()[6]
 		except:
+			logging.error('Unable to get position data from the vicon for wand')
 			pass
 
 		goal_z = filter_value(1000,5000,goal_z)
@@ -117,6 +121,7 @@ while vidro.current_rc_channels[4] > 1600:
 		controller.rc_xy(goal_x,goal_y)
 		curses_print("No errors",2,0)
 		#~ except:
+			#~logging.error('Something went wrong in the control system. Setting to hover')
 			#~ controller.vidro.set_rc_throttle(controller.base_rc_throttle)
 			#~ controller.vidro.set_rc_roll(controller.base_rc_roll)
 			#~ controller.vidro.set_rc_pitch(controller.base_rc_pitch)
@@ -183,6 +188,9 @@ while vidro.current_rc_channels[4] > 1600:
 
 		plot_x_current.append(vidro.get_position()[0])
 		plot_y_current.append(vidro.get_position()[1])
+		
+		plot_x_goal.append(goal_x)
+		plot_y_goal.append(goal_y)
 
 		switch = True
 		vidro.get_mavlink()
@@ -270,6 +278,7 @@ while vidro.current_rc_channels[4] > 1600:
 		plot.ylabel("y Location(mm)")
 		plot.title("Location")
 		plot.plot(plot_x_current, plot_y_current)
+		plot.plot(plot_x_goal,plot_y_goal)
 		"""
 		plot.draw()
 		plot.pause(.0001)

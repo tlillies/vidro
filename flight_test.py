@@ -3,8 +3,8 @@ from position_controller import PositionController
 import sys, math, time
 import socket, struct, threading
 import curses
-import utm
 import matplotlib.pyplot as plot
+import logging
 
 #Plot arrays to start previous data for plotting
 plot_error_yaw=[]
@@ -50,6 +50,8 @@ def curses_print(string, line, col):
 		screen.addstr(line, 40, string)
 
 	screen.refresh()
+
+logging.basicConfig(filename='flight_test.log', level=logging.DEBUG)
 
 vidro = Vidro(False)
 vidro.connect()

@@ -5,6 +5,7 @@ This is currently the main file used
 from pymavlink import mavutil
 import sys, math, time
 import socket, struct, threading
+import logging
 
 ###################################################################################
 ## A simple module for retrieving data from a Vicon motion capture system
@@ -245,6 +246,8 @@ class Vidro:
 		self.vicon_error = False
 
 		self.num_vicon_objs = None
+		
+		logging.basicConfig(filename='vidro.log', level=logging.DEBUG)
 
 	def connect_mavlink(self):
 		"""
@@ -254,7 +257,7 @@ class Vidro:
 		print "Attempting to get HEARTBEAT message from APM..."
 		msg = self.master.recv_match(type='HEARTBEAT', blocking=True)
 		print("Heartbeat from APM (system %u component %u)" % (self.master.target_system, self.master.target_system))
-		#The max rate (the second to last argument in the line below) is 25 Hz. You must chnage the firmware to get a fast rate than that.
+		#The max rate (the second to last argument in the line below) is 25 Hz. You must change the firmware to get a fast rate than that.
 		#It may be possible to get up to 500 Hz??
 		#This may be useful later down the road to decrease latency
 		#It also may be helpful to only stream needed data instead of all data
@@ -337,8 +340,10 @@ class Vidro:
 		
 		if len(self.s.getData()) == 50:
 			self.num_vicon_objs = 1
-		if len(self.s.getData()) == 75:
+		elif len(self.s.getData()) == 75:
 			self.num_vicon_objs = 2
+		else:
+			logging.error('Number of Vicon objects was not set. This means that length of s.getData() was not correct')
 			
 	def disconnect_vicon(self):
 		"""
@@ -524,6 +529,7 @@ class Vidro:
 					yaw = self.get_vicon()[9]*(1.0)
 				self.vicon_error = False
 			except:
+				logging.error('Unable to get the yaw(radians) from vicon')
 				yaw = None
 				self.vicon_error = True
 		return yaw
@@ -544,6 +550,7 @@ class Vidro:
 				yaw += 360
 				
 		except:
+			logging.error('Unable to get the yaw(radians) from vicon')
 			yaw = None
 			self.vicon_error = True
 			
@@ -580,6 +587,7 @@ class Vidro:
 				position[2] = self.get_vicon()[3]
 				self.vicon_error = False
 			except:
+				logging.error('Unable to get position data from vicon')
 				position = None
 				self.vicon_error = True
 		return position

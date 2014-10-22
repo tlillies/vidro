@@ -6,6 +6,7 @@ import sys, math, time
 import socket, struct, threading
 import matplotlib.pyplot as plot
 import os
+import logging
 
 class PositionController:
 	def __init__(self,vidro):
@@ -55,6 +56,8 @@ class PositionController:
 		self.pitch_K_P = .01
 		self.pitch_K_I = .0006
 		self.pitch_K_D = .05
+		
+		logging.basicConfig(filename='controller.log', level=logging.DEBUG)
 
 		#Base RC values
 		if self.vidro.sitl == True:
@@ -64,8 +67,6 @@ class PositionController:
 			self.base_rc_yaw = 1470
 			
 			self.gains_file_path = os.path.join(os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__))), 'gains_sitl.txt')
-			#self.gains_file_path = '/home/tom/RECUV/vidro/vidro/gains_sitl.txt'
-			#self.gains_file_path = '/home/recuv/sources/vidro/gains_sitl.txt'
 		else:
 			self.base_rc_roll = 1620
 			self.base_rc_pitch = 1620
@@ -73,9 +74,6 @@ class PositionController:
 			self.base_rc_yaw = 1520
 			
 			self.gains_file_path = os.path.join(os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__))), 'gains.txt')
-			#self.gains_file_path = '/home/tom/RECUV/vidro/vidro/gains.txt'
-			#self.gains_file_path = '/home/recuv/sources/vidro/gains.txt'
-
 
 	def update_gains(self):
 		"""
@@ -114,6 +112,7 @@ class PositionController:
 		try:
 			self.error_alt = goal_alt - self.vidro.get_position()[2]
 		except:
+			logging.error('Unable to get the error for alt. This means vicon data is likely `None`')
 			self.vidro.set_rc_throttle(self.base_rc_throttle)
 			self.D_error_alt = 0
 			self.P_error_alt = 0
@@ -163,8 +162,9 @@ class PositionController:
 
 		#Get error
 		try:
-			yaw = self.vidro.get_yaw_radians() - 0.0
+			yaw = self.vidro.get_yaw_radians() - 0
 		except:
+			logging.error('Unable to get the error for yaw. This means vicon data is likely `None`')
 			self.vidro.set_rc_yaw(self.base_rc_yaw)
 			self.D_error_yaw = 0
 			self.P_error_yaw = 0
@@ -216,6 +216,7 @@ class PositionController:
 			try:
 				heading = self.vidro.get_yaw_degrees() - 0.0
 			except:
+				logging.error('Unable to get the error for yaw in rc_xy. This means vicon data is likely `None`')
 				self.vidro.set_rc_pitch(self.base_rc_pitch)
 				self.vidro.set_rc_roll(self.base_rc_roll)
 				self.P_error_roll = 0
@@ -226,15 +227,14 @@ class PositionController:
 				self.D_error_pitch = 0
 				return
 
-		#Calculate current position
-		self.x_current = self.vidro.get_position()[0]
-		self.y_current = self.vidro.get_position()[1]
-
-		#Calculate the error in the x-y(lat/lon) axis
+		#Calculate current position and error
 		try:
+			self.x_current = self.vidro.get_position()[0]
+			self.y_current = self.vidro.get_position()[1]
 			self.error_x = goal_x - self.x_current * 1.0
 			self.error_y = goal_y - self.y_current * 1.0
 		except:
+			logging.error('Unable to get either roll or pitch data from vicon. This means vicon data is likely `None`')
 			self.vidro.set_rc_pitch(self.base_rc_pitch)
 			self.vidro.set_rc_roll(self.base_rc_roll)
 			self.P_error_roll = 0
