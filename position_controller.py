@@ -98,9 +98,9 @@ class PositionController:
 		self.pitch_K_I = float(lines[21])
 		self.pitch_K_D = float(lines[23])
 
-	def rc_alt(self, goal_alt):
+	def rc_alt(self, target_alt):
 		"""
-		Will send copter based off of throttle to 'goal_alt'
+		Will send copter based off of throttle to 'target_alt'
 		"""
 
 		#Calculate delta t and set previous time ot current time
@@ -110,7 +110,7 @@ class PositionController:
 
 		#Get error
 		try:
-			self.error_alt = goal_alt - self.vidro.get_position()[2]
+			self.error_alt = target_alt - self.vidro.get_position()[2]
 		except:
 			logging.error('Unable to get the error for alt. This means vicon data is likely `None`')
 			self.vidro.set_rc_throttle(self.base_rc_throttle)
@@ -145,14 +145,14 @@ class PositionController:
 
 		return self.error_alt
 
-	def rc_yaw(self, goal_heading):
+	def rc_yaw(self, target_heading):
 		"""
 		Sends quad to given yaw
 		Imput is in radians from -pi to pi
 		"""
 
 		#Get rid of bad inputs
-		if goal_heading > math.pi or goal_heading < math.pi*-1:
+		if target_heading > math.pi or target_heading < math.pi*-1:
 			return 0
 
 		#Calculate delta t and set previous time ot current time
@@ -171,12 +171,12 @@ class PositionController:
 			self.I_error_yaw = 0
 			return
 
-		self.error_yaw = goal_heading - yaw
+		self.error_yaw = target_heading - yaw
 
-		if abs(goal_heading - (yaw+2*math.pi)) < abs(self.error_yaw):
-			self.error_yaw = goal_heading - (yaw+2*math.pi)
-		if abs(goal_heading - (yaw-2*math.pi)) < abs(self.error_yaw):
-			self.error_yaw = goal_heading - (yaw-2*math.pi)
+		if abs(target_heading - (yaw+2*math.pi)) < abs(self.error_yaw):
+			self.error_yaw = target_heading - (yaw+2*math.pi)
+		if abs(target_heading - (yaw-2*math.pi)) < abs(self.error_yaw):
+			self.error_yaw = target_heading - (yaw-2*math.pi)
 
 		self.error_yaw = self.error_yaw * -1
 
@@ -204,7 +204,7 @@ class PositionController:
 		return self.error_yaw
 
 
-	def rc_xy(self, goal_x, goal_y):
+	def rc_xy(self, target_x, target_y):
 		"""
 		Sends quad copter to given x-y point
 		"""
@@ -231,8 +231,8 @@ class PositionController:
 		try:
 			self.x_current = self.vidro.get_position()[0]
 			self.y_current = self.vidro.get_position()[1]
-			self.error_x = goal_x - self.x_current * 1.0
-			self.error_y = goal_y - self.y_current * 1.0
+			self.error_x = target_x - self.x_current * 1.0
+			self.error_y = target_y - self.y_current * 1.0
 		except:
 			logging.error('Unable to get either roll or pitch data from vicon. This means vicon data is likely `None`')
 			self.vidro.set_rc_pitch(self.base_rc_pitch)
@@ -252,7 +252,7 @@ class PositionController:
 		if self.error_y == 0:
 			self.error_y += .000000000001
 
-		#Total error from current point to goal point
+		#Total error from current point to target point
 		total_error = math.sqrt(self.error_x*self.error_x+self.error_y*self.error_y)
 
 		#Angle on x-y(lat/lon) axis to point

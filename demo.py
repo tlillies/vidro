@@ -31,12 +31,12 @@ plot_y_current=[]
 plot_x_goal=[]
 plot_y_goal=[]
 
-goal_x = 0
-goal_y = 0
-goal_z = 0
-goal_x_previous = 0
-goal_y_previous = 0
-goal_z_previous = 0
+target_x = 0
+target_y = 0
+target_z = 0
+target_x_previous = 0
+target_y_previous = 0
+target_z_previous = 0
 
 def curses_print(string, line, col):
 	"""
@@ -104,21 +104,21 @@ while vidro.current_rc_channels[4] > 1600:
 	while vidro.current_rc_channels[5] > 1600:
 
 		try:
-			goal_x = vidro.get_vicon()[4]
-			goal_y = vidro.get_vicon()[5]
-			goal_z = vidro.get_vicon()[6]
+			target_x = vidro.get_vicon()[4]
+			target_y = vidro.get_vicon()[5]
+			target_z = vidro.get_vicon()[6]
 		except:
 			logging.error('Unable to get position data from the vicon for wand')
 			pass
 
-		goal_z = filter_value(1000,5000,goal_z)
-		goal_x = filter_value(-2000,2000,goal_x)
-		goal_y = filter_value(-2000,2000,goal_y)
+		target_z = filter_value(1000,5000,target_z)
+		target_x = filter_value(-2000,2000,target_x)
+		target_y = filter_value(-2000,2000,target_y)
 
 		#~ try:
-		controller.rc_alt(goal_z)
+		controller.rc_alt(target_z)
 		#controller.rc_yaw(0)
-		controller.rc_xy(goal_x,goal_y)
+		controller.rc_xy(target_x,target_y)
 		curses_print("No errors",2,0)
 		#~ except:
 			#~logging.error('Something went wrong in the control system. Setting to hover')
@@ -135,7 +135,7 @@ while vidro.current_rc_channels[4] > 1600:
 
 			curses_print("Position: X: " + str(vidro.get_position()[0]) + " Y: " + str(vidro.get_position()[1]) + " Z: " + str(vidro.get_position()[2]),0,0)
 			curses_print("Wand:     X: " + str(vidro.get_vicon()[4]) + " Y: " + str(vidro.get_vicon()[5]) + " Z: " + str(vidro.get_vicon()[6]),1,0)
-			curses_print("Goal:     X: " + str(goal_x) + " Y: " + str(goal_y) + " Z: " + str(goal_z),2,0)
+			curses_print("Target:     X: " + str(target_x) + " Y: " + str(target_y) + " Z: " + str(target_z),2,0)
 			curses_print("Vicon Error: " + str(vidro.vicon_error),3,0)
 
 			#Print alt data
@@ -189,8 +189,8 @@ while vidro.current_rc_channels[4] > 1600:
 		plot_x_current.append(vidro.get_position()[0])
 		plot_y_current.append(vidro.get_position()[1])
 		
-		plot_x_goal.append(goal_x)
-		plot_y_goal.append(goal_y)
+		plot_x_goal.append(target_x)
+		plot_y_goal.append(target_y)
 
 		switch = True
 		vidro.get_mavlink()
