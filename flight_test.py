@@ -160,10 +160,10 @@ while vidro.current_rc_channels[4] > 1600:
 		plot_y_current.append(vidro.get_position()[1])
 
 		switch = True
-		vidro.get_mavlink()
+		vidro.update_mavlink()
 
 	vidro.rc_all_reset()
-	vidro.get_mavlink()
+	vidro.update_mavlink()
 
 	#Erase Plots
 	if switch == True:

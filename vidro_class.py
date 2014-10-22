@@ -274,11 +274,11 @@ class Vidro:
 		print "Getting inital values from APM..."
 		if self.sitl == False:
 			while (self.current_rc_channels[0] == None):
-				self.get_mavlink()
+				self.update_mavlink()
 			print("Got RC channels")
 		else:
 			while (self.current_rc_channels[0] == None) or (self.current_alt == None) or (self.current_yaw == None):
-				self.get_mavlink()
+				self.update_mavlink()
 			print("Got RC channels, global position, and attitude")
 			
 		#Set contants for SITl
@@ -290,7 +290,7 @@ class Vidro:
 			self.home_lon = self.current_lon
 			print("Successfully set home latitude and longitude")
 
-	def get_mavlink(self):
+	def update_mavlink(self):
 		"""
 		Function for getting the general mavlink message and changing class variables based on that message.
 		It looks for 5 different message types:

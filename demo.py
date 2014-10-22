@@ -207,11 +207,11 @@ while vidro.current_rc_channels[4] > 1600:
 		switch = True
 		
 		#update mavlink
-		vidro.get_mavlink()
+		vidro.update_mavlink()
 
 	#reset of rc channels to go back to transmitter control
 	vidro.rc_all_reset()
-	vidro.get_mavlink()
+	vidro.update_mavlink()
 
 	#Erase Plots
 	if switch == True:
