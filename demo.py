@@ -65,7 +65,7 @@ def filter_value(low,high,value):
 		value = high
 	return value
 
-vidro = Vidro(False,2)
+vidro = Vidro(False)
 vidro.connect()
 controller = PositionController(vidro)
 

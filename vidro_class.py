@@ -5,7 +5,6 @@ This is currently the main file used
 from pymavlink import mavutil
 import sys, math, time
 import socket, struct, threading
-import utm
 
 ###################################################################################
 ## A simple module for retrieving data from a Vicon motion capture system
@@ -186,7 +185,7 @@ class ViconStreamer:
 
 class Vidro:
 
-	def __init__(self, sitl,vicon_num):
+	def __init__(self, sitl):
 		self.sitl = sitl
 		if self.sitl == True:
 			self.baud = 115200
@@ -245,7 +244,7 @@ class Vidro:
 
 		self.vicon_error = False
 
-		self.num_vicon_objs = vicon_num
+		self.num_vicon_objs = None
 
 	def connect_mavlink(self):
 		"""
@@ -324,10 +323,6 @@ class Vidro:
 		"""
 		Connects to vicon. This is needed to scream vicon data.
 		"""
-		if self.num_vicon_objs > 2:
-			print "WARNING: Number of vicon objects must be 2 > x > 0"
-		if self.num_vicon_objs < 1:
-			print "WARNING: Number of vicon objects must be 2 > x > 0"
 		self.s = ViconStreamer()
 		self.s.connect("Vicon", 800)
 		self.streams = self.s.selectStreams(["Time", "t-", "a-"])
@@ -339,7 +334,12 @@ class Vidro:
 		self.home_x = self.get_position()[0]
 		self.home_y = self.get_position()[1]
 		self.home_z = self.get_position()[2]
-
+		
+		if len(self.s.getData()) == 50:
+			self.num_vicon_objs = 1
+		if len(self.s.getData()) == 75:
+			self.num_vicon_objs = 2
+			
 	def disconnect_vicon(self):
 		"""
 		Properly closes vicon connection. Call this when finished using vicon.
