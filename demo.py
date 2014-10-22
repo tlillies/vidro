@@ -58,7 +58,7 @@ def curses_print(string, line, col):
 
 	screen.refresh()
 
-
+#Filter for fencing values given by wand
 def filter_value(low,high,value):
 	if value < low:
 		value = low
@@ -66,43 +66,51 @@ def filter_value(low,high,value):
 		value = high
 	return value
 
+#Initialization of log
 logging.basicConfig(filename='demo.log', level=logging.DEBUG)
 
+#Creation of vidro and controller objects
 vidro = Vidro(False)
 vidro.connect()
 controller = PositionController(vidro)
 
+#Setup the screen for curses
 screen = curses.initscr()
 screen.clear()
 screen.refresh()
 
+#switch for knowing if first time out of control loop
 switch = False
 
+#Possibly needed for live plotting (Need to test)
 plot.ion()
 
+#Setup of timer
 timer = time.clock()
 
 while vidro.current_rc_channels[4] > 1600:
 
+	#Reset of errors after each time control loop finishes
 	controller.I_error_alt = 0
 	controller.I_error_pitch = 0
 	controller.I_error_roll = 0
 	controller.I_error_yaw = 0
-
 	controller.previous_time_alt = (time.clock()-controller.timer)*10
 	controller.previous_time_yaw = (time.clock()-controller.timer)*10
 	controller.previous_time_xy = (time.clock()-controller.timer)*10
-
 	vidro.previous_error_alt = 0
 	vidro.previous_error_yaw = 0
 	vidro.previous_error_roll = 0
 	vidro.previous_error_pitch = 0
 
+	#Update of gains before going into control loop
 	if vidro.current_rc_channels[5] > 1600:
 		controller.update_gains()
 
+	#control loop
 	while vidro.current_rc_channels[5] > 1600:
 
+		#Get the position of the wand
 		try:
 			target_x = vidro.get_vicon()[4]
 			target_y = vidro.get_vicon()[5]
@@ -111,10 +119,12 @@ while vidro.current_rc_channels[4] > 1600:
 			logging.error('Unable to get position data from the vicon for wand')
 			pass
 
+		#filter position of wand between values
 		target_z = filter_value(1000,5000,target_z)
 		target_x = filter_value(-2000,2000,target_x)
 		target_y = filter_value(-2000,2000,target_y)
 
+		#Send control values
 		#~ try:
 		controller.rc_alt(target_z)
 		#controller.rc_yaw(0)
@@ -127,7 +137,8 @@ while vidro.current_rc_channels[4] > 1600:
 			#~ controller.vidro.set_rc_pitch(controller.base_rc_pitch)
 			#~ controller.vidro.set_rc_yaw(controller.base_rc_yaw)
 			#~ curses_print("ERROR",4,0)
-
+		
+		#Printing to screen. 
 		if round((round(time.clock(),3) % .05),2) == 0:
 
 			screen.clear()
@@ -192,9 +203,13 @@ while vidro.current_rc_channels[4] > 1600:
 		plot_x_goal.append(target_x)
 		plot_y_goal.append(target_y)
 
+		#reset switch
 		switch = True
+		
+		#update mavlink
 		vidro.get_mavlink()
 
+	#reset of rc channels to go back to transmitter control
 	vidro.rc_all_reset()
 	vidro.get_mavlink()
 

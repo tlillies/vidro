@@ -10,8 +10,11 @@ import logging
 
 class PositionController:
 	def __init__(self,vidro):
+		
+		#vidro object
 		self.vidro = vidro
 
+		#clock
 		self.timer = time.clock()
 
 		#Previous errors for calculating I and D
@@ -20,7 +23,6 @@ class PositionController:
 		self.D_error_alt = 0
 		self.previous_error_alt = None
 		self.error_alt = 0
-
 
 		self.previous_time_yaw = (time.clock()-self.timer)*10
 		self.I_error_yaw = 0
@@ -39,6 +41,7 @@ class PositionController:
 		self.error_roll = 0
 		self.error_x = 0
 		self.error_y = 0
+		
 
 		#Gains for PID controller
 		self.alt_K_P = .005
@@ -57,9 +60,12 @@ class PositionController:
 		self.pitch_K_I = .0006
 		self.pitch_K_D = .05
 		
+		
+		#Initalization of log
 		logging.basicConfig(filename='controller.log', level=logging.DEBUG)
 
-		#Base RC values
+
+		#Base RC values and path for gains file
 		if self.vidro.sitl == True:
 			self.base_rc_roll = 1535
 			self.base_rc_pitch = 1535
@@ -128,7 +134,7 @@ class PositionController:
 		#Get error D
 		if self.previous_error_alt == None:
 			self.previous_error_alt = self.error_alt
-
+		#Check to make sure error and previous error are not the same so D is not 0
 		if self.error_alt != self.previous_error_alt:
 			self.D_error_alt = (self.error_alt-self.previous_error_alt)/delta_t
 			self.previous_error_alt = self.error_alt
@@ -173,6 +179,7 @@ class PositionController:
 
 		self.error_yaw = target_heading - yaw
 
+		#Find the smallest error which makes shortest path to error
 		if abs(target_heading - (yaw+2*math.pi)) < abs(self.error_yaw):
 			self.error_yaw = target_heading - (yaw+2*math.pi)
 		if abs(target_heading - (yaw-2*math.pi)) < abs(self.error_yaw):
@@ -245,7 +252,7 @@ class PositionController:
 			self.D_error_pitch = 0
 			return
 
-		#Make error not zero so you don't get a divid by zero error (Need to tes to see if needed)
+		#Make error not zero so you don't get a divid by zero error (Need to test to see if needed)
 		if self.error_x == 0:
 			self.error_x += .000000000001
 
@@ -286,15 +293,13 @@ class PositionController:
 			self.previous_error_roll = self.error_roll
 		if self.previous_error_pitch == None:
 			self.previous_error_pitch = self.error_pitch
-
+		#Check to make sure that the errors are different or else D will be 0
 		if self.previous_error_roll != self.error_roll:
 			self.D_error_roll = (self.error_roll-self.previous_error_roll)/delta_t
 			self.previous_error_roll = self.error_roll
-
 		if self.previous_error_pitch != self.error_pitch:
 			self.D_error_pitch = (self.error_pitch-self.previous_error_pitch)/delta_t
 			self.previous_error_pitch = self.error_pitch
-
 
 		#filter for D values
 		if self.D_error_roll != self.filter_value(7000,-7000,self.D_error_roll) or self.D_error_pitch != self.filter_value(7000,-7000,self.D_error_pitch):
@@ -305,7 +310,6 @@ class PositionController:
 			self.P_error_pitch = 0
 			self.I_error_pitch = 0
 			return
-
 
 		#Send RC values
 		self.vidro.set_rc_pitch( self.base_rc_pitch + (self.error_pitch*self.pitch_K_P) + (self.I_error_pitch*self.pitch_K_I) + (self.D_error_pitch*self.pitch_K_D) )

@@ -238,25 +238,27 @@ class Vidro:
 
 		self.clock = time.clock()
 
-		self.rc_msg_time = 0
-		self.previous_rc_message = 0
-
-		self.battery_level = None
-
+		#Flag for vicon error. May not be needed
 		self.vicon_error = False
 
+		#The number of vicon objects that are being streamed. Can currently handle only two
 		self.num_vicon_objs = None
 		
+		#Start of a log
 		logging.basicConfig(filename='vidro.log', level=logging.DEBUG)
 
 	def connect_mavlink(self):
 		"""
 		Initialize connection to pixhawk and make sure to get first heartbeat message
 		"""
+		#Initialize connection
 		self.master = mavutil.mavlink_connection(self.device, self.baud)
 		print "Attempting to get HEARTBEAT message from APM..."
+		
+		#Request heartbeat from APM
 		msg = self.master.recv_match(type='HEARTBEAT', blocking=True)
 		print("Heartbeat from APM (system %u component %u)" % (self.master.target_system, self.master.target_system))
+		
 		#The max rate (the second to last argument in the line below) is 25 Hz. You must change the firmware to get a fast rate than that.
 		#It may be possible to get up to 500 Hz??
 		#This may be useful later down the road to decrease latency
@@ -267,15 +269,19 @@ class Vidro:
 			self.master.mav.request_data_stream_send(self.master.target_system, self.master.target_component, 0, 1, 0) #All
 			self.master.mav.request_data_stream_send(self.master.target_system, self.master.target_component, 3, 25, 1) #RC channels
 			self.master.mav.request_data_stream_send(self.master.target_system, self.master.target_component, 6, 25, 1) #Position
-		print "Getting inital values RC, global psition, and attitude from APM..."
+			
+		#Get intial values from the APM
+		print "Getting inital values from APM..."
 		if self.sitl == False:
 			while (self.current_rc_channels[0] == None):
 				self.get_mavlink()
-			print("Got RC channels and global position")
+			print("Got RC channels")
 		else:
 			while (self.current_rc_channels[0] == None) or (self.current_alt == None) or (self.current_yaw == None):
 				self.get_mavlink()
 			print("Got RC channels, global position, and attitude")
+			
+		#Set contants for SITl
 		if self.sitl == True:
 			self.ground_alt = self.current_alt
 			self.current_alt = 0
@@ -519,10 +525,13 @@ class Vidro:
 		For SITL it returns that yaw givn by the copter and for the Vicon system it returns the yaw given by the Vicon
 		"""
 		yaw = None
+		
 		if self.sitl == True:
 			yaw = self.current_yaw
+			
 		else:
 			try:
+				#Depending on different number of objects yaw located in different place in the vicon data stream
 				if self.num_vicon_objs == 1:
 					yaw = self.get_vicon()[6]*(1.0)
 				if self.num_vicon_objs == 2:
