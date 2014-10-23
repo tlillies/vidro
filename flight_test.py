@@ -183,7 +183,7 @@ while vidro.current_rc_channels[4] > 1600:
 		plot.title("Throttle")
 		plot.plot(plot_time_throttle,plot_error_throttle)
 		"""
-
+		"""
 		plot.figure(3).clf()
 		plot.figure(3)
 		plot.xlabel("Time(sec)")
@@ -192,7 +192,8 @@ while vidro.current_rc_channels[4] > 1600:
 		plot.plot(plot_time_pitch,plot_error_pitch)
 		#plot.plot(plot_time_pitch,plot_rc_pitch)
 		#plot.plot(plot_time_pitch,plot_error_pitch_D)
-
+		"""
+		"""
 		plot.figure(4).clf()
 		plot.figure(4)
 		plot.xlabel("Time(sec)")
@@ -201,6 +202,7 @@ while vidro.current_rc_channels[4] > 1600:
 		plot.plot(plot_time_roll,plot_error_roll)
 		#plot.plot(plot_time_roll,plot_rc_roll)
 		#plot.plot(plot_time_roll,plot_error_roll_D)
+		"""
 
 		"""
 		plot.figure(5).clf()
@@ -246,8 +248,8 @@ while vidro.current_rc_channels[4] > 1600:
 		plot.title("Location")
 		plot.plot(plot_x_current, plot_y_current)
 		"""
-		plot.draw()
-		plot.pause(.0001)
+		#plot.draw()
+		#plot.pause(.0001)
 		time.sleep(.02)
 
 

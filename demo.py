@@ -293,7 +293,7 @@ while vidro.current_rc_channels[4] > 1600:
 		plot.plot(plot_time_roll,plot_error_roll)
 		plot.plot(plot_time_roll,plot_error_roll_I)
 		"""
-		
+		"""	
 		plot.figure(9).clf()
 		plot.figure(9)
 		plot.xlabel("x Location(mm)")
@@ -301,9 +301,9 @@ while vidro.current_rc_channels[4] > 1600:
 		plot.title("Location")
 		plot.plot(plot_x_current, plot_y_current)
 		plot.plot(plot_x_goal,plot_y_goal)
-		
-		plot.draw()
-		plot.pause(.0001)
+		"""
+		#plot.draw()
+		#plot.pause(.0001)
 		time.sleep(.02)
 
 
