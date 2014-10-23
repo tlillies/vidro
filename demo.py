@@ -4,6 +4,7 @@ import sys, math, time
 import socket, struct, threading
 import curses
 import matplotlib.pyplot as plot
+import logging
 
 #Plot arrays to start previous data for plotting
 plot_error_yaw=[]
@@ -70,7 +71,7 @@ def filter_value(low,high,value):
 logging.basicConfig(filename='demo.log', level=logging.DEBUG)
 
 #Creation of vidro and controller objects
-vidro = Vidro(False)
+vidro = Vidro(False, 2)
 vidro.connect()
 controller = PositionController(vidro)
 
@@ -125,20 +126,19 @@ while vidro.current_rc_channels[4] > 1600:
 		target_y = filter_value(-2000,2000,target_y)
 
 		#Send control values
-		#~ try:
-		controller.rc_alt(target_z)
-		#controller.rc_yaw(0)
-		controller.rc_xy(target_x,target_y)
-		curses_print("No errors",2,0)
-		#~ except:
-			#~logging.error('Something went wrong in the control system. Setting to hover')
-			#~ controller.vidro.set_rc_throttle(controller.base_rc_throttle)
-			#~ controller.vidro.set_rc_roll(controller.base_rc_roll)
-			#~ controller.vidro.set_rc_pitch(controller.base_rc_pitch)
-			#~ controller.vidro.set_rc_yaw(controller.base_rc_yaw)
-			#~ curses_print("ERROR",4,0)
-		
-		#Printing to screen. 
+		try:
+			controller.rc_alt(target_z)
+			controller.rc_yaw(0)
+			controller.rc_xy(target_x,target_y)
+		except:
+			logging.error('Something went wrong in the control system. Setting to hover')
+			controller.vidro.set_rc_throttle(controller.base_rc_throttle)
+			controller.vidro.set_rc_roll(controller.base_rc_roll)
+			controller.vidro.set_rc_pitch(controller.base_rc_pitch)
+			controller.vidro.set_rc_yaw(controller.base_rc_yaw)
+			curses_print("ERROR",4,0)
+
+		#Printing to screen.
 		if round((round(time.clock(),3) % .05),2) == 0:
 
 			screen.clear()
@@ -160,8 +160,8 @@ while vidro.current_rc_channels[4] > 1600:
 			curses_print("Yaw RC Level: " + str(vidro.current_rc_channels[3]), 5, 0)
 			curses_print("Error: " + str(controller.error_yaw), 6, 0)
 			curses_print("raw vicon : " + str(vidro.get_vicon()[9]), 7, 0)
-			#curses_print("Heading Radians: " + str(vidro.get_yaw_radians()), 8, 0)
-			#curses_print("Heading Degrees: " + str(vidro.get_yaw_degrees()), 9, 0)
+			curses_print("Heading Radians: " + str(vidro.get_yaw_radians()), 8, 0)
+			curses_print("Heading Degrees: " + str(vidro.get_yaw_degrees()), 9, 0)
 			curses_print("Y: "+ str(int(controller.base_rc_yaw+controller.error_yaw*controller.yaw_K_P+controller.I_error_yaw*controller.yaw_K_I)) + " = "+ str(controller.base_rc_yaw) + " + " + str(controller.error_yaw*controller.yaw_K_P) + " + " + str(controller.I_error_yaw*controller.yaw_K_I) + " + " + str(controller.D_error_yaw*controller.yaw_K_D), 20, 0)
 
 			#Print pitch and roll
@@ -199,13 +199,13 @@ while vidro.current_rc_channels[4] > 1600:
 
 		plot_x_current.append(vidro.get_position()[0])
 		plot_y_current.append(vidro.get_position()[1])
-		
+
 		plot_x_goal.append(target_x)
 		plot_y_goal.append(target_y)
 
 		#reset switch
 		switch = True
-		
+
 		#update mavlink
 		vidro.update_mavlink()
 

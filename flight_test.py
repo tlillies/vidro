@@ -53,7 +53,7 @@ def curses_print(string, line, col):
 
 logging.basicConfig(filename='flight_test.log', level=logging.DEBUG)
 
-vidro = Vidro(False)
+vidro = Vidro(False, 1)
 vidro.connect()
 controller = PositionController(vidro)
 

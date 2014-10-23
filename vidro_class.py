@@ -186,7 +186,7 @@ class ViconStreamer:
 
 class Vidro:
 
-	def __init__(self, sitl):
+	def __init__(self, sitl, vicon_num):
 		self.sitl = sitl
 		if self.sitl == True:
 			self.baud = 115200
@@ -242,8 +242,8 @@ class Vidro:
 		self.vicon_error = False
 
 		#The number of vicon objects that are being streamed. Can currently handle only two
-		self.num_vicon_objs = None
-		
+		self.num_vicon_objs = vicon_num
+
 		#Start of a log
 		logging.basicConfig(filename='vidro.log', level=logging.DEBUG)
 
@@ -254,11 +254,11 @@ class Vidro:
 		#Initialize connection
 		self.master = mavutil.mavlink_connection(self.device, self.baud)
 		print "Attempting to get HEARTBEAT message from APM..."
-		
+
 		#Request heartbeat from APM
 		msg = self.master.recv_match(type='HEARTBEAT', blocking=True)
 		print("Heartbeat from APM (system %u component %u)" % (self.master.target_system, self.master.target_system))
-		
+
 		#The max rate (the second to last argument in the line below) is 25 Hz. You must change the firmware to get a fast rate than that.
 		#It may be possible to get up to 500 Hz??
 		#This may be useful later down the road to decrease latency
@@ -269,7 +269,7 @@ class Vidro:
 			self.master.mav.request_data_stream_send(self.master.target_system, self.master.target_component, 0, 1, 0) #All
 			self.master.mav.request_data_stream_send(self.master.target_system, self.master.target_component, 3, 25, 1) #RC channels
 			self.master.mav.request_data_stream_send(self.master.target_system, self.master.target_component, 6, 25, 1) #Position
-			
+
 		#Get intial values from the APM
 		print "Getting inital values from APM..."
 		if self.sitl == False:
@@ -280,7 +280,7 @@ class Vidro:
 			while (self.current_rc_channels[0] == None) or (self.current_alt == None) or (self.current_yaw == None):
 				self.update_mavlink()
 			print("Got RC channels, global position, and attitude")
-			
+
 		#Set contants for SITl
 		if self.sitl == True:
 			self.ground_alt = self.current_alt
@@ -343,14 +343,16 @@ class Vidro:
 		self.home_x = self.get_position()[0]
 		self.home_y = self.get_position()[1]
 		self.home_z = self.get_position()[2]
-		
-		if len(self.s.getData()) == 50:
+
+		"""
+		if len(self.s.getData()) < 51:
 			self.num_vicon_objs = 1
-		elif len(self.s.getData()) == 75:
+		elif len(self.s.getData()) > 50:
 			self.num_vicon_objs = 2
 		else:
 			logging.error('Number of Vicon objects was not set. This means that length of s.getData() was not correct')
-			
+		"""
+
 	def disconnect_vicon(self):
 		"""
 		Properly closes vicon connection. Call this when finished using vicon.
@@ -525,10 +527,10 @@ class Vidro:
 		For SITL it returns that yaw givn by the copter and for the Vicon system it returns the yaw given by the Vicon
 		"""
 		yaw = None
-		
+
 		if self.sitl == True:
 			yaw = self.current_yaw
-			
+
 		else:
 			try:
 				#Depending on different number of objects yaw located in different place in the vicon data stream
@@ -557,12 +559,12 @@ class Vidro:
 			self.vicon_error = False
 			if yaw < 0.0:
 				yaw += 360
-				
+
 		except:
 			logging.error('Unable to get the yaw(radians) from vicon')
 			yaw = None
 			self.vicon_error = True
-			
+
 		return yaw
 
 	def get_pitch(self):
