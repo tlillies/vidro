@@ -3,7 +3,7 @@ alt_K_P:
 alt_K_I:
 0.03
 alt_K_D:
-0.02
+0.04
 yaw_K_P:
 200.0
 yaw_K_I:
@@ -15,10 +15,10 @@ roll_K_P:
 roll_K_I:
 0.0
 roll_K_D:
-0.01
+0.021
 pitch_K_P:
 0.04
 pitch_K_I:
 0.0
 pitch_K_D:
-0.01
+0.021

@@ -90,7 +90,7 @@ while vidro.current_rc_channels[4] > 1600:
 
 		#~ try:
 		controller.rc_alt(1000)
-		controller.rc_yaw(math.pi/2)
+		controller.rc_yaw(0)
 		controller.rc_xy(0,0)
 		curses_print("No errors",2,0)
 		#~ except:
@@ -279,8 +279,6 @@ while vidro.current_rc_channels[4] > 1600:
 	screen.clear()
 	screen.refresh()
 	curses_print("Under transmitter controll", 0, 0)
-	curses_print(str((time.clock()-timer)*10), 1, 0)
-	curses_print(str(vidro.rc_msg_time), 3, 0)
 
 	curses_print(str(vidro.current_rc_channels[0]),5,0)
 	curses_print(str(vidro.current_rc_channels[1]),6,0)

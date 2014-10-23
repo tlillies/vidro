@@ -448,7 +448,7 @@ class Vidro:
 
 
 	def set_rc_throttle(self, rc_value):
-		rc_value = self.rc_filter(rc_value, 1110, 1641)
+		rc_value = self.rc_filter(rc_value, 1110, 1741)
 		self.current_rc_overrides[2] =  rc_value
 
 

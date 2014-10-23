@@ -26,7 +26,7 @@ def curses_print(string, line, col):
 
 	screen.refresh()
 
-vidro = Vidro(False)
+vidro = Vidro(False, 1)
 vidro.connect()
 controller = PositionController(vidro)
 
@@ -44,6 +44,6 @@ while True:
 	screen.refresh()
 	screen.clear()
 	screen.refresh()
-	vidro.get_mavlink()
+	vidro.update_mavlink()
 
 vidro.close()
