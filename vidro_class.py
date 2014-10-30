@@ -192,8 +192,10 @@ class Vidro:
 			self.baud = 115200
 			self.device = "127.0.0.1:14551"
 		else:
-			self.baud = 57600
-			self.device = '/dev/ttyUSB0'
+			#self.baud = 57600
+			#self.device = '/dev/ttyUSB0'
+			self.baud = 115200
+			self.device = '/dev/ttyACM0'
 
 		#Home x,y,x position
 		self.home_x = 0
@@ -236,7 +238,7 @@ class Vidro:
 		self.fence_z_min = None
 		self.fence_z_max = None
 
-		self.clock = time.clock()
+		self.clock = time.time()
 
 		#Flag for vicon error. May not be needed
 		self.vicon_error = False
@@ -439,11 +441,11 @@ class Vidro:
 
 	## Set RC Channels ##
 	def set_rc_roll(self, rc_value):
-		rc_value = self.rc_filter(rc_value,1310,1858)
+		rc_value = self.rc_filter(rc_value,1519-270,1519+270)
 		self.current_rc_overrides[0] = rc_value
 
 	def set_rc_pitch(self, rc_value):
-		rc_value = self.rc_filter(rc_value, 1344, 1837)
+		rc_value = self.rc_filter(rc_value, 1519-270,1519+270)
 		self.current_rc_overrides[1] = rc_value
 
 

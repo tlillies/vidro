@@ -65,7 +65,7 @@ switch = False
 
 plot.ion()
 
-timer = time.clock()
+timer = time.time()
 
 while vidro.current_rc_channels[4] > 1600:
 
@@ -74,9 +74,9 @@ while vidro.current_rc_channels[4] > 1600:
 	controller.I_error_roll = 0
 	controller.I_error_yaw = 0
 
-	controller.previous_time_alt = (time.clock()-controller.timer)*10
-	controller.previous_time_yaw = (time.clock()-controller.timer)*10
-	controller.previous_time_xy = (time.clock()-controller.timer)*10
+	controller.previous_time_alt = (time.time()-controller.timer)*10
+	controller.previous_time_yaw = (time.time()-controller.timer)*10
+	controller.previous_time_xy = (time.time()-controller.timer)*10
 
 	vidro.previous_error_alt = 0
 	vidro.previous_error_yaw = 0
@@ -100,7 +100,7 @@ while vidro.current_rc_channels[4] > 1600:
 			#~ controller.vidro.set_rc_yaw(controller.base_rc_yaw)
 			#~ curses_print("ERROR",2,0)
 
-		if round((round(time.clock(),3) % .05),2) == 0:
+		if round((round(time.time(),3) % .05),2) == 0:
 
 			screen.clear()
 			screen.refresh()

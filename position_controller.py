@@ -15,22 +15,22 @@ class PositionController:
 		self.vidro = vidro
 
 		#clock
-		self.timer = time.clock()
+		self.timer = time.time()
 
 		#Previous errors for calculating I and D
-		self.previous_time_alt = (time.clock()-self.timer)*10
+		self.previous_time_alt = (time.time()-self.timer)*10
 		self.I_error_alt = 0
 		self.D_error_alt = 0
 		self.previous_error_alt = None
 		self.error_alt = 0
 
-		self.previous_time_yaw = (time.clock()-self.timer)*10
+		self.previous_time_yaw = (time.time()-self.timer)*10
 		self.I_error_yaw = 0
 		self.D_error_yaw = 0
 		self.error_yaw = 0
 		self.previous_error_yaw = None
 
-		self.previous_time_xy = (time.clock()-self.timer)*10
+		self.previous_time_xy = (time.time()-self.timer)*10
 		self.previous_error_pitch = None
 		self.previous_error_roll = None
 		self.D_error_roll = 0
@@ -74,8 +74,8 @@ class PositionController:
 
 			self.gains_file_path = os.path.join(os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__))), 'gains_sitl.txt')
 		else:
-			self.base_rc_roll = 1620
-			self.base_rc_pitch = 1620
+			self.base_rc_roll = 1519
+			self.base_rc_pitch = 1519
 			self.base_rc_throttle = 1516
 			self.base_rc_yaw = 1520
 
@@ -110,7 +110,7 @@ class PositionController:
 		"""
 
 		#Calculate delta t and set previous time ot current time
-		current_time = ((time.clock()-self.timer)*10)
+		current_time = ((time.time()-self.timer)*10)
 		delta_t = current_time - self.previous_time_alt
 		self.previous_time_alt = current_time
 
@@ -162,7 +162,7 @@ class PositionController:
 			return 0
 
 		#Calculate delta t and set previous time ot current time
-		current_time = ((time.clock()-self.timer)*10)
+		current_time = ((time.time()-self.timer)*10)
 		delta_t = current_time - self.previous_time_yaw
 		self.previous_time_yaw = current_time
 
@@ -272,7 +272,7 @@ class PositionController:
 		self.error_pitch = total_error * math.cos(math.radians(vehicle_angle))*-1
 
 		#Calculate delta-t for integration
-		current_time = ((time.clock()-self.timer)*10)
+		current_time = ((time.time()-self.timer)*10)
 		delta_t = current_time - self.previous_time_xy
 		self.previous_time_xy = current_time
 
