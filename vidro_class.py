@@ -342,6 +342,7 @@ class Vidro:
 					vidro.set_rc_roll(vidro.base_rc_roll)
 					vidro.set_rc_pitch(vidro.base_rc_pitch)
 					vidro.set_rc_yaw(vidro.base_rc_yaw)
+					self.vicon_error = True
 
 				self.send_rc_overrides()
 

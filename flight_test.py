@@ -106,7 +106,8 @@ while (vidro.current_rc_channels[4] > 1600) and (flight_ready == True):
 			screen.refresh()
 
 			curses_print("Position: X: " + str(vidro.get_position()[0]) + " Y: " + str(vidro.get_position()[1]) + " Z: " + str(vidro.get_position()[2]),0,0)
-			curses_print("Vicon Error: " + str(vidro.vicon_error),1,0)
+			if vidro.vicon_error == True:
+				curses_print("Vicon Error: " + str(vidro.vicon_error),1,0)
 
 			#Print alt data
 			curses_print("Throttle RC Override: " + str(vidro.current_rc_overrides[2]), 5, 1)
@@ -281,6 +282,8 @@ while (vidro.current_rc_channels[4] > 1600) and (flight_ready == True):
 	screen.clear()
 	screen.refresh()
 	curses_print("Under transmitter controll", 0, 0)
+	if vidro.vicon_error == True:
+		curses_print("Vicon Error: " + str(vidro.vicon_error),1,0)
 
 	curses_print(str(vidro.current_rc_channels[0]),5,0)
 	curses_print(str(vidro.current_rc_channels[1]),6,0)
