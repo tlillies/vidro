@@ -94,10 +94,10 @@ while vidro.current_rc_channels[4] > 1600:
 		controller.rc_xy(0,0)
 		curses_print("No errors",2,0)
 		#~ except:
-			#~ controller.vidro.set_rc_throttle(controller.base_rc_throttle)
-			#~ controller.vidro.set_rc_roll(controller.base_rc_roll)
-			#~ controller.vidro.set_rc_pitch(controller.base_rc_pitch)
-			#~ controller.vidro.set_rc_yaw(controller.base_rc_yaw)
+			#~ controller.vidro.set_rc_throttle(vidro.base_rc_throttle)
+			#~ controller.vidro.set_rc_roll(vidro.base_rc_roll)
+			#~ controller.vidro.set_rc_pitch(vidro.base_rc_pitch)
+			#~ controller.vidro.set_rc_yaw(vidro.base_rc_yaw)
 			#~ curses_print("ERROR",2,0)
 
 		if round((round(time.time(),3) % .05),2) == 0:
@@ -113,7 +113,7 @@ while vidro.current_rc_channels[4] > 1600:
 			curses_print("Throttle RC Level: " + str(vidro.current_rc_channels[2]), 6, 1)
 			curses_print("Error: " + str(controller.error_alt), 7, 1)
 			curses_print("Altitude:" + str(vidro.get_position()[2]), 8, 1)
-			curses_print("T: "+ str(int(controller.base_rc_throttle+controller.error_alt*controller.alt_K_P+controller.I_error_alt*controller.alt_K_I)) + " = "+ str(controller.base_rc_throttle) + " + " + str(controller.error_alt*controller.alt_K_P) + " + " + str(controller.I_error_alt*controller.alt_K_I) + " + " + str(controller.D_error_alt*controller.alt_K_D), 19, 0)
+			curses_print("T: "+ str(int(vidro.base_rc_throttle+controller.error_alt*controller.alt_K_P+controller.I_error_alt*controller.alt_K_I)) + " = "+ str(vidro.base_rc_throttle) + " + " + str(controller.error_alt*controller.alt_K_P) + " + " + str(controller.I_error_alt*controller.alt_K_I) + " + " + str(controller.D_error_alt*controller.alt_K_D), 19, 0)
 
 			#Print yaw data
 			curses_print("Yaw RC Level: " + str(vidro.current_rc_channels[3]), 5, 0)
@@ -121,7 +121,7 @@ while vidro.current_rc_channels[4] > 1600:
 			curses_print("raw vicon : " + str(vidro.get_vicon()[6]), 7, 0)
 			curses_print("Heading Radians: " + str(vidro.get_yaw_radians()), 8, 0)
 			curses_print("Heading Degrees: " + str(vidro.get_yaw_degrees()), 9, 0)
-			curses_print("Y: "+ str(int(controller.base_rc_yaw+controller.error_yaw*controller.yaw_K_P+controller.I_error_yaw*controller.yaw_K_I)) + " = "+ str(controller.base_rc_yaw) + " + " + str(controller.error_yaw*controller.yaw_K_P) + " + " + str(controller.I_error_yaw*controller.yaw_K_I) + " + " + str(controller.D_error_yaw*controller.yaw_K_D), 20, 0)
+			curses_print("Y: "+ str(int(vidro.base_rc_yaw+controller.error_yaw*controller.yaw_K_P+controller.I_error_yaw*controller.yaw_K_I)) + " = "+ str(vidro.base_rc_yaw) + " + " + str(controller.error_yaw*controller.yaw_K_P) + " + " + str(controller.I_error_yaw*controller.yaw_K_I) + " + " + str(controller.D_error_yaw*controller.yaw_K_D), 20, 0)
 
 			#Print pitch and roll
 			curses_print("Pitch RC Level: " + str(vidro.current_rc_channels[1]), 11, 0)
@@ -132,8 +132,8 @@ while vidro.current_rc_channels[4] > 1600:
 			curses_print("Y Error: " + str(round(controller.error_y)), 15, 1)
 			curses_print("Roll Error: " + str(round(controller.error_roll)), 13, 1)
 			curses_print("Pitch Error: " + str(round(controller.error_pitch)), 13, 0)
-			curses_print("P: " +  str(int(controller.base_rc_pitch+controller.error_pitch*controller.pitch_K_P+controller.I_error_pitch*controller.pitch_K_I+controller.D_error_pitch*controller.pitch_K_D)) + " = " + str(controller.base_rc_pitch) + " + " + str(controller.error_pitch*controller.pitch_K_P) + " + " + str(controller.I_error_pitch*controller.pitch_K_I) + " + " + str(controller.D_error_pitch*controller.pitch_K_D), 21, 0)
-			curses_print("R: " +  str(int(controller.base_rc_roll+controller.error_roll*controller.roll_K_P+controller.I_error_roll*controller.roll_K_I+controller.D_error_roll*controller.roll_K_D)) + " = " + str(controller.base_rc_roll) + " + " + str(controller.error_roll*controller.roll_K_P) + " + " + str(controller.I_error_roll*controller.roll_K_I) + " + " + str(controller.D_error_roll*controller.roll_K_D), 22, 0)
+			curses_print("P: " +  str(int(vidro.base_rc_pitch+controller.error_pitch*controller.pitch_K_P+controller.I_error_pitch*controller.pitch_K_I+controller.D_error_pitch*controller.pitch_K_D)) + " = " + str(vidro.base_rc_pitch) + " + " + str(controller.error_pitch*controller.pitch_K_P) + " + " + str(controller.I_error_pitch*controller.pitch_K_I) + " + " + str(controller.D_error_pitch*controller.pitch_K_D), 21, 0)
+			curses_print("R: " +  str(int(vidro.base_rc_roll+controller.error_roll*controller.roll_K_P+controller.I_error_roll*controller.roll_K_I+controller.D_error_roll*controller.roll_K_D)) + " = " + str(vidro.base_rc_roll) + " + " + str(controller.error_roll*controller.roll_K_P) + " + " + str(controller.I_error_roll*controller.roll_K_I) + " + " + str(controller.D_error_roll*controller.roll_K_D), 22, 0)
 
 		#Add values to arrays for plotting
 		plot_error_yaw.append(controller.error_yaw)

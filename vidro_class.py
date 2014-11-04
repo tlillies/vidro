@@ -191,11 +191,24 @@ class Vidro:
 		if self.sitl == True:
 			self.baud = 115200
 			self.device = "127.0.0.1:14551"
+			
+			self.base_rc_roll = 1535
+			self.base_rc_pitch = 1535
+			self.base_rc_throttle = 1370
+			self.base_rc_yaw = 1470
 		else:
-			#self.baud = 57600
+			#for GCS with wireless radio
+			#self.baud = 57600 
 			#self.device = '/dev/ttyUSB0'
-			self.baud = 115200
+			
+			#for raspberry pi
+			self.baud = 115200 
 			self.device = '/dev/ttyACM0'
+			
+			self.base_rc_roll = 1519
+			self.base_rc_pitch = 1519
+			self.base_rc_throttle = 1516
+			self.base_rc_yaw = 1520
 
 		#Home x,y,x position
 		self.home_x = 0
@@ -245,6 +258,8 @@ class Vidro:
 
 		#The number of vicon objects that are being streamed. Can currently handle only two
 		self.num_vicon_objs = vicon_num
+		
+		self.vicon_time = 0
 
 		#Start of a log
 		logging.basicConfig(filename='vidro.log', level=logging.DEBUG)
@@ -266,31 +281,33 @@ class Vidro:
 		#This may be useful later down the road to decrease latency
 		#It also may be helpful to only stream needed data instead of all data
 		if self.sitl == True:
-			self.master.mav.request_data_stream_send(self.master.target_system, self.master.target_component, 0, 25, 1)
-		else:
-			self.master.mav.request_data_stream_send(self.master.target_system, self.master.target_component, 0, 1, 0) #All
-			self.master.mav.request_data_stream_send(self.master.target_system, self.master.target_component, 3, 25, 1) #RC channels
-			self.master.mav.request_data_stream_send(self.master.target_system, self.master.target_component, 6, 25, 1) #Position
-
-		#Get intial values from the APM
-		print "Getting inital values from APM..."
-		if self.sitl == False:
-			while (self.current_rc_channels[0] == None):
-				self.update_mavlink()
-			print("Got RC channels")
-		else:
+			#setup data stream
+			self.master.mav.request_data_stream_send(self.master.target_system, self.master.target_component, 0, 25, 1) 
+			
+			#Get intial values from the APM
+			print "Getting inital values from APM..."
 			while (self.current_rc_channels[0] == None) or (self.current_alt == None) or (self.current_yaw == None):
 				self.update_mavlink()
 			print("Got RC channels, global position, and attitude")
-
-		#Set contants for SITl
-		if self.sitl == True:
+			
+			#Set constants for SITl
 			self.ground_alt = self.current_alt
 			self.current_alt = 0
 			print("Successfully set ground altitude")
 			self.home_lat = self.current_lat
 			self.home_lon = self.current_lon
 			print("Successfully set home latitude and longitude")
+		else:
+			#setup data stream
+			self.master.mav.request_data_stream_send(self.master.target_system, self.master.target_component, 0, 1, 0) #All
+			self.master.mav.request_data_stream_send(self.master.target_system, self.master.target_component, 3, 25, 1) #RC channels
+			self.master.mav.request_data_stream_send(self.master.target_system, self.master.target_component, 6, 25, 1) #Position
+			
+			#Get intial values from the APM
+			print "Getting inital values from APM..."
+			while (self.current_rc_channels[0] == None):
+				self.update_mavlink()
+			print("Got RC channels")
 
 	def update_mavlink(self):
 		"""
@@ -318,6 +335,13 @@ class Vidro:
 					self.current_rc_channels[5] = self.msg.chan6_raw
 				except:
 					pass
+				
+				if self.vicon_time >= self.get_vicon()[0]:
+					logging.error('Vicon system values are remainng the same. Stop the system and restart the vicon values')
+					vidro.set_rc_throttle(vidro.base_rc_throttle)
+					vidro.set_rc_roll(vidro.base_rc_roll)
+					vidro.set_rc_pitch(vidro.base_rc_pitch)
+					vidro.set_rc_yaw(vidro.base_rc_yaw)
 
 				self.send_rc_overrides()
 
@@ -345,7 +369,16 @@ class Vidro:
 		self.home_x = self.get_position()[0]
 		self.home_y = self.get_position()[1]
 		self.home_z = self.get_position()[2]
-
+		
+		timer = time.time()
+		self.vicon_time = self.get_vicon()[0]
+		while self.vicon_time >= self.get_vicon()[0]:
+			if (time.time() - timer) > 10:
+				print "unable to connect to the vicon system. Needs to be reset"
+				logging.error('Unable to connect to the vicon system. Needs to be reset')
+				return False
+		
+		return True
 		"""
 		if len(self.s.getData()) < 51:
 			self.num_vicon_objs = 1

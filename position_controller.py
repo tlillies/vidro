@@ -67,18 +67,8 @@ class PositionController:
 
 		#Base RC values and path for gains file
 		if self.vidro.sitl == True:
-			self.base_rc_roll = 1535
-			self.base_rc_pitch = 1535
-			self.base_rc_throttle = 1370
-			self.base_rc_yaw = 1470
-
 			self.gains_file_path = os.path.join(os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__))), 'gains_sitl.txt')
 		else:
-			self.base_rc_roll = 1519
-			self.base_rc_pitch = 1519
-			self.base_rc_throttle = 1516
-			self.base_rc_yaw = 1520
-
 			self.gains_file_path = os.path.join(os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__))), 'gains.txt')
 
 	def update_gains(self):
@@ -119,7 +109,7 @@ class PositionController:
 			self.error_alt = target_alt - self.vidro.get_position()[2]
 		except:
 			logging.error('Unable to get the error for alt. This means vicon data is likely `None`')
-			self.vidro.set_rc_throttle(self.base_rc_throttle)
+			self.vidro.set_rc_throttle(self.vidro.base_rc_throttle)
 			self.D_error_alt = 0
 			self.P_error_alt = 0
 			self.I_error_alt = 0
@@ -141,13 +131,13 @@ class PositionController:
 
 		#filter for D values
 		if self.D_error_alt != self.filter_value(5000,-5000,self.D_error_alt):
-			self.vidro.set_rc_throttle(self.base_rc_throttle)
+			self.vidro.set_rc_throttle(self.vidro.base_rc_throttle)
 			self.P_error_alt = 0
 			self.I_error_alt = 0
 			return
 
 		#Send RC value
-		self.vidro.set_rc_throttle(round(self.base_rc_throttle + self.error_alt*self.alt_K_P + self.I_error_alt*self.alt_K_I + self.D_error_alt*self.alt_K_D))
+		self.vidro.set_rc_throttle(round(self.vidro.base_rc_throttle + self.error_alt*self.alt_K_P + self.I_error_alt*self.alt_K_I + self.D_error_alt*self.alt_K_D))
 
 		return self.error_alt
 
@@ -171,7 +161,7 @@ class PositionController:
 			yaw = self.vidro.get_yaw_radians() - 0
 		except:
 			logging.error('Unable to get the error for yaw. This means vicon data is likely `None`')
-			self.vidro.set_rc_yaw(self.base_rc_yaw)
+			self.vidro.set_rc_yaw(self.vidro.base_rc_yaw)
 			self.D_error_yaw = 0
 			self.P_error_yaw = 0
 			self.I_error_yaw = 0
@@ -199,13 +189,13 @@ class PositionController:
 
 		#filter for D values
 		if self.D_error_yaw != self.filter_value(5000,-5000,self.D_error_yaw):
-			self.vidro.set_rc_yaw(self.base_rc_yaw)
+			self.vidro.set_rc_yaw(self.vidro.base_rc_yaw)
 			self.P_error_yaw = 0
 			self.I_error_yaw = 0
 			return
 
 		#Send RC value
-		self.vidro.set_rc_yaw(self.base_rc_yaw + self.error_yaw*self.yaw_K_P + self.I_error_yaw*self.yaw_K_I + self.D_error_yaw*self.yaw_K_D)
+		self.vidro.set_rc_yaw(self.vidro.base_rc_yaw + self.error_yaw*self.yaw_K_P + self.I_error_yaw*self.yaw_K_I + self.D_error_yaw*self.yaw_K_D)
 
 		return self.error_yaw
 
@@ -223,8 +213,8 @@ class PositionController:
 				heading = self.vidro.get_yaw_degrees() - 0.0
 			except:
 				logging.error('Unable to get the error for yaw in rc_xy. This means vicon data is likely `None`')
-				self.vidro.set_rc_pitch(self.base_rc_pitch)
-				self.vidro.set_rc_roll(self.base_rc_roll)
+				self.vidro.set_rc_pitch(self.vidro.base_rc_pitch)
+				self.vidro.set_rc_roll(self.vidro.base_rc_roll)
 				self.P_error_roll = 0
 				self.I_error_roll = 0
 				self.D_error_roll = 0
@@ -241,8 +231,8 @@ class PositionController:
 			self.error_y = target_y - self.y_current * 1.0
 		except:
 			logging.error('Unable to get either roll or pitch data from vicon. This means vicon data is likely `None`')
-			self.vidro.set_rc_pitch(self.base_rc_pitch)
-			self.vidro.set_rc_roll(self.base_rc_roll)
+			self.vidro.set_rc_pitch(self.vidro.base_rc_pitch)
+			self.vidro.set_rc_roll(self.vidro.base_rc_roll)
 			self.P_error_roll = 0
 			self.I_error_roll = 0
 			self.D_error_roll = 0
@@ -302,8 +292,8 @@ class PositionController:
 
 		#filter for D values
 		if self.D_error_roll != self.filter_value(7000,-7000,self.D_error_roll) or self.D_error_pitch != self.filter_value(7000,-7000,self.D_error_pitch):
-			self.vidro.set_rc_pitch(self.base_rc_pitch)
-			self.vidro.set_rc_roll(self.base_rc_roll)
+			self.vidro.set_rc_pitch(self.vidro.base_rc_pitch)
+			self.vidro.set_rc_roll(self.vidro.base_rc_roll)
 			self.P_error_roll = 0
 			self.I_error_roll = 0
 			self.P_error_pitch = 0
@@ -311,8 +301,8 @@ class PositionController:
 			return
 
 		#Send RC values
-		self.vidro.set_rc_pitch( self.base_rc_pitch + (self.error_pitch*self.pitch_K_P) + (self.I_error_pitch*self.pitch_K_I) + (self.D_error_pitch*self.pitch_K_D) )
-		self.vidro.set_rc_roll(  self.base_rc_roll + (self.error_roll*self.roll_K_P) + (self.I_error_roll*self.roll_K_I) + (self.D_error_roll*self.roll_K_D) )
+		self.vidro.set_rc_pitch( self.vidro.base_rc_pitch + (self.error_pitch*self.pitch_K_P) + (self.I_error_pitch*self.pitch_K_I) + (self.D_error_pitch*self.pitch_K_D) )
+		self.vidro.set_rc_roll(  self.vidro.base_rc_roll + (self.error_roll*self.roll_K_P) + (self.I_error_roll*self.roll_K_I) + (self.D_error_roll*self.roll_K_D) )
 
 	def filter_value(self, high, low, value):
 		if high < low:
