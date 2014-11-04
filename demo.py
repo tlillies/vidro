@@ -72,7 +72,7 @@ logging.basicConfig(filename='demo.log', level=logging.DEBUG)
 
 #Creation of vidro and controller objects
 vidro = Vidro(False, 2)
-vidro.connect()
+flight_ready = vidro.connect()
 controller = PositionController(vidro)
 
 #Setup the screen for curses
@@ -89,7 +89,7 @@ plot.ion()
 #Setup of timer
 timer = time.time()
 
-while vidro.current_rc_channels[4] > 1600:
+while (vidro.current_rc_channels[4] > 1600) and flight_ready == True:
 
 	#Reset of errors after each time control loop finishes
 	controller.I_error_alt = 0

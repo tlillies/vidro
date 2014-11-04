@@ -398,9 +398,11 @@ class Vidro:
 		"""
 		Connects to mavlink and vicon
 		"""
+		flight_ready = True
 		if self.sitl == False:
-			self.connect_vicon()
+			flight_ready = self.connect_vicon()
 		self.connect_mavlink()
+		return flight_ready
 
 	def close(self):
 		"""
