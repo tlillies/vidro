@@ -398,9 +398,9 @@ class Vidro:
 		"""
 		Connects to mavlink and vicon
 		"""
-		self.connect_mavlink()
 		if self.sitl == False:
 			self.connect_vicon()
+		self.connect_mavlink()
 
 	def close(self):
 		"""
