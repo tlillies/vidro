@@ -362,7 +362,7 @@ class Vidro:
 		self.s.connect("Vicon", 800)
 		self.streams = self.s.selectStreams(["Time", "t-", "a-"])
 		self.s.startStreams(verbose=False)
-		print "Vicon Connected..."
+		print "checking values..."
 		while self.s.getData() == None:
 			pass
 		print "Got inital vicon position"
@@ -377,7 +377,7 @@ class Vidro:
 				print "unable to connect to the vicon system. Needs to be reset"
 				logging.error('Unable to connect to the vicon system. Needs to be reset')
 				return False
-		
+		print "Vicon Connected..."
 		return True
 		"""
 		if len(self.s.getData()) < 51:
