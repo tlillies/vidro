@@ -338,10 +338,10 @@ class Vidro:
 				
 				if self.vicon_time >= self.get_vicon()[0]:
 					logging.error('Vicon system values are remainng the same. Stop the system and restart the vicon values')
-					vidro.set_rc_throttle(self.base_rc_throttle)
-					vidro.set_rc_roll(self.base_rc_roll)
-					vidro.set_rc_pitch(self.base_rc_pitch)
-					vidro.set_rc_yaw(self.base_rc_yaw)
+					self.set_rc_throttle(self.base_rc_throttle)
+					self.set_rc_roll(self.base_rc_roll)
+					self.set_rc_pitch(self.base_rc_pitch)
+					self.set_rc_yaw(self.base_rc_yaw)
 					self.vicon_error = True
 				self.vicon_time = self.get_vicon()[0]
 
@@ -367,6 +367,7 @@ class Vidro:
 		print "checking values..."
 		while self.s.getData() == None:
 			pass
+			
 		print "Got inital vicon position"
 		self.home_x = self.get_position()[0]
 		self.home_y = self.get_position()[1]
@@ -374,6 +375,7 @@ class Vidro:
 		
 		timer = time.time()
 		self.vicon_time = self.get_vicon()[0]
+		time.sleep(1)
 		while self.vicon_time >= self.get_vicon()[0]:
 			if (time.time() - timer) > 10:
 				print "unable to connect to the vicon system. Needs to be reset"
