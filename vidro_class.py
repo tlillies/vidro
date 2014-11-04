@@ -338,10 +338,10 @@ class Vidro:
 				
 				if self.vicon_time >= self.get_vicon()[0]:
 					logging.error('Vicon system values are remainng the same. Stop the system and restart the vicon values')
-					vidro.set_rc_throttle(vidro.base_rc_throttle)
-					vidro.set_rc_roll(vidro.base_rc_roll)
-					vidro.set_rc_pitch(vidro.base_rc_pitch)
-					vidro.set_rc_yaw(vidro.base_rc_yaw)
+					vidro.set_rc_throttle(self.base_rc_throttle)
+					vidro.set_rc_roll(self.base_rc_roll)
+					vidro.set_rc_pitch(self.base_rc_pitch)
+					vidro.set_rc_yaw(self.base_rc_yaw)
 					self.vicon_error = True
 				self.vicon_time = self.get_vicon()[0]
 
