@@ -54,7 +54,7 @@ def curses_print(string, line, col):
 logging.basicConfig(filename='flight_test.log', level=logging.DEBUG)
 
 vidro = Vidro(False, 1)
-vidro.connect()
+flight_ready = vidro.connect()
 controller = PositionController(vidro)
 
 screen = curses.initscr()
@@ -67,7 +67,7 @@ plot.ion()
 
 timer = time.time()
 
-while vidro.current_rc_channels[4] > 1600:
+while (vidro.current_rc_channels[4] > 1600) and (flight_ready == True):
 
 	controller.I_error_alt = 0
 	controller.I_error_pitch = 0
