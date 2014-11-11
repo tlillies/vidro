@@ -83,7 +83,7 @@ screen.refresh()
 #switch for knowing if first time out of control loop
 switch = False
 
-#Possibly needed for live plotting (Need to test)
+#needed for live plotting
 plot.ion()
 
 #Setup of timer

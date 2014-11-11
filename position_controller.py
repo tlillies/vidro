@@ -67,9 +67,9 @@ class PositionController:
 
 		#Base RC values and path for gains file
 		if self.vidro.sitl == True:
-			self.gains_file_path = os.path.join(os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__))), 'gains_sitl.txt')
+			self.gains_file_path = os.path.join(os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__))), 'gains/gains_sitl.txt')
 		else:
-			self.gains_file_path = os.path.join(os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__))), 'gains.txt')
+			self.gains_file_path = os.path.join(os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__))), 'gains/gains.txt')
 
 	def update_gains(self):
 		"""
