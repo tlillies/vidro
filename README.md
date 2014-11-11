@@ -13,7 +13,7 @@ An API combing pymavlink and Vicon streaming data to close the feedback control 
 
 ## Contents ##
 
-### vidro_class.py ###
+### vidro.py ###
 
 This is the class for connecting to the APM and vicon. It is able to handle SITL of the APM which is useful for testing.
 
