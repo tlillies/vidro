@@ -51,19 +51,21 @@ def curses_print(string, line, col):
 
 	screen.refresh()
 
+
 logging.basicConfig(filename='flight_test.log', level=logging.DEBUG)
 
+#Setup of vidro and controller
 vidro = Vidro(False, 1)
 flight_ready = vidro.connect()
 controller = PositionController(vidro)
 
+#Initalization of curses
 screen = curses.initscr()
 screen.clear()
 screen.refresh()
+plot.ion()
 
 switch = False
-
-plot.ion()
 
 timer = time.time()
 
