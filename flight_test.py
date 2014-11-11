@@ -54,7 +54,7 @@ def curses_print(string, line, col):
 logging.basicConfig(filename='flight_test.log', level=logging.DEBUG)
 
 vidro = Vidro(False, 1)
-vidro.connect()
+flight_ready = vidro.connect()
 controller = PositionController(vidro)
 
 screen = curses.initscr()
@@ -67,7 +67,7 @@ plot.ion()
 
 timer = time.time()
 
-while vidro.current_rc_channels[4] > 1600:
+while (vidro.current_rc_channels[4] > 1600) and (flight_ready == True):
 
 	controller.I_error_alt = 0
 	controller.I_error_pitch = 0
@@ -108,6 +108,8 @@ while vidro.current_rc_channels[4] > 1600:
 			curses_print("Position: X: " + str(vidro.get_position()[0]) + " Y: " + str(vidro.get_position()[1]) + " Z: " + str(vidro.get_position()[2]),0,0)
 			if vidro.vicon_error == True:
 				curses_print("Vicon Error: " + str(vidro.vicon_error),1,0)
+			else:
+				curses_print("Vicon time: " + str(vidro.vicon_time),1,0)
 
 			#Print alt data
 			curses_print("Throttle RC Override: " + str(vidro.current_rc_overrides[2]), 5, 1)
