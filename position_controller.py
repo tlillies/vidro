@@ -1,7 +1,7 @@
 """
 Class for handling the PID controller
 """
-from vidro_class import Vidro, ViconStreamer
+from vidro import Vidro, ViconStreamer
 import sys, math, time
 import socket, struct, threading
 import matplotlib.pyplot as plot

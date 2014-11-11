@@ -1,4 +1,4 @@
-from vidro_class import Vidro, ViconStreamer
+from vidro import Vidro, ViconStreamer
 from position_controller import PositionController
 import sys, math, time
 import socket, struct, threading
