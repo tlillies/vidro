@@ -1,3 +1,7 @@
+"""
+Test of live plot in matplotlib
+"""
+
 import time
 import numpy as np
 import matplotlib.pyplot as plt

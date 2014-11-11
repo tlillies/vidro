@@ -2,7 +2,7 @@
 Simple test for connecting to the vidro class. Some things like time may not be working
 """
 
-from vidro_class import Vidro, ViconStreamer
+from vidro import Vidro, ViconStreamer
 import sys, math, time
 import socket, struct, threading
 import curses
