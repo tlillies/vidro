@@ -1,1 +1,0 @@
-mavproxy.py --master=/dev/ttyUSB0 --baudrate=57600
