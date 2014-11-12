@@ -297,3 +297,4 @@ while (vidro.current_rc_channels[4] > 1600) and (flight_ready == True):
 	curses_print(str(vidro.current_rc_channels[5]),10,0)
 
 vidro.close()
+curses.endwin()
