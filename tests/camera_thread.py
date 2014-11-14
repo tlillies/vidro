@@ -68,17 +68,19 @@ d.start()
 start_time = time.time()
 previous_time = time.time()
 
-while (time.time()-start_time) < 60:
+while (time.time()-start_time) < 15:
     current_time = time.time()
     curses_print(str(current_time-start_time),0,0)
     plot_main_time.append(current_time-start_time)
     plot_main_cycle.append((current_time-previous_time))
     previous_time = current_time
+    """
     try:
         cv2.imshow('frame', frame)
     except:
         pass
         curses_print("Failed image show",1,0)
+    """
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
     screen.clear()
