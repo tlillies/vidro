@@ -1,18 +1,17 @@
-import threading
-import time
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+from vidro import Vidro, ViconStreamer
+from position_controller import PositionController
+import sys, math, time
+import socket, struct, threading
+import curses
+import matplotlib.pyplot as plot
+import logging
+import numpy as np
 import cv2
 import picamera
 import picamera.array
-import curses
-import matplotlib.pyplot as plot
-import numpy as np
-
-plot_camera_time=[]
-plot_camera_cycle=[]
-plot_camera_cycle_number=[]
-plot_main_time=[]
-plot_main_cycle=[]
-plot_main_cycle_number=[]
 
 def curses_print(string, line, col):
     """
@@ -33,16 +32,8 @@ def curses_print(string, line, col):
         screen.addstr(line, 40, string)
 
     screen.refresh()
-
-#Setup the screen for curses
-screen = curses.initscr()
-screen.clear()
-screen.refresh()
-
-frame = None
-
-new_frame = True
-
+    
+    
 def camera(event):
     global frame
     global new_frame
@@ -67,9 +58,14 @@ def camera(event):
                 curses_print("In camera loop",3,0)
                 camera.capture(stream, 'bgr', use_video_port=True)
                 # stream.array now contains the image data in BGR order
-				frame = stream.array
+		frame = stream.array
                 new_frame = True
                 stream.truncate(0)
+                
+#Setup of vidro and controller
+vidro = Vidro(False, 1)
+flight_ready = vidro.connect()
+controller = PositionController(vidro)
 
 event = threading.Event()
 
@@ -128,20 +124,3 @@ d.join()
 
 cv2.destroyAllWindows()
 curses.endwin()
-
-plot.figure(1)
-plot.xlabel("Time (sec)")
-plot.ylabel("Time/cycle")
-plot.title("Thread and main loop cycle times")
-plot.plot(plot_camera_time, plot_camera_cycle)
-plot.plot(plot_main_time, plot_main_cycle)
-
-plot.figure(2)
-plot.xlabel("Loop cycle")
-plot.ylabel("Time/cycle")
-plot.title("Thread and main loop cycle times")
-plot.plot(plot_camera_cycle_number, plot_camera_cycle)
-plot.plot(plot_main_cycle_number, plot_main_cycle)
-
-
-plot.show()
