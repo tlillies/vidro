@@ -67,7 +67,7 @@ def camera(event):
                 curses_print("In camera loop",3,0)
                 camera.capture(stream, 'bgr', use_video_port=True)
                 # stream.array now contains the image data in BGR order
-				frame = stream.array
+                frame = stream.array
                 new_frame = True
                 stream.truncate(0)
 
@@ -109,7 +109,7 @@ while (time.time()-start_time) < 15:
 
             # Bitwise-AND mask and original image
             res = cv2.bitwise_and(frame,frame, mask= mask)
-        
+
             #cv2.imshow('frame',frame)
             #cv2.imshow('mask',mask)
             cv2.imshow('res',res)
