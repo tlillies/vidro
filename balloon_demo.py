@@ -79,6 +79,24 @@ previous_time = time.time()
 cycle = 0
 
 while (time.time()-start_time) < 15:
+	
+	controller.I_error_alt = 0
+	controller.I_error_pitch = 0
+	controller.I_error_roll = 0
+	controller.I_error_yaw = 0
+
+	controller.previous_time_alt = (time.time()-controller.timer)*10
+	controller.previous_time_yaw = (time.time()-controller.timer)*10
+	controller.previous_time_xy = (time.time()-controller.timer)*10
+
+	vidro.previous_error_alt = 0
+	vidro.previous_error_yaw = 0
+	vidro.previous_error_roll = 0
+	vidro.previous_error_pitch = 0
+
+	if vidro.current_rc_channels[5] > 1600:
+		controller.update_gains()
+	
     current_time = time.time()
     curses_print(str(current_time-start_time),0,0)
     curses_print("New Frame: " + str(new_frame),7,0)
