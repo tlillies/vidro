@@ -152,12 +152,13 @@ seq2_cnt = 0
 seq3_cnt = 0
 
 yaw = 0
+alt = 1000
 
 while vidro.current_rc_channels[5] > 1600:
 
     #On ground
     if sequence = 0:
-        error_z = controller.rc_alt(1000)
+        error_z = controller.rc_alt(0)
         error_yaw = controller.rc_yaw(0)
         error_pitch, error_roll = controller.rc_xy(0,0)
         if error_z < 50 and error_yaw < 1 and error_pitch < 50 and error_roll < 50:
@@ -200,9 +201,7 @@ while vidro.current_rc_channels[5] > 1600:
                     yaw += .1
             else:
                 sequence = 3
-        if image_data[8] > 1:
-            sequence = 0
-        if image_data[8] < 1:
+        if (image_data[8] < 1) or (image_data[8] > 1):
             if (time.time() % 1) == 0:
                 yaw += 1
                 if yaw > 2 * math.pi:
@@ -210,9 +209,21 @@ while vidro.current_rc_channels[5] > 1600:
 
     #Adjust height
     if sequence = 3:
-        error_z = controller.rc_alt(1000)
-        error_yaw = controller.rc_yaw(1)
+        error_z = controller.rc_alt(alt)
+        error_yaw = controller.rc_yaw(yaw)
         error_x_y = controller.rc_xy(0,0)
+        if new_frame == True:
+            image_data = get_object(frame)
+            #0: Centroid x
+            #1: Centroid y
+            #2: Area
+            #3: Min x value of object 1
+            #4: Max x value of object 1
+            #5: Min y value of object 1
+            #6: Max y value of object 1
+            #7: Out of bounds
+            #8: Number of objects
+            new_frame = False
         if error_z < 50 and error_yaw < 1 and error_pitch < 50 and error_roll < 50:
             if (time.time() % 1) == 0:
                 seq3_cnt += 1
