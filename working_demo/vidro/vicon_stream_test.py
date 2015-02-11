@@ -18,9 +18,12 @@ def callback(userdata, packet):
     print "CB: X: %f \tY: %f \tZ: %f \tRoll: %f \tPitch: %f \tYaw: %f" % \
          (position[0], position[1], position[2], pos_angles[0], pos_angles[1], pos_angles[2])
 	
-	
-#print(userdata, " => ", data);
-tracker=vrpn.receiver.Tracker("test1@vicon")
-tracker.register_change_handler("position", callback, "position")
+quad=vrpn.receiver.Tracker("quad@vicon")
+quad.register_change_handler("position", callback, "position")
+
+wand=vrpn.receiver.Tracker("wand@vicon")
+wand.register_change_handler("position", callback, "position")
+
 while 1:
-    tracker.mainloop()
+    quad.mainloop()
+    wand.mainloop()
