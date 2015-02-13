@@ -7,6 +7,7 @@ import sys, math, time
 import socket, struct, threading
 import logging
 import vicon
+import signal
 
 class Vidro:
 
@@ -94,7 +95,7 @@ class Vidro:
 		else:
 			self.master.mav.request_data_stream_send(self.master.target_system, self.master.target_component, 0, 1, 0) #All
 			self.master.mav.request_data_stream_send(self.master.target_system, self.master.target_component, 3, 25, 1) #RC channels
-			self.master.mav.request_data_stream_send(self.master.target_system, self.master.target_component, 6, 25, 1) #Position
+			#self.master.mav.request_data_stream_send(self.master.target_system, self.master.target_component, 6, 25, 1) #Position
 
 		#Get intial values from the APM
 		print "Getting inital values from APM..."
@@ -161,16 +162,17 @@ class Vidro:
 		signal.signal(signal.SIGINT, self.signal_handler)
 		self.quad = vicon.ViconPosition("pixhawk(new)@Vicon")
 		self.quad.start()
-		while (self.get_vicon()[1] == 0 and self.get_vicon()[2] == 0 and self.get_vicon()[3] == 0) or self.get_vicon() == 0:
-			pass
-		print "Connected to pixhawk location..."
 		
 		if self.num_vicon_objs == 2:
-			wand = vicon.ViconPosition("Wand@Vicon")
-			wand.start()
+			self.wand = vicon.ViconPosition("Wand@Vicon")
+			self.wand.start()
 			while (self.get_vicon()[4] == 0 and self.get_vicon()[5] == 0 and self.get_vicon()[6] == 0) or self.get_vicon() == 0:
 				pass
 			print "Connected to wand location..."
+		while (self.get_vicon()[1] == 0 and self.get_vicon()[2] == 0 and self.get_vicon()[3] == 0) or self.get_vicon() == 0:
+                        pass
+                print "Connected to pixhawk location..."
+
 		print "Connected to vicon..."
 		
 	def disconnect_vicon(self):
@@ -234,10 +236,11 @@ class Vidro:
 			vicon_data()[11] = y_rotation_2
 			vicon_data()[12] = z_rotation_2
 		"""
+		
 		if self.num_vicon_objs == 1:
 			lst = [0,self.quad.position[0]*1000,self.quad.position[1]*1000,self.quad.position[2]*1000,self.quad.angles[0],self.quad.angles[1],self.quad.angles[2]]
 			return lst
-		if self.num_viocn_objs == 2:
+		if self.num_vicon_objs == 2:
 			lst = [0,self.quad.position[0]*1000,self.quad.position[1]*1000,self.quad.position[2]*1000,self.wand.position[0]*1000,self.wand.position[1]*1000,self.wand.position[2]*1000,self.quad.angles[0],self.quad.angles[1],self.quad.angles[2],self.wand.angles[0],self.wand.angles[1],self.wand.angles[2]]
 			return lst
 		return

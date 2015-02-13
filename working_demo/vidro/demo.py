@@ -1,10 +1,22 @@
-from vidro_class import Vidro, ViconStreamer
+from vidro_class import Vidro
 from position_controller import PositionController
 import sys, math, time
 import socket, struct, threading
-import curses
+#import curses
 import matplotlib.pyplot as plot
 import logging
+import os
+import atexit
+
+print_to_screen = True
+
+@atexit.register
+def program_exit():
+	os.system('clear')
+	print "EXIT"
+	if vidro:
+		vidro.close()
+	print "closed vicon contection"
 
 #Plot arrays to start previous data for plotting
 plot_error_yaw=[]
@@ -50,14 +62,16 @@ def curses_print(string, line, col):
 
 	if line > 22 or line < 0:
 		return
-
+	
+#	os.system('clear')
+	
 	#Print to screen using curses
 	if col == 0:
-		screen.addstr(line, 0, string)
+		print("\033["+str(line)+";0H"+string)
 	if col == 1:
-		screen.addstr(line, 40, string)
+		print("\033["+str(line)+";40H"+string)
 
-	screen.refresh()
+	#screen.refresh()
 
 #Filter for fencing values given by wand
 def filter_value(low,high,value):
@@ -76,9 +90,9 @@ vidro.connect()
 controller = PositionController(vidro)
 
 #Setup the screen for curses
-screen = curses.initscr()
-screen.clear()
-screen.refresh()
+#screen = curses.initscr()
+#screen.clear()
+#screen.refresh()
 
 #switch for knowing if first time out of control loop
 switch = False
@@ -89,8 +103,12 @@ plot.ion()
 #Setup of timer
 timer = time.time()
 
-while vidro.current_rc_channels[4] > 1600:
+os.system('clear')
 
+while vidro.current_rc_channels[4] > 1600:
+	
+
+	#os.system('clear')	
 	#Reset of errors after each time control loop finishes
 	controller.I_error_alt = 0
 	controller.I_error_pitch = 0
@@ -141,44 +159,46 @@ while vidro.current_rc_channels[4] > 1600:
 		#Printing to screen.
 		if round((round(time.time(),3) % .05),2) == 0:
 
-			screen.clear()
-			screen.refresh()
+			#screen.clear()
+			#screen.refresh()
 			
-			try:
-				curses_print("Position: X: " + str(vidro.get_position()[0]) + " Y: " + str(vidro.get_position()[1]) + " Z: " + str(vidro.get_position()[2]),0,0)
-				curses_print("Wand:     X: " + str(vidro.get_vicon()[4]) + " Y: " + str(vidro.get_vicon()[5]) + " Z: " + str(vidro.get_vicon()[6]),1,0)
-				curses_print("Target:     X: " + str(target_x) + " Y: " + str(target_y) + " Z: " + str(target_z),2,0)
-				curses_print("Vicon Error: " + str(vidro.vicon_error),3,0)
+			if print_to_screen == True:
+				try:
+					curses_print("Under quad control",0,0)
+					curses_print("Position: X: " + str(vidro.get_position()[0]) + " Y: " + str(vidro.get_position()[1]) + " Z: " + str(vidro.get_position()[2]),1,0)
+					curses_print("Wand:     X: " + str(vidro.get_vicon()[4]) + " Y: " + str(vidro.get_vicon()[5]) + " Z: " + str(vidro.get_vicon()[6]),2,0)
+					curses_print("Target:     X: " + str(target_x) + " Y: " + str(target_y) + " Z: " + str(target_z),3,0)
+					curses_print("Vicon Error: " + str(vidro.vicon_error),4,0)
 
-				#Print alt data
-				curses_print("Throttle RC Override: " + str(vidro.current_rc_overrides[2]), 5, 1)
-				curses_print("Throttle RC Level: " + str(vidro.current_rc_channels[2]), 6, 1)
-				curses_print("Error: " + str(controller.error_alt), 7, 1)
-				curses_print("Altitude:" + str(vidro.get_position()[2]), 8, 1)
-				curses_print("T: "+ str(int(controller.base_rc_throttle+controller.error_alt*controller.alt_K_P+controller.I_error_alt*controller.alt_K_I)) + " = "+ str(controller.base_rc_throttle) + " + " + str(controller.error_alt*controller.alt_K_P) + " + " + str(controller.I_error_alt*controller.alt_K_I) + " + " + str(controller.D_error_alt*controller.alt_K_D), 19, 0)
+					#Print alt data
+					curses_print("Throttle RC Override: " + str(vidro.current_rc_overrides[2]), 6, 1)
+					curses_print("Throttle RC Level: " + str(vidro.current_rc_channels[2]), 7, 1)
+					curses_print("Error: " + str(controller.error_alt), 8, 1)
+					curses_print("Altitude:" + str(vidro.get_position()[2]), 9, 1)
+					curses_print("T: "+ str(int(controller.base_rc_throttle+controller.error_alt*controller.alt_K_P+controller.I_error_alt*controller.alt_K_I)) + " = "+ str(controller.base_rc_throttle) + " + " + str(controller.error_alt*controller.alt_K_P) + " + " + str(controller.I_error_alt*controller.alt_K_I) + " + " + str(controller.D_error_alt*controller.alt_K_D), 19, 0)
 
-				#Print yaw data
-				curses_print("Yaw RC Level: " + str(vidro.current_rc_channels[3]), 5, 0)
-				curses_print("Error: " + str(controller.error_yaw), 6, 0)
-				curses_print("raw vicon : " + str(vidro.get_vicon()[9]), 7, 0)
-				curses_print("Heading Radians: " + str(vidro.get_yaw_radians()), 8, 0)
-				curses_print("Heading Degrees: " + str(vidro.get_yaw_degrees()), 9, 0)
-				curses_print("Y: "+ str(int(controller.base_rc_yaw+controller.error_yaw*controller.yaw_K_P+controller.I_error_yaw*controller.yaw_K_I)) + " = "+ str(controller.base_rc_yaw) + " + " + str(controller.error_yaw*controller.yaw_K_P) + " + " + str(controller.I_error_yaw*controller.yaw_K_I) + " + " + str(controller.D_error_yaw*controller.yaw_K_D), 20, 0)
+					#Print yaw data
+					curses_print("Yaw RC Level: " + str(vidro.current_rc_channels[3]), 6, 0)
+					curses_print("Error: " + str(controller.error_yaw), 7, 0)
+					curses_print("raw vicon : " + str(vidro.get_vicon()[9]), 8, 0)
+					curses_print("Heading Radians: " + str(vidro.get_yaw_radians()), 9, 0)
+					curses_print("Heading Degrees: " + str(vidro.get_yaw_degrees()), 9, 0)
+					curses_print("Y: "+ str(int(controller.base_rc_yaw+controller.error_yaw*controller.yaw_K_P+controller.I_error_yaw*controller.yaw_K_I)) + " = "+ str(controller.base_rc_yaw) + " + " + str(controller.error_yaw*controller.yaw_K_P) + " + " + str(controller.I_error_yaw*controller.yaw_K_I) + " + " + str(controller.D_error_yaw*controller.yaw_K_D), 20, 0)
 
-				#Print pitch and roll
-				curses_print("Pitch RC Level: " + str(vidro.current_rc_channels[1]), 11, 0)
-				curses_print("Roll RC Level: " + str(vidro.current_rc_channels[0]), 11, 1)
-				curses_print("Pitch: " + str(vidro.get_pitch()), 12, 0)
-				curses_print("Roll: " + str(vidro.get_roll()), 12, 1)
-				curses_print("X Error: " + str(round(controller.error_x)), 15, 0)
-				curses_print("Y Error: " + str(round(controller.error_y)), 15, 1)
-				curses_print("Roll Error: " + str(round(controller.error_roll)), 13, 1)
-				curses_print("Pitch Error: " + str(round(controller.error_pitch)), 13, 0)
-				curses_print("P: " +  str(int(controller.base_rc_pitch+controller.error_pitch*controller.pitch_K_P+controller.I_error_pitch*controller.pitch_K_I+controller.D_error_pitch*controller.pitch_K_D)) + " = " + str(controller.base_rc_pitch) + " + " + str(controller.error_pitch*controller.pitch_K_P) + " + " + str(controller.I_error_pitch*controller.pitch_K_I) + " + " + str(controller.D_error_pitch*controller.pitch_K_D), 21, 0)
-				curses_print("R: " +  str(int(controller.base_rc_roll+controller.error_roll*controller.roll_K_P+controller.I_error_roll*controller.roll_K_I+controller.D_error_roll*controller.roll_K_D)) + " = " + str(controller.base_rc_roll) + " + " + str(controller.error_roll*controller.roll_K_P) + " + " + str(controller.I_error_roll*controller.roll_K_I) + " + " + str(controller.D_error_roll*controller.roll_K_D), 22, 0)
+					#Print pitch and roll
+					curses_print("Pitch RC Level: " + str(vidro.current_rc_channels[1]), 12, 0)
+					curses_print("Roll RC Level: " + str(vidro.current_rc_channels[0]), 12, 1)
+					curses_print("Pitch: " + str(vidro.get_pitch()), 13, 0)
+					curses_print("Roll: " + str(vidro.get_roll()), 13, 1)
+					curses_print("X Error: " + str(round(controller.error_x)), 16, 0)
+					curses_print("Y Error: " + str(round(controller.error_y)), 16, 1)
+					curses_print("Roll Error: " + str(round(controller.error_roll)), 14, 1)
+					curses_print("Pitch Error: " + str(round(controller.error_pitch)), 14, 0)
+					curses_print("P: " +  str(int(controller.base_rc_pitch+controller.error_pitch*controller.pitch_K_P+controller.I_error_pitch*controller.pitch_K_I+controller.D_error_pitch*controller.pitch_K_D)) + " = " + str(controller.base_rc_pitch) + " + " + str(controller.error_pitch*controller.pitch_K_P) + " + " + str(controller.I_error_pitch*controller.pitch_K_I) + " + " + str(controller.D_error_pitch*controller.pitch_K_D), 21, 0)
+					curses_print("R: " +  str(int(controller.base_rc_roll+controller.error_roll*controller.roll_K_P+controller.I_error_roll*controller.roll_K_I+controller.D_error_roll*controller.roll_K_D)) + " = " + str(controller.base_rc_roll) + " + " + str(controller.error_roll*controller.roll_K_P) + " + " + str(controller.I_error_roll*controller.roll_K_I) + " + " + str(controller.D_error_roll*controller.roll_K_D), 22, 0)
 				
-			except:
-				logging.error('Unable to print values')
+				except:
+					logging.error('Unable to print values')
 		
 		try:
 			#Add values to arrays for plotting
@@ -335,15 +355,17 @@ while vidro.current_rc_channels[4] > 1600:
 
 		switch = False
 
-	screen.clear()
-	screen.refresh()
+	#screen.clear()
+	#screen.refresh()
 	curses_print("Under transmitter controll", 0, 0)
 
-	curses_print(str(vidro.current_rc_channels[0]),2,0)
-	curses_print(str(vidro.current_rc_channels[1]),3,0)
-	curses_print(str(vidro.current_rc_channels[2]),4,0)
-	curses_print(str(vidro.current_rc_channels[3]),5,0)
-	curses_print(str(vidro.current_rc_channels[4]),6,0)
-	curses_print(str(vidro.current_rc_channels[5]),7,0)
+	#curses_print(str(vidro.current_rc_channels[0]),2,0)
+	#curses_print(str(vidro.current_rc_channels[1]),3,0)
+	#curses_print(str(vidro.current_rc_channels[2]),4,0)
+	#curses_print(str(vidro.current_rc_channels[3]),5,0)
+	#curses_print(str(vidro.current_rc_channels[4]),6,0)
+	#curses_print(str(vidro.current_rc_channels[5]),7,0)
 
+os.system('clear')
+print "Reached end of program..."
 vidro.close()
