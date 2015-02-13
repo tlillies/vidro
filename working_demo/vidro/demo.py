@@ -8,7 +8,7 @@ import logging
 import os
 import atexit
 
-print_to_screen = False
+print_to_screen = True
 
 @atexit.register
 def program_exit():
