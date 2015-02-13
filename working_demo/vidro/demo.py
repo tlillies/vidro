@@ -8,11 +8,11 @@ import logging
 import os
 import atexit
 
-print_to_screen = True
+print_to_screen = False
 
 @atexit.register
 def program_exit():
-	os.system('clear')
+#	os.system('clear')
 	print "EXIT"
 	if vidro:
 		vidro.close()
@@ -199,7 +199,12 @@ while vidro.current_rc_channels[4] > 1600:
 				
 				except:
 					logging.error('Unable to print values')
-		
+
+			else:
+				try:
+					curses_print("Under position controller control...",0,0)
+				except:
+					pass	
 		try:
 			#Add values to arrays for plotting
 			plot_error_yaw.append(controller.error_yaw)
@@ -357,7 +362,7 @@ while vidro.current_rc_channels[4] > 1600:
 
 	#screen.clear()
 	#screen.refresh()
-	curses_print("Under transmitter controll", 0, 0)
+	curses_print("Under transmitter controll...            ", 0, 0)
 
 	#curses_print(str(vidro.current_rc_channels[0]),2,0)
 	#curses_print(str(vidro.current_rc_channels[1]),3,0)
